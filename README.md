@@ -1,5 +1,4 @@
 # WTOM
-# Website Equipe Tom
 Descrição do projeto.
 
 ## Equipe de Desenvolvimento
