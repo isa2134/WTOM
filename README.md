@@ -69,13 +69,15 @@ Descrição do projeto.
 | REQ043 | Todos os atores          | Recuperar/alterar senha via e-mail.                                          |
 | REQ044 | Administrador            | Validar/autenticar usuário.                                                  |
 | REQ045 | Administrador            | Gerar relatório de desempenho dos alunos em olimpíadas (PDF).                |
-| REQ046 | Sistema                  | Manter ranking dos alunos com base nas premiações.                           |
+| REQ046 | --                       | Manter ranking dos alunos com base nas premiações.                           |
 | REQ047 | Administrador, Professor | Cadastrar eventos no calendário.                                             |
 | REQ048 | Todos os atores          | Visualizar eventos disponíveis no calendário.                                |
 | REQ049 | Todos os atores          | Enviar feedback sobre aluno ou professor.                                    |
 | REQ050 | Todos os atores          | Visualizar feedbacks próprios (ou gerais, se administrador).                 |
 | REQ051 | Todos os atores          | Editar feedbacks próprios (ou gerais, se administrador).                     |
 | REQ052 | Todos os atores          | Excluir feedbacks próprios (ou gerais, se administrador).                    |
+| REQ053 | --                       | Gerir as permissões de cada usuário, ou seja, as funcionalidades que poderá acessar em cada tela. |
+| REQ054 | --                       | Ao fazer login no sistema, os dados de login deverão ser validados e o usuário deverá ser redirecionado para sua respectiva página.|
 
 
 ## Regras de Negócio
@@ -93,13 +95,15 @@ Descrição do projeto.
 | RN10 | Notificações apenas para alunos                                                         | Somente alunos recebem notificações automáticas. |
 | RN11 | Apenas administradores e professores controlam notificações                             | Somente esses perfis podem gerenciá-las.         |
 | RN12 | Ranking exibirá apenas participantes da olimpíada                                       | Apenas alunos que participaram da competição serão listados. |
+| RN13 | Permissão de visualização                                                               | Um usuário deverá apenas acessar funcionalidades/recursos que lhe cabem. |
+| RN14 | Validação de dados                                                                      | Dados inseridos/utilizados no programa devem sempre passar por um processo de verificação e serem validados. |
 
 
 ## Casos de Uso
 | Id    | Nome                                        | Requisitos                                     | Regras de Negócio |
 |:------|:--------------------------------------------|:-----------------------------------------------|:------------------|
-| CSU01 | Gestão de alunos                            | REQ001, REQ002, REQ003, REQ004                 | RN01, RN04        |
-| CSU02 | Gestão de professores                       | REQ005, REQ006, REQ007, REQ008                 | RN01, RN04        |
+| CSU01 | Gestão de usuários                          | REQ001, REQ002, REQ003, REQ004, REQ005, REQ006, REQ007, REQ008, REQ033, REQ034, REQ035, REQ036 |RN01, RN04        |
+| CSU02 | Gestão de login                             | REQ054                                         | RN14              |
 | CSU03 | Gestão de olimpíadas                        | REQ009, REQ010, REQ011, REQ012                 | RN07              |
 | CSU04 | Gestão de inscrições em olimpíadas          | REQ001, REQ010, REQ013, REQ014, REQ015, REQ016 | RN03              |
 | CSU05 | Gestão de premiações                        | REQ002, REQ017, REQ018, REQ019, REQ020         | RN05              |
@@ -107,14 +111,14 @@ Descrição do projeto.
 | CSU07 | Gestão de dúvidas                           | REQ002, REQ025, REQ026, REQ027, REQ028         | RN06              |
 | CSU08 | Gestão de conteúdos didáticos               | REQ002, REQ029, REQ030, REQ031, REQ032         | RN02              |
 | CSU09 | Gestão de desafios matemáticos              | REQ003                                         | RN02              |
-| CSU10 | Gestão de usuários                          | REQ003, REQ033, REQ034, REQ035, REQ036         | RN01              |
+| CSU10 | Gestão de permissão                         | REQ053                                         | RN13              |
 | CSU11 | Gestão de reuniões online                   | REQ003, REQ037, REQ038, REQ039, REQ040         | RN08              |
 | CSU12 | Gestão de notificações                      | REQ003                                         | RN10, RN11        |
 | CSU13 | Filtro de pesquisa para olimpíadas          | REQ004, REQ041                                 | —                 |
 | CSU14 | Gerar relatório de desempenho               | REQ004, REQ045                                 | RN05              |
 | CSU15 | Gestão de ranking de alunos                 | REQ004, REQ046                                 | RN12              |
 | CSU16 | Gestão de cronograma (eventos e olimpíadas) | REQ004, REQ047, REQ048                         | —                 |
-| CSU17 | Recuperação de senha                        | REQ043                                         | —                 |
+| CSU17 | Redefinição de senha                        | REQ043                                         | —                 |
 | CSU18 | Gestão de feedbacks                         | REQ049, REQ050, REQ051, REQ052                 | —                 |
 
 
@@ -124,8 +128,8 @@ Descrição do projeto.
 | 1      | CSU01       |      2        |
 | 1      | CSU02       |      5        |
 | 1      | CSU03       |      1        |
-| 1      | CSU08       |      3        |
-| 1      | CSU10       |      4        |
+| 1      | CSU10       |      3        |
+| 1      | CSU08       |      4        |
 | 1      | CSU12       |      6        |
 | 2      | CSU04       |      1        |
 | 2      | CSU05       |      2        |
