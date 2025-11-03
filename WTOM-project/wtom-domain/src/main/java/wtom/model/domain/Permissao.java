@@ -7,7 +7,7 @@ package wtom.model.domain;
 /**
  *
  * @author Luis Dias
- */
+ ***/
 
 public class Permissao {
     private String nome;

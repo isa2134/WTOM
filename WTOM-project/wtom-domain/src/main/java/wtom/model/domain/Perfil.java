@@ -7,7 +7,7 @@ package wtom.model.domain;
 /**
  *
  * @author Luis Dias
- */
+ ***/
 
 import java.util.ArrayList;
 import java.util.List;

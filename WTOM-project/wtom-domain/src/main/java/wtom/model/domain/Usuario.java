@@ -3,7 +3,7 @@ package wtom.model.domain;
 /**
  *
  * @author Luis Dias
- */
+ ***/
 
 public class Usuario {
     private final String login;
