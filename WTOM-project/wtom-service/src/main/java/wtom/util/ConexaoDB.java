@@ -20,25 +20,7 @@ public class ConexaoDB {
         }
         
         Connection connection = DriverManager.getConnection(url + db_name, user, password);
-        inicializarTabelas(connection);
         return connection;
         
-    }
-    
-    private static void inicializarTabelas(Connection connection) throws SQLException{
-        
-        String sqlConteudos = "CREATE TABLE IF NOT EXISTS conteudos("
-                +"id INT AUTO_INCREMENT PRIMARY KEY, "
-                +"id_professor INT NOT NULL, "
-                +"titulo VARCHAR(100) NOT NULL, "
-                +"descricao VARCHAR(100) NOT NULL, "
-                +"arquivo VARCHAR(100) NOT NULL, "
-                +"data VARCHAR(100) NOT NULL, "
-                +"FOREIGN KEY (id_professor) REFERENCES usuarios(id)"
-                +")";
-        
-        try(Statement statement = connection.createStatement()){
-            statement.executeUpdate(sqlConteudos);
-        }
-    }    
+    }  
 }

@@ -13,4 +13,12 @@
         <maven.compiler.release>24</maven.compiler.release>
         <exec.mainClass>WtomService</exec.mainClass>
     </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wtom-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
