@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
     <artifactId>WTOM-project</artifactId>
-    <groupId>br.cefetmg.inf</groupId>
+    <groupId>wtom</groupId>
     <version>1.0-SNAPSHOT</version>
   </parent>
     <groupId>wtom</groupId>
@@ -23,6 +23,11 @@
             <artifactId>jakarta.jakartaee-api</artifactId>
             <version>${jakartaee}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wtom-domain</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
     
