@@ -5,14 +5,18 @@ import java.time.format.DateTimeFormatter;
 
 
 public class ConteudoDidatico {
-    private Usuario professor;
+    private int id;
+    private int idProfessor;
     private String titulo;
     private String descricao;
     private String arquivo; //caminho do arquivo
-    private final String data;
+    private String data;
     
-    public ConteudoDidatico(Usuario professor, String titulo, String descricao, String arquivo){
-        this.professor = professor;
+    public ConteudoDidatico(){
+    }
+    
+    public ConteudoDidatico(int professorId, String titulo, String descricao, String arquivo){
+        this.idProfessor = professorId;
         this.titulo = titulo;
         this.descricao = descricao;
         this.arquivo = arquivo;
@@ -24,13 +28,22 @@ public class ConteudoDidatico {
         this.data = dataFormatada;
     }
     
-    public void setProfessor(Usuario professor){
-        this.professor = professor;
+    public void setId(int id){
+        this.id = id;
     }
     
-    public Usuario getProfessor(){
-        return professor;
+    public int getId(){
+        return id;
     }
+    
+    public void setIdProfessor(int professorId){
+        this.idProfessor = professorId;
+    }
+    
+    public int getIdProfessor(){
+        return idProfessor;
+    }
+    
     
     public void setTitulo(String titulo){
         this.titulo = titulo;
@@ -54,6 +67,10 @@ public class ConteudoDidatico {
     
     public String getArquivo(){
         return arquivo;
+    }
+    
+    public void setData(String data){
+        this.data = data;
     }
     
     public String getData(){
