@@ -1,10 +1,5 @@
 package wtom.model.domain;
 
-/**
- *
- * @author CaioFillipe <soucristao789@gmail.com>
- */
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -14,6 +9,7 @@ public class Olimpiada {
     private LocalDate dataDeVencimento;
     private String descricao;
     private double pesoOlimpiada;
+    protected int idOlimpiada;
     protected List<Inscricao> inscritos;
     
     public Olimpiada(String nome, String topico, LocalDate dataDeVenc, String descricao, double peso){

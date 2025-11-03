@@ -1,16 +1,12 @@
 package wtom.model.domain;
 
-/**
- *
- * @author CaioFillipe <soucristao789@gmail.com>
- */
-
 import java.time.LocalDate;
 
 public class Inscricao {
     private String cpf;
     private String nome;
     private LocalDate dataDeNascimento;
+    protected int idOlimpiada;
 
     public Inscricao(String cpf, String nome, LocalDate dataDeNascimento) {
         this.cpf = cpf;
