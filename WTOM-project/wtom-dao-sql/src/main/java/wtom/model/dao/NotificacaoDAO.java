@@ -1,6 +1,6 @@
 package wtom.model.dao;
 
-import wtom.util.ConexaoDB;
+import wtom.model.util.ConexaoDB;
 import wtom.model.domain.TipoNotificacao;
 import wtom.model.domain.Notificacao;
 import wtom.model.domain.Usuario;
@@ -22,7 +22,9 @@ public class NotificacaoDAO {
 
     public void inserir(Notificacao notificacao) throws PersistenciaException {
         String sql = "INSERT INTO notificacao (titulo, mensagem, data_do_envio, tipo, lida, destinatario_id) VALUES (?, ?, NOW(), ?, ?, ?)";
-        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, notificacao.getTitulo());
             ps.setString(2, notificacao.getMensagem());
@@ -39,15 +41,15 @@ public class NotificacaoDAO {
             }
 
         } catch (SQLException e) {
-            throw new PersistenciaException("erro ao inserir notificacao. " + e.getMessage());
+            throw new PersistenciaException("Erro ao inserir notificação: " + e.getMessage());
         }
-
     }
 
     public void marcarComoLida(int id) throws PersistenciaException {
         String sql = "UPDATE notificacao SET lida = TRUE WHERE id = ?";
 
-        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, id);
             ps.executeUpdate();
@@ -61,7 +63,8 @@ public class NotificacaoDAO {
         List<Notificacao> lista = new ArrayList<>();
         String sql = "SELECT * FROM notificacao WHERE destinatario_id = ? ORDER BY data_do_envio DESC";
 
-        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, idUsuario);
             try (ResultSet rs = ps.executeQuery()) {
@@ -94,7 +97,8 @@ public class NotificacaoDAO {
     public void deletar(int id) throws PersistenciaException {
         String sql = "DELETE FROM notificacao WHERE id = ?";
 
-        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, id);
             ps.executeUpdate();
@@ -103,5 +107,4 @@ public class NotificacaoDAO {
             throw new PersistenciaException("Erro ao deletar notificação: " + e.getMessage());
         }
     }
-
 }
