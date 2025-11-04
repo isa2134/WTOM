@@ -5,9 +5,17 @@ public class Usuario {
     private String senha;
     private String nome;
     private String email;
+    private int id;
 
-    public Usuario(String login) {
+    public Usuario(String login){
         this.login = login;
+    }
+    public Usuario(String login, String senha, String nome, String email, int id) {
+        this.login = login;
+        this.senha = senha;
+        this.nome = nome;
+        this.email = email;
+        this.id = id;
     }
 
     public String getSenha() {
@@ -17,7 +25,6 @@ public class Usuario {
     public void setSenha(String senha) {
         this.senha = senha;
     }
-
     public String getLogin() {
         return login;
     }
@@ -37,5 +44,10 @@ public class Usuario {
     public void setEmail(String email) {
         this.email = email;
     }
-
+    public void setId(int id){
+        this.id = id;
+    }
+    public int getId(){
+        return id;
+    }
 }

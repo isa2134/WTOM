@@ -10,33 +10,69 @@ public class Notificacao {
     private TipoNotificacao tipo;
     private boolean lida = false;
     private Usuario destinatario;
-    
-    Notificacao(int id, String titulo, String mensagem, Usuario destinatario, TipoNotificacao tipo){
+
+    public Notificacao() {
+        this.dataDoEnvio = LocalDateTime.now();
+    }
+    public Notificacao(String titulo, String mensagem, Usuario destinatario, TipoNotificacao tipo) {
         this.titulo = titulo;
         this.mensagem = mensagem;
         this.destinatario = destinatario;
         this.tipo = tipo;
         this.dataDoEnvio = LocalDateTime.now();
     }
-    public int getId(){
+    public Notificacao(int id, String titulo, String mensagem, Usuario destinatario, TipoNotificacao tipo, LocalDateTime data) {
+        this(titulo, mensagem, destinatario, tipo);
+        this.id = id;
+        this.dataDoEnvio = data;
+    }
+
+    public int getId() {
         return id;
     }
-    public String getTitulo(){
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getTitulo() {
         return titulo;
     }
-    public String getMensagem(){
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public String getMensagem() {
         return mensagem;
     }
-    public LocalDateTime getDataDoEnvio(){
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
+    }
+
+    public LocalDateTime getDataDoEnvio() {
         return dataDoEnvio;
     }
-    public boolean getLida(){
+    public void setDataDoEnvio(LocalDateTime dataDoEnvio) {
+        this.dataDoEnvio = dataDoEnvio;
+    }
+
+    public boolean getLida() {
         return lida;
     }
-    public Usuario getDestinatario(){
+    public void setLida(boolean lida) {
+        this.lida = lida;
+    }
+
+    public Usuario getDestinatario() {
         return destinatario;
     }
-    public TipoNotificacao getTipo(){
+    public void setDestinatario(Usuario destinatario) {
+        this.destinatario = destinatario;
+    }
+
+    public TipoNotificacao getTipo() {
         return tipo;
+    }
+    public void setTipo(TipoNotificacao tipo) {
+        this.tipo = tipo;
     }
 }
