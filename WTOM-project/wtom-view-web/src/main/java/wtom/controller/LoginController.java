@@ -1,10 +1,9 @@
 package wtom.controller;
 
-import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import sgb.model.domain.Pessoa;
-import sgb.model.service.GestaoPessoasService;
+import wtom.model.service.GestaoPessoasService;
+import wtom.model.domain.Usuario;
 
 public class LoginController {
 
@@ -14,12 +13,18 @@ public class LoginController {
             String login = request.getParameter("login");
             String senha = request.getParameter("senha");
 
+            if (login == null || login.isEmpty() || senha == null || senha.isEmpty()) {
+                request.setAttribute("erro", "Preencha todos os campos.");
+                jsp = "/index.jsp";
+                return jsp;
+            }
+
             GestaoPessoasService manterPessoa = new GestaoPessoasService();
-            Pessoa pessoa = manterPessoa.pesquisarConta(login, senha);
+            Usuario pessoa = manterPessoa.pesquisarConta(login, senha);
 
             if (pessoa == null) {
-                request.setAttribute("erro", "Pessoa não encontrada!");
-                jsp = "/core/erro.jsp";
+                request.setAttribute("erro", "Usuário ou senha inválidos.");
+                jsp = "/index.jsp";
             } else {
                 HttpSession session = request.getSession();
                 session.setAttribute("usuario", pessoa);
@@ -28,8 +33,8 @@ public class LoginController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            jsp = "/core/erro.jsp";
             request.setAttribute("erro", "Erro interno no servidor.");
+            jsp = "/core/erro.jsp";
         }
         return jsp;
     }

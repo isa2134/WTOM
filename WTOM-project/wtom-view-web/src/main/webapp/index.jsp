@@ -1,8 +1,6 @@
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,7 +24,6 @@
             <button class="close-btn" id="btn-close-modal" aria-label="Fechar janela de seleção de perfil">×</button>
             <h3 id="modal-title" style="margin-top: 0; color: var(--accent);">Selecione seu Perfil</h3>
             <p style="color: var(--muted); margin-bottom: 25px;">Para continuar, você se cadastrará como:</p>
-            
             <div class="role-selection-actions">
               <button class="btn" id="btn-select-aluno" data-role="aluno">Aluno</button>
               <button class="btn secondary" id="btn-select-professor" data-role="professor">Professor</button>
@@ -43,22 +40,23 @@
         <div class="login-form-container">
           <div class="card section-block">
             <h3>Login</h3>
-            <form name="frmLogin" method="post" action="login.java">
-              <label>Email</label>
-              <input type="email" id="email" placeholder="seu@exemplo.com" required>
-              <label>Senha</label>
-              <input type="password" id="senha" placeholder="••••••" required>
+            <form name="frmLogin" method="post" action="LoginController">
+              <label for="login">Email</label>
+              <input type="email" id="login" name="login" placeholder="seu@exemplo.com" required>
+              <label for="senha">Senha</label>
+              <input type="password" id="senha" name="senha" placeholder="••••••" required>
               <div class="login-actions">
-                <button class="btn" type="submit" onclick="main.java">Entrar</button>
+                <button class="btn" type="submit">Entrar</button>
                 <button class="btn ghost" type="button" id="btn-show-recover">Cadastrar</button>
               </div>
+              <c:if test="${not empty erro}">
+                <div class="alert alert-danger">${erro}</div>
+              </c:if>
             </form>
           </div>
         </div>
     </main>
-    
   </div>
   <script src="js.js"></script>
-  
 </body>
 </html>

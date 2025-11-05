@@ -42,6 +42,17 @@
             <version>1.0.9.14-jre14</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wtom-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wtom-domain</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
     </dependencies>
     
     <build>
