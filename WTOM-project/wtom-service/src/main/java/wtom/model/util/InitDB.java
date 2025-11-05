@@ -38,6 +38,7 @@ public class InitDB {
                 data_do_envio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 tipo ENUM('OLIMPIADA_ABERTA', 'REUNIAO_AGENDADA', 'AVISO_GERAL', 
                 'REUNIAO_CHEGANDO', 'DESAFIO_SEMANAL', 'CORRECAO_DE_EXERCICIO') NOT NULL,
+                alcance ENUM('INDIVIDUAL','GERAL',ALUNOS','PROFESSORES') NOT NULL DEFAULT 'INDIVIDUAL',
                 lida BOOLEAN NOT NULL DEFAULT FALSE,
                 destinatario_id INT NOT NULL,
                 FOREIGN KEY (destinatario_id) REFERENCES usuario(id) ON DELETE CASCADE
