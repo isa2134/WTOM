@@ -12,14 +12,13 @@ public class GestaoNotificacao{
 
     private final NotificacaoService notificacaoService;
     private final MandaEmail email;
-    //private final UsuarioDAO usuarioDAO;
+    private final UsuarioDAO usuarioDAO;
 
     public GestaoNotificacao() {
         this.notificacaoService = new NotificacaoService();
         this.email = new MandaEmail();
-        //this.usuarioDAO = UsuarioDAO.getInstance();
+        this.usuarioDAO = UsuarioDAO.getInstance();
     }
-/* Preciso de uma interface de UsuarioDAO pois ela ainda nao foi implementada
     public void selecionaAlcance(Notificacao notificacao, AlcanceNotificacao alcance) throws PersistenciaException {
 
         switch (alcance) {
@@ -63,5 +62,5 @@ public class GestaoNotificacao{
             }
         }
     }
-*/
+
 }
