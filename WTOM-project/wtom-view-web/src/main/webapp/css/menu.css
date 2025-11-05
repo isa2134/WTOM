@@ -1,0 +1,112 @@
+.sidebar{
+  position:fixed;
+  left:0;top:0;bottom:0;
+  width:var(--sidebar-width);
+  padding:28px 20px;
+  background:linear-gradient(180deg, rgba(15,76,92,0.98), rgba(12,60,74,0.95));
+  color:#fff;
+  display:flex;flex-direction:column;gap:18px;
+  box-shadow: 6px 0 24px rgba(0,0,0,0.06);
+  z-index:50;
+  overflow-y:auto;
+  transition: width 0.2s, padding 0.2s; /* Transição para o recolhimento */
+}
+
+.sidebar.collapsed{
+  width: 80px;
+  padding: 50px 10px 28px 10px; 
+}
+
+.sidebar.collapsed .role-select,
+.sidebar.collapsed .sidebar-footer,
+.sidebar.collapsed .menu span,
+.sidebar.collapsed .menu a[data-disabled="true"]{
+  display: none !important;
+}
+
+.sidebar.collapsed .logo{
+  width: 60px;
+  height: 60px;
+  margin: 0 auto;
+}
+.sidebar.collapsed .brand{
+  justify-content: center;
+}
+.sidebar.collapsed .menu a{
+  justify-content: center;
+  padding: 12px 0;
+  gap: 0;
+}
+.brand{
+  display:flex;
+  gap:12px;
+  align-items:center; 
+  justify-content: center
+}
+.logo{
+  width:56px;
+  height:56px;
+  border-radius:12px;
+  background:linear-gradient(135deg,var(--gold),#F0D9A6);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:800;
+  color:var(--accent);
+  font-size:20px; 
+  cursor:pointer}
+.brand h1{
+  margin:0;
+  font-size:18px
+}
+.brand p{
+  margin:0;
+  font-size:12px;
+  color:rgba(255,255,255,0.9)
+}
+.role-select{
+  background:transparent;
+  padding-top:8px
+}
+.role-buttons{
+  display:flex;
+  gap:8px
+}
+.role-buttons button{
+  flex:1;
+  padding:8px;
+  border-radius:10px;
+  border:0;
+  background:rgba(255,255,255,0.06);
+  color:#fff;
+  font-weight:600;
+  cursor:pointer
+}
+.role-buttons button.active{
+  background:var(--gold);color:var(--accent)
+}
+nav.menu{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-top:6px
+}
+nav.menu a{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px;
+  border-radius:10px;
+  color:rgba(255,255,255,0.95);
+  text-decoration:none;
+  font-weight:600
+}
+nav.menu a:hover{
+  background:rgba(255,255,255,0.05);
+  transform:translateX(4px);
+  transition:all .12s
+}
+nav.menu a[data-disabled="true"]{
+  opacity:0.45;
+  pointer-events:none
+}
