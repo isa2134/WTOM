@@ -30,9 +30,73 @@ public class InitDB {
         }
     }
     
+    public void initUsuario() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS usuario (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                cpf VARCHAR(14) NOT NULL UNIQUE,
+                nome VARCHAR(100) NOT NULL,
+                telefone VARCHAR(20),
+                email VARCHAR(120) UNIQUE NOT NULL,
+                data_nascimento DATE,
+                senha VARCHAR(100) NOT NULL,
+                login VARCHAR(50) UNIQUE NOT NULL,
+                tipo ENUM('ADMINISTRADOR', 'PROFESSOR', 'ALUNO') NOT NULL,
+                premiacoes JSON DEFAULT NULL,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            );
+        """;
+
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
+
+
+    public void initAluno() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS aluno (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                usuario_id BIGINT NOT NULL,
+                curso VARCHAR(100) NOT NULL,
+                pontuacao INT DEFAULT 0,
+                serie VARCHAR(20),
+                FOREIGN KEY (usuario_id) REFERENCES usuario(id)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE
+            );
+        """;
+
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
+
+
+    public void initProfessor() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS professor (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                usuario_id BIGINT NOT NULL,
+                area VARCHAR(100) NOT NULL,
+                FOREIGN KEY (usuario_id) REFERENCES usuario(id)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE
+            );
+        """;
+
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
+    
     public void initTodos() throws PersistenciaException{
         try{
             initConteudos();
+            initUsuario();
+            initAluno();
+            initProfessor();
         }
         catch(SQLException e){
             throw new PersistenciaException("erro ao inicializar tabelas: " + e.getMessage());
