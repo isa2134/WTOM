@@ -1,4 +1,4 @@
-package wtom.util;
+package wtom.model.util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -24,3 +24,4 @@ public class ConexaoDB {
         
     }  
 }
+
