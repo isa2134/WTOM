@@ -58,6 +58,39 @@ public class NotificacaoDAO {
             throw new PersistenciaException("Erro ao marcar notificação como lida: " + e.getMessage());
         }
     }
+    
+    public List<Notificacao> listarTodas() throws PersistenciaException {
+    List<Notificacao> lista = new ArrayList<>();
+    String sql = "SELECT * FROM notificacao ORDER BY data_do_envio DESC";
+
+    try (Connection con = ConexaoDB.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        UsuarioDAO usuarioDAO = UsuarioDAO.getInstance();
+
+        while (rs.next()) {
+            Notificacao n = new Notificacao();
+            n.setId(rs.getInt("id"));
+            n.setTitulo(rs.getString("titulo"));
+            n.setMensagem(rs.getString("mensagem"));
+            n.setDataDoEnvio(rs.getTimestamp("data_do_envio").toLocalDateTime());
+            n.setTipo(TipoNotificacao.valueOf(rs.getString("tipo")));
+            n.setLida(rs.getBoolean("lida"));
+
+            int destinatarioId = rs.getInt("destinatario_id");
+            Usuario u = usuarioDAO.buscarPorId(destinatarioId);
+            n.setDestinatario(u);
+
+            lista.add(n);
+        }
+
+    } catch (SQLException e) {
+        throw new PersistenciaException("Erro ao listar todas as notificações: " + e.getMessage());
+    }
+
+    return lista;
+}
 
     public List<Notificacao> listarPorUsuario(int idUsuario) throws PersistenciaException {
         List<Notificacao> lista = new ArrayList<>();
