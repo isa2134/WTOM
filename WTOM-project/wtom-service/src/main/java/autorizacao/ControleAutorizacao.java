@@ -1,8 +1,7 @@
-package wtom.autorizacao;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import wtom.model.domain.util.RecursoAcao;
 import wtom.model.domain.util.UsuarioTipo;
 
 public class ControleAutorizacao {
@@ -15,55 +14,46 @@ public class ControleAutorizacao {
 
     private static void inicializarPermissoes() {
 
-        // usuários
         adicionaPermissao(RecursoAcao.USUARIO_CRIAR, UsuarioTipo.ADMINISTRADOR);
         adicionaPermissao(RecursoAcao.USUARIO_VISUALIZAR, UsuarioTipo.ADMINISTRADOR);
         adicionaPermissao(RecursoAcao.USUARIO_EDITAR, UsuarioTipo.ADMINISTRADOR);
         adicionaPermissao(RecursoAcao.USUARIO_EXCLUIR, UsuarioTipo.ADMINISTRADOR);
 
-        // olimpíadas
         adicionaPermissao(RecursoAcao.OLIMPIADA_CRIAR, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR);
         adicionaPermissao(RecursoAcao.OLIMPIADA_VISUALIZAR, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR, UsuarioTipo.ALUNO);
         adicionaPermissao(RecursoAcao.OLIMPIADA_EDITAR, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR);
         adicionaPermissao(RecursoAcao.OLIMPIADA_EXCLUIR, UsuarioTipo.ADMINISTRADOR);
 
-        // inscrições
         adicionaPermissao(RecursoAcao.INSCRICAO_REALIZAR, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.ALUNO);
         adicionaPermissao(RecursoAcao.INSCRICAO_VISUALIZAR, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR, UsuarioTipo.ALUNO);
         adicionaPermissao(RecursoAcao.INSCRICAO_EDITAR, UsuarioTipo.ADMINISTRADOR);
         adicionaPermissao(RecursoAcao.INSCRICAO_CANCELAR, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.ALUNO);
 
-        // premiações
         adicionaPermissao(RecursoAcao.PREMIACAO_REGISTRAR, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR);
         adicionaPermissao(RecursoAcao.PREMIACAO_VISUALIZAR, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR, UsuarioTipo.ALUNO);
         adicionaPermissao(RecursoAcao.PREMIACAO_EDITAR, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR);
         adicionaPermissao(RecursoAcao.PREMIACAO_REMOVER, UsuarioTipo.ADMINISTRADOR);
 
-        // avisos
         adicionaPermissao(RecursoAcao.AVISO_CRIAR, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR);
         adicionaPermissao(RecursoAcao.AVISO_VISUALIZAR, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR, UsuarioTipo.ALUNO);
         adicionaPermissao(RecursoAcao.AVISO_EDITAR, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR);
         adicionaPermissao(RecursoAcao.AVISO_EXCLUIR, UsuarioTipo.ADMINISTRADOR);
 
-        // fórum
         adicionaPermissao(RecursoAcao.FORUM_CRIAR_POST, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR, UsuarioTipo.ALUNO);
         adicionaPermissao(RecursoAcao.FORUM_VISUALIZAR, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR, UsuarioTipo.ALUNO);
         adicionaPermissao(RecursoAcao.FORUM_EDITAR_POST, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR, UsuarioTipo.ALUNO);
         adicionaPermissao(RecursoAcao.FORUM_EXCLUIR_POST, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR);
 
-        // conteúdo didático
         adicionaPermissao(RecursoAcao.CONTEUDO_CRIAR, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR);
         adicionaPermissao(RecursoAcao.CONTEUDO_VISUALIZAR, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR, UsuarioTipo.ALUNO);
         adicionaPermissao(RecursoAcao.CONTEUDO_EDITAR, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR);
         adicionaPermissao(RecursoAcao.CONTEUDO_EXCLUIR, UsuarioTipo.ADMINISTRADOR);
 
-        // eventos
         adicionaPermissao(RecursoAcao.EVENTO_CRIAR, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR);
         adicionaPermissao(RecursoAcao.EVENTO_VISUALIZAR, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR, UsuarioTipo.ALUNO);
         adicionaPermissao(RecursoAcao.EVENTO_EDITAR, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR);
         adicionaPermissao(RecursoAcao.EVENTO_EXCLUIR, UsuarioTipo.ADMINISTRADOR);
 
-        // n otificações
         adicionaPermissao(RecursoAcao.NOTIFICACAO_GERENCIAR, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR);
         adicionaPermissao(RecursoAcao.NOTIFICACAO_VISUALIZAR, UsuarioTipo.ADMINISTRADOR, UsuarioTipo.PROFESSOR, UsuarioTipo.ALUNO);
     }

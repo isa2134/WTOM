@@ -1,5 +1,3 @@
-package wtom.autorizacao;
-
 import java.util.HashSet;
 import java.util.Set;
 import wtom.model.domain.util.UsuarioTipo;
