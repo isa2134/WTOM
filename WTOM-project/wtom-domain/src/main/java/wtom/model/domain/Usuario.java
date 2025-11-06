@@ -22,6 +22,13 @@ public class Usuario {
         this.login = login;
         this.cpf = cpf;
     }
+    public Usuario(String login, String senha, String nome, String email, int id) {
+        this.login = login;
+        this.senha = senha;
+        this.nome = nome;
+        this.email = email;
+        this.id = id;
+    }
 
     public Usuario(Long id, String cpf, String nome, String telefone, String email, LocalDate dataDeNascimento,
                    String senha, String login, UsuarioTipo tipo, Map<String, String> premiacoes) {
