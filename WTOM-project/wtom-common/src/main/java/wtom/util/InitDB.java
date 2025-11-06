@@ -21,8 +21,8 @@ public class InitDB {
                 +"titulo VARCHAR(100) NOT NULL, "
                 +"descricao VARCHAR(100) NOT NULL, "
                 +"arquivo VARCHAR(100) NOT NULL, "
-                +"data VARCHAR(100) NOT NULL, "
-                +"FOREIGN KEY (id_professor) REFERENCES usuarios(id)"
+                +"data VARCHAR(100) NOT NULL "
+                //+"FOREIGN KEY (id_professor) REFERENCES usuarios(id)"
                 +")";
         
         try(Statement st = con.createStatement()){
