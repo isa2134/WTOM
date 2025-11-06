@@ -19,7 +19,7 @@
                 <a href=""> <span>Ranking</span></a>
                 <a href=""> <span>Materiais</span></a>
                 <a href=""> <span>Dúvidas</span></a>
-                <a href=""> <span>Notificações</span></a>
+                <a href="notificacoes.jsp"> <span>Notificações</span></a>
                 <a href=""> <span>Perfil</span></a>
             </nav>
         </aside>
