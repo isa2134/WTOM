@@ -66,6 +66,29 @@ public class ConteudoDidaticoDAO {
         }
     }
     
+    public ConteudoDidatico pesquisarPorId(int id_conteudo) throws PersistenciaException{
+        String sql = "SELECT * FROM conteudos WHERE id=?";
+        
+        try(Connection con = ConexaoDB.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery()){
+            
+            ConteudoDidatico c = new ConteudoDidatico();
+            ps.setInt(1, id_conteudo);
+            while(rs.next()){
+                c.setIdProfessor(rs.getInt("id_professor"));
+                c.setTitulo(rs.getString("titulo"));
+                c.setDescricao(rs.getString("descricao"));
+                c.setArquivo(rs.getString("arquivo"));
+                c.setData(rs.getString("data"));
+            }
+            return c;
+            
+        }
+        catch(SQLException e){
+            throw new PersistenciaException("erro ao pesquisar id do conteudo: " + e.getMessage());
+        }
+    }
     
     public List<ConteudoDidatico> listarTodos() throws PersistenciaException{
         List<ConteudoDidatico> lista = new ArrayList<>();
@@ -160,7 +183,5 @@ public class ConteudoDidaticoDAO {
             throw new PersistenciaException("erro ao deletar conteudo didatico. " + e.getMessage());
         }
     }
-    
-  
     
 }
