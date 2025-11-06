@@ -21,6 +21,6 @@ class Permissao {
     }
 
     public boolean check(UsuarioTipo usuario) {
-        return usuarios.contains(usuario);
+            return usuarios.contains(usuario);
     }
 }
