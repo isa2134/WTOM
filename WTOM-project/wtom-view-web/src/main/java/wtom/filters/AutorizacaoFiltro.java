@@ -7,22 +7,35 @@ import wtom.model.domain.util.UsuarioTipo;
 
 public class AutorizacaoFiltro implements Filter {
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+@Override
+public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+        throws IOException, ServletException {
 
-        HttpServletRequest req = (HttpServletRequest) request;
-        HttpSession session = req.getSession(false);
+    HttpServletRequest req = (HttpServletRequest) request;
+    HttpServletResponse res = (HttpServletResponse) response;
+    HttpSession session = req.getSession(false);
 
-        UsuarioTipo usuarioTipo = (session != null)
-                ? (UsuarioTipo) session.getAttribute("usuarioTipo")
-                : null;
+    String caminho = req.getRequestURI();
 
-        if (usuarioTipo == null) {
-            ((HttpServletResponse) response).sendRedirect(req.getContextPath() + "/login.jsp");
-            return;
-        }
+    if (caminho.endsWith("login.jsp") ||
+        caminho.contains("/css/") ||
+        caminho.contains("/js/") ||
+        caminho.contains("/images/")) {
 
         chain.doFilter(request, response);
+        return;
     }
+
+    UsuarioTipo usuarioTipo = (session != null)
+            ? (UsuarioTipo) session.getAttribute("usuarioTipo")
+            : null;
+
+    if (usuarioTipo == null) {
+        res.sendRedirect(req.getContextPath() + "/login.jsp");
+        return;
+    }
+
+    chain.doFilter(request, response);
+}
+
 }
