@@ -10,15 +10,29 @@
     <artifactId>wtom-service</artifactId>
     <packaging>jar</packaging>
     <properties>
-        <maven.compiler.release>24</maven.compiler.release>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <exec.mainClass>WtomService</exec.mainClass>
     </properties>
     
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>wtom-domain</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wtom-dao-sql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>wtom-common</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
     </dependencies>
 </project>

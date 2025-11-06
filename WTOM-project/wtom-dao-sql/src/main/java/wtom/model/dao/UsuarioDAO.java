@@ -1,13 +1,11 @@
 package wtom.model.dao;
 
-
 import wtom.model.domain.Usuario;
 import wtom.model.domain.util.UsuarioTipo;
 import wtom.dao.exception.PersistenciaException;
 import wtom.util.ConexaoDB;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +49,23 @@ public class UsuarioDAO {
         } catch (SQLException e) {
             throw new PersistenciaException("Erro ao inserir usuário: " + e.getMessage());
         }
+    }
+
+    public Usuario buscarPorId(Long id) throws PersistenciaException {
+        String sql = "SELECT * FROM usuario WHERE id = ?";
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setLong(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSet(rs);
+                }
+            }
+        } catch (SQLException e) {
+            throw new PersistenciaException("Erro ao buscar usuário por ID: " + e.getMessage());
+        }
+        return null;
     }
 
     public List<Usuario> listarTodos() throws PersistenciaException {
@@ -106,8 +121,6 @@ public class UsuarioDAO {
         }
     }
 
-    //notificação pro pedrinho
-
     public List<Usuario> listarUsuariosNaoAdm() throws PersistenciaException {
         return listarPorTipoExcluindo("ADMINISTRADOR");
     }
@@ -157,10 +170,7 @@ public class UsuarioDAO {
     }
 
     private Usuario mapResultSet(ResultSet rs) throws SQLException {
-        Usuario u = new Usuario(
-                rs.getString("login"),
-                rs.getString("cpf")
-        );
+        Usuario u = new Usuario(rs.getString("login"), rs.getString("cpf"));
         u.setId(rs.getLong("id"));
         u.setNome(rs.getString("nome"));
         u.setTelefone(rs.getString("telefone"));

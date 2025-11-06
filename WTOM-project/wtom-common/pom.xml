@@ -10,7 +10,8 @@
     <artifactId>wtom-common</artifactId>
     <packaging>jar</packaging>
     <properties>
-        <maven.compiler.release>24</maven.compiler.release>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <exec.mainClass>WtomCommon</exec.mainClass>
     </properties>
 </project>

@@ -37,7 +37,7 @@ public class AlunoDAO {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                Usuario usuario = new UsuarioDAO().buscarPorId(rs.getLong("usuario_id"));
+                Usuario usuario = UsuarioDAO.getInstance().buscarPorId(rs.getLong("usuario_id"));
                 Aluno a = new Aluno(usuario);
                 a.setId(rs.getLong("id"));
                 a.setCurso(rs.getString("curso"));
@@ -52,4 +52,3 @@ public class AlunoDAO {
         return alunos;
     }
 }
-

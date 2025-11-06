@@ -35,7 +35,7 @@ public class ProfessorDAO {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                Usuario usuario = new UsuarioDAO().buscarPorId(rs.getLong("usuario_id"));
+                Usuario usuario = UsuarioDAO.getInstance().buscarPorId(rs.getLong("usuario_id"));
                 Professor p = new Professor(usuario);
                 p.setId(rs.getLong("id"));
                 p.setArea(rs.getString("area"));
@@ -48,4 +48,3 @@ public class ProfessorDAO {
         return professores;
     }
 }
-
