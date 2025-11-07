@@ -52,21 +52,22 @@ public class UsuarioDAO {
     }
 
     public Usuario buscarPorId(Long id) throws PersistenciaException {
-        String sql = "SELECT * FROM usuario WHERE id = ?";
+        String sql = "SELECT * FROM usuario WHERE id=?";
         try (Connection con = ConexaoDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapResultSet(rs);
-                }
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return mapResultSet(rs);
             }
+            return null;
         } catch (SQLException e) {
             throw new PersistenciaException("Erro ao buscar usuário por ID: " + e.getMessage());
         }
-        return null;
     }
+
 
     public List<Usuario> listarTodos() throws PersistenciaException {
         String sql = "SELECT * FROM usuario";
