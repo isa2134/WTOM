@@ -22,7 +22,7 @@ public class Usuario {
         this.login = login;
         this.cpf = cpf;
     }
-    public Usuario(String login, String senha, String nome, String email, int id) {
+    public Usuario(String login, String senha, String nome, String email, Long id) {
         this.login = login;
         this.senha = senha;
         this.nome = nome;
