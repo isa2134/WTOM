@@ -1,53 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>wtom</groupId>
         <artifactId>WTOM-project</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <groupId>wtom</groupId>
+
     <artifactId>wtom-view-web</artifactId>
-    <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>wtom-view-web</name>
-    
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jakartaee>11.0.0-M1</jakartaee>
+        <!-- Compatível com Tomcat 10.1 -->
+        <jakartaee>10.0.0</jakartaee>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
-    
+
     <dependencies>
+
+        <!-- Jakarta EE API (Servlet, JSP, JSTL, etc) -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
             <version>${jakartaee}</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- JSTL Jakarta necessário para resolver as tags no JSP -->
+        <dependency>
+            <groupId>org.eclipse.ee4j.jstl</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+
+        <!-- Módulos internos do projeto -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wtom-domain</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wtom-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
     </dependencies>
-    
+
     <build>
         <plugins>
+
+            <!-- Configuração do compilador para Java 17 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.12.1</version>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
+
+            <!-- Necessário para gerar o WAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.4.0</version>
             </plugin>
+
         </plugins>
     </build>
+
 </project>

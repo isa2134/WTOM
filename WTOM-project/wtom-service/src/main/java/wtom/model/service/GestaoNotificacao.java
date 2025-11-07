@@ -29,7 +29,7 @@ public class GestaoNotificacao {
                     throw new PersistenciaException("Destinatário deve ser informado no alcance INDIVIDUAL.");
 
                 notificacaoService.enviar(notificacao);
-                email.enviarEmail(notificacao);
+                //email.enviarEmail(notificacao);
             }
 
             case GERAL -> {
@@ -55,7 +55,7 @@ public class GestaoNotificacao {
             copia.setDestinatario(u);
 
             notificacaoService.enviar(copia);
-            email.enviarEmail(copia);
+            //email.enviarEmail(copia);
         }
     }
 }

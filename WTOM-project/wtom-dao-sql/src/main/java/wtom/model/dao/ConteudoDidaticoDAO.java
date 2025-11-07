@@ -1,6 +1,6 @@
 package wtom.model.dao;
 
-import wtom.model.util.ConexaoDB;
+import wtom.util.ConexaoDB;
 import wtom.model.domain.ConteudoDidatico;
 import java.sql.*;
 import wtom.dao.exception.PersistenciaException;

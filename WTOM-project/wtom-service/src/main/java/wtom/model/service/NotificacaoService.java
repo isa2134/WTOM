@@ -3,7 +3,6 @@ package wtom.model.service;
 import wtom.model.dao.NotificacaoDAO;
 import wtom.model.domain.Notificacao;
 import wtom.dao.exception.PersistenciaException;
-
 import java.util.List;
 
 public class NotificacaoService {
@@ -18,7 +17,7 @@ public class NotificacaoService {
         notificacaoDAO.inserir(notificacao);
     }
 
-    public List<Notificacao> listarPorUsuario(int idUsuario) throws PersistenciaException {
+    public List<Notificacao> listarPorUsuario(long idUsuario) throws PersistenciaException {
         return notificacaoDAO.listarPorUsuario(idUsuario);
     }
 
@@ -26,12 +25,11 @@ public class NotificacaoService {
         return notificacaoDAO.listarTodas();
     }
 
-    public boolean marcarComoLida(int idNotificacao, int idUsuario) throws PersistenciaException {
+    public boolean marcarComoLida(long idNotificacao, long idUsuario) throws PersistenciaException {
         return notificacaoDAO.marcarComoLida(idNotificacao, idUsuario);
     }
 
-    public void excluir(int idNotificacao, int idUsuario) throws PersistenciaException {
+    public void excluir(long idNotificacao, long idUsuario) throws PersistenciaException {
         notificacaoDAO.deletar(idNotificacao, idUsuario);
     }
 }
-
