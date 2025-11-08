@@ -1,10 +1,10 @@
 package wtom.model.exception;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class NegocioException extends RuntimeException {
-    
+
     private List<String> msgs;
     
     public NegocioException() {
