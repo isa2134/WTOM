@@ -18,30 +18,34 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- Compatível com Tomcat 10.1 -->
         <jakartaee>10.0.0</jakartaee>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
     </properties>
 
     <dependencies>
 
-        <!-- Jakarta EE API (Servlet, JSP, JSTL, etc) -->
+        <!-- Jakarta EE Web API (Servlets, JSP, CDI, etc.) -->
         <dependency>
             <groupId>jakarta.platform</groupId>
-            <artifactId>jakarta.jakartaee-api</artifactId>
+            <artifactId>jakarta.jakartaee-web-api</artifactId>
             <version>${jakartaee}</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- JSTL Jakarta necessário para resolver as tags no JSP -->
+        <!-- JSTL moderno compatível com Jakarta EE 9/10 -->
         <dependency>
-            <groupId>org.eclipse.ee4j.jstl</groupId>
+            <groupId>jakarta.servlet.jsp.jstl</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
             <artifactId>jakarta.servlet.jsp.jstl</artifactId>
             <version>3.0.1</version>
         </dependency>
 
-        <!-- Módulos internos do projeto -->
+        <!-- Dependências internas -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wtom-domain</artifactId>
@@ -58,25 +62,20 @@
 
     <build>
         <plugins>
-
-            <!-- Configuração do compilador para Java 17 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.12.1</version>
                 <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
+                    <release>${maven.compiler.release}</release>
                 </configuration>
             </plugin>
 
-            <!-- Necessário para gerar o WAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.4.0</version>
             </plugin>
-
         </plugins>
     </build>
 

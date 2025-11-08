@@ -33,17 +33,17 @@ public class NotificacaoServlet extends HttpServlet {
         Usuario usuario = (sessao != null) ? (Usuario) sessao.getAttribute("usuarioLogado") : null;
 
         if (usuario == null) {
-            resp.sendRedirect("login.jsp");
+            resp.sendRedirect(req.getContextPath() + "/index.jsp");
             return;
         }
 
         try {
             List<Notificacao> notificacoes = notificacaoService.listarPorUsuario(usuario.getId());
             req.setAttribute("notificacoes", notificacoes);
-            req.getRequestDispatcher("/notificacao.jsp").forward(req, resp);
+            req.getRequestDispatcher("/core/notificacao.jsp").forward(req, resp);
         } catch (PersistenciaException e) {
             req.setAttribute("erro", e.getMessage());
-            req.getRequestDispatcher("/erro.jsp").forward(req, resp);
+            req.getRequestDispatcher("/core/erro.jsp").forward(req, resp);
         }
     }
 
@@ -67,7 +67,7 @@ public class NotificacaoServlet extends HttpServlet {
             }
         } catch (PersistenciaException e) {
             req.setAttribute("erro", e.getMessage());
-            req.getRequestDispatcher("/erro.jsp").forward(req, resp);
+            req.getRequestDispatcher("/core/erro.jsp").forward(req, resp);
         }
     }
 
@@ -78,7 +78,7 @@ public class NotificacaoServlet extends HttpServlet {
         Usuario remetente = (sessao != null) ? (Usuario) sessao.getAttribute("usuarioLogado") : null;
 
         if (remetente == null) {
-            resp.sendRedirect("login.jsp");
+            resp.sendRedirect(req.getContextPath() + "/index.jsp");
             return;
         }
 
@@ -123,7 +123,7 @@ public class NotificacaoServlet extends HttpServlet {
         Usuario usuario = (sessao != null) ? (Usuario) sessao.getAttribute("usuarioLogado") : null;
 
         if (usuario == null) {
-            resp.sendRedirect("login.jsp");
+            resp.sendRedirect(req.getContextPath() + "/index.jsp");
             return;
         }
 
@@ -140,7 +140,7 @@ public class NotificacaoServlet extends HttpServlet {
         Usuario usuario = (sessao != null) ? (Usuario) sessao.getAttribute("usuarioLogado") : null;
 
         if (usuario == null) {
-            resp.sendRedirect("login.jsp");
+            resp.sendRedirect(req.getContextPath() + "/index.jsp");
             return;
         }
 
