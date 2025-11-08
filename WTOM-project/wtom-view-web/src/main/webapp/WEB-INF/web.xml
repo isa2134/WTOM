@@ -15,10 +15,14 @@
     </filter-mapping>
 
     <error-page>
-        <exception-type>wtom.exceptions.AcessoNegadoException</exception-type>
+        <exception-type>wtom.model.service.exception.AcessoNegadoException</exception-type>
         <location>/acessoNegado.jsp</location>
     </error-page>
 
+    <error-page>
+        <exception-type>wtom.model.service.exception.AcessoNegadoException</exception-type>
+        <location>/acessoNegado.jsp</location>
+    </error-page>
 
     <session-config>
         <session-timeout>30</session-timeout>

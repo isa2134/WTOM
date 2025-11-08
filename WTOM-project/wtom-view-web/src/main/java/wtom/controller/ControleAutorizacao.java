@@ -1,8 +1,11 @@
+package wtom.controller;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import wtom.model.domain.util.RecursoAcao;
 import wtom.model.domain.util.UsuarioTipo;
+import wtom.model.service.autorizacao.Permissao;
 
 public class ControleAutorizacao {
 
