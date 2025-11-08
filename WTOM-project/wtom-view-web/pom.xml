@@ -23,7 +23,6 @@
     </properties>
 
     <dependencies>
-
         <!-- Jakarta EE Web API (Servlets, JSP, CDI, etc.) -->
         <dependency>
             <groupId>jakarta.platform</groupId>

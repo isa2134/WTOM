@@ -5,31 +5,14 @@ import java.sql.Statement;
 import java.sql.SQLException;
 import wtom.dao.exception.PersistenciaException;
 
-
 public class InitDB {
-    
+
     private final Connection con;
-    
-    public InitDB(Connection con){
+
+    public InitDB(Connection con) {
         this.con = con;
     }
-    
-    public void initConteudos() throws SQLException{
-        String sql = "CREATE TABLE IF NOT EXISTS conteudos("
-                +"id INT AUTO_INCREMENT PRIMARY KEY, "
-                +"id_professor INT NOT NULL, "
-                +"titulo VARCHAR(100) NOT NULL, "
-                +"descricao VARCHAR(100) NOT NULL, "
-                +"arquivo VARCHAR(100) NOT NULL, "
-                +"data VARCHAR(100) NOT NULL "
-                //+"FOREIGN KEY (id_professor) REFERENCES usuarios(id)"
-                +")";
-        
-        try(Statement st = con.createStatement()){
-            st.executeUpdate(sql);
-        }
-    }
-    
+
     public void initUsuario() throws SQLException {
         String sql = """
             CREATE TABLE IF NOT EXISTS usuario (
@@ -53,6 +36,22 @@ public class InitDB {
         }
     }
 
+    public void initProfessor() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS professor (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                usuario_id BIGINT NOT NULL,
+                area VARCHAR(100) NOT NULL,
+                FOREIGN KEY (usuario_id) REFERENCES usuario(id)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE
+            );
+        """;
+
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
 
     public void initAluno() throws SQLException {
         String sql = """
@@ -72,34 +71,17 @@ public class InitDB {
             st.executeUpdate(sql);
         }
     }
-    public void initNotificacoes() throws SQLException {
-    String sql = """
-        CREATE TABLE IF NOT EXISTS notificacao (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            titulo VARCHAR(255) NOT NULL,
-            mensagem TEXT NOT NULL,
-            data_do_envio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            tipo ENUM('OLIMPIADA_ABERTA', 'REUNIAO_AGENDADA', 'AVISO_GERAL', 
-            'REUNIAO_CHEGANDO', 'DESAFIO_SEMANAL', 'CORRECAO_DE_EXERCICIO') NOT NULL,
-            alcance ENUM('INDIVIDUAL','GERAL','ALUNOS','PROFESSORES') NOT NULL DEFAULT 'INDIVIDUAL',
-            lida BOOLEAN NOT NULL DEFAULT FALSE,
-            destinatario_id INT NOT NULL,
-            FOREIGN KEY (destinatario_id) REFERENCES usuarios(id) ON DELETE CASCADE
-        )
-    """;
 
-    try (Statement st = con.createStatement()) {
-        st.executeUpdate(sql);
-        }
-    }
-
-    public void initProfessor() throws SQLException {
+    public void initConteudos() throws SQLException {
         String sql = """
-            CREATE TABLE IF NOT EXISTS professor (
-                id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                usuario_id BIGINT NOT NULL,
-                area VARCHAR(100) NOT NULL,
-                FOREIGN KEY (usuario_id) REFERENCES usuario(id)
+            CREATE TABLE IF NOT EXISTS conteudos (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                id_professor BIGINT NOT NULL,
+                titulo VARCHAR(100) NOT NULL,
+                descricao VARCHAR(100) NOT NULL,
+                arquivo VARCHAR(100) NOT NULL,
+                data VARCHAR(100) NOT NULL,
+                FOREIGN KEY (id_professor) REFERENCES usuario(id)
                     ON DELETE CASCADE
                     ON UPDATE CASCADE
             );
@@ -109,28 +91,50 @@ public class InitDB {
             st.executeUpdate(sql);
         }
     }
-    
-    public void initTodos() throws PersistenciaException{
-        try{
-            initConteudos();
-            initUsuario();
-            initAluno();
-            initProfessor();
-            initNotificacoes();
+
+    public void initNotificacoes() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS notificacao (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                titulo VARCHAR(255) NOT NULL,
+                mensagem TEXT NOT NULL,
+                data_do_envio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                tipo ENUM('OLIMPIADA_ABERTA', 'REUNIAO_AGENDADA', 'AVISO_GERAL', 
+                          'REUNIAO_CHEGANDO', 'DESAFIO_SEMANAL', 'CORRECAO_DE_EXERCICIO') NOT NULL,
+                alcance ENUM('INDIVIDUAL','GERAL','ALUNOS','PROFESSORES') NOT NULL DEFAULT 'INDIVIDUAL',
+                lida BOOLEAN NOT NULL DEFAULT FALSE,
+                destinatario_id BIGINT NOT NULL,
+                FOREIGN KEY (destinatario_id) REFERENCES usuario(id)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE
+            );
+        """;
+
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
         }
-        catch(SQLException e){
+    }
+
+    public void initTodos() throws PersistenciaException {
+        try {
+            initUsuario();   
+            initProfessor();     
+            initAluno();        
+            initConteudos();     
+            initNotificacoes();  
+        } catch (SQLException e) {
             throw new PersistenciaException("erro ao inicializar tabelas: " + e.getMessage());
         }
     }
-    
-    public static void main(String[] args) throws PersistenciaException{
-        try{
+
+    // ---- MAIN ----
+    public static void main(String[] args) throws PersistenciaException {
+        try {
             Connection con = ConexaoDB.getConnection();
             InitDB init = new InitDB(con);
             init.initTodos();
-        }
-        catch(SQLException e){
-            throw new PersistenciaException("erro ao inicializar tabelas: "+e.getMessage());
+        } catch (SQLException e) {
+            throw new PersistenciaException("erro ao inicializar tabelas: " + e.getMessage());
         }
     }
 }
