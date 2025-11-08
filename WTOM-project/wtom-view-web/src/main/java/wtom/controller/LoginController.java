@@ -1,11 +1,27 @@
 package wtom.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import wtom.model.service.GestaoPessoasService;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.*;
+import java.io.IOException;
+import wtom.model.service.UsuarioService;
 import wtom.model.domain.Usuario;
+import wtom.model.service.exception.UsuarioInvalidoException;
 
-public class LoginController {
+public class LoginController extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String jsp = logar(request);
+        request.getRequestDispatcher(jsp).forward(request, response);
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String jsp = logout(request);
+        request.getRequestDispatcher(jsp).forward(request, response);
+    }
 
     public static String logar(HttpServletRequest request) {
         String jsp = "";
@@ -15,22 +31,21 @@ public class LoginController {
 
             if (login == null || login.isEmpty() || senha == null || senha.isEmpty()) {
                 request.setAttribute("erro", "Preencha todos os campos.");
-                jsp = "/index.jsp";
-                return jsp;
+                return "/index.jsp";
             }
 
-            GestaoPessoasService manterPessoa = new GestaoPessoasService();
-            Usuario pessoa = manterPessoa.pesquisarConta(login, senha);
+            UsuarioService manterPessoa = new UsuarioService();
+            Usuario pessoa = manterPessoa.buscarPorLogin(login);
 
-            if (pessoa == null) {
-                request.setAttribute("erro", "Usuário ou senha inválidos.");
-                jsp = "/index.jsp";
-            } else {
-                HttpSession session = request.getSession();
-                session.setAttribute("usuario", pessoa);
-                jsp = "/core/menu.jsp";
-            }
+            HttpSession session = request.getSession();
+            session.setAttribute("usuario", pessoa);
+            System.out.println("Usuário logado: " + pessoa.getLogin());
+            System.out.println("Redirecionando para /core/menu.jsp");
+            jsp = "/core/menu.jsp";
 
+        } catch (UsuarioInvalidoException e) {
+            request.setAttribute("erro", e.getMessage());
+            jsp = "/index.jsp";
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("erro", "Erro interno no servidor.");
