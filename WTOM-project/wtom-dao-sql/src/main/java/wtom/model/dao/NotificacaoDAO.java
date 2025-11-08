@@ -2,6 +2,7 @@ package wtom.model.dao;
 
 import wtom.model.util.ConexaoDB;
 import wtom.model.domain.TipoNotificacao;
+import wtom.model.domain.AlcanceNotificacao;
 import wtom.model.domain.Notificacao;
 import wtom.model.domain.Usuario;
 import java.sql.*;
@@ -11,17 +12,18 @@ import java.util.ArrayList;
 
 public class NotificacaoDAO {
 
-    private static NotificacaoDAO notificacaoBanco;
+    private static NotificacaoDAO instance;
 
     public static NotificacaoDAO getInstance() {
-        if (notificacaoBanco == null) {
-            notificacaoBanco = new NotificacaoDAO();
+        if (instance == null) {
+            instance = new NotificacaoDAO();
         }
-        return notificacaoBanco;
+        return instance;
     }
 
     public void inserir(Notificacao notificacao) throws PersistenciaException {
-        String sql = "INSERT INTO notificacao (titulo, mensagem, data_do_envio, tipo, lida, destinatario_id) VALUES (?, ?, NOW(), ?, ?, ?)";
+        String sql = "INSERT INTO notificacao (titulo, mensagem, data_do_envio, tipo, alcance, lida, destinatario_id) " +
+                     "VALUES (?, ?, NOW(), ?, ?, ?, ?)";
 
         try (Connection con = ConexaoDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -29,15 +31,13 @@ public class NotificacaoDAO {
             ps.setString(1, notificacao.getTitulo());
             ps.setString(2, notificacao.getMensagem());
             ps.setString(3, notificacao.getTipo().name());
-            ps.setBoolean(4, notificacao.getLida());
-            ps.setInt(5, notificacao.getDestinatario().getId());
-
+            ps.setString(4, notificacao.getAlcance().name());
+            ps.setBoolean(5, notificacao.getLida());
+            ps.setInt(6, notificacao.getDestinatario().getId());
             ps.executeUpdate();
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) {
-                    notificacao.setId(rs.getInt(1));
-                }
+                if (rs.next()) notificacao.setId(rs.getInt(1));
             }
 
         } catch (SQLException e) {
@@ -45,52 +45,35 @@ public class NotificacaoDAO {
         }
     }
 
-    public void marcarComoLida(int id) throws PersistenciaException {
-        String sql = "UPDATE notificacao SET lida = TRUE WHERE id = ?";
-
+    public boolean marcarComoLida(int idNotificacao, int idUsuario) throws PersistenciaException {
+        String sql = "UPDATE notificacao SET lida = TRUE WHERE id = ? AND destinatario_id = ?";
         try (Connection con = ConexaoDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setInt(1, id);
-            ps.executeUpdate();
+            ps.setInt(1, idNotificacao);
+            ps.setInt(2, idUsuario);
+
+            return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            throw new PersistenciaException("Erro ao marcar notificação como lida: " + e.getMessage());
+            throw new PersistenciaException("Erro ao marcar como lida: " + e.getMessage());
         }
     }
-    
-    public List<Notificacao> listarTodas() throws PersistenciaException {
-    List<Notificacao> lista = new ArrayList<>();
-    String sql = "SELECT * FROM notificacao ORDER BY data_do_envio DESC";
 
-    try (Connection con = ConexaoDB.getConnection();
-         PreparedStatement ps = con.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
+    public boolean deletar(int idNotificacao, int idUsuario) throws PersistenciaException {
+        String sql = "DELETE FROM notificacao WHERE id = ? AND destinatario_id = ?";
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-        UsuarioDAO usuarioDAO = UsuarioDAO.getInstance();
+            ps.setInt(1, idNotificacao);
+            ps.setInt(2, idUsuario);
 
-        while (rs.next()) {
-            Notificacao n = new Notificacao();
-            n.setId(rs.getInt("id"));
-            n.setTitulo(rs.getString("titulo"));
-            n.setMensagem(rs.getString("mensagem"));
-            n.setDataDoEnvio(rs.getTimestamp("data_do_envio").toLocalDateTime());
-            n.setTipo(TipoNotificacao.valueOf(rs.getString("tipo")));
-            n.setLida(rs.getBoolean("lida"));
+            return ps.executeUpdate() > 0;
 
-            int destinatarioId = rs.getInt("destinatario_id");
-            Usuario u = usuarioDAO.buscarPorId(destinatarioId);
-            n.setDestinatario(u);
-
-            lista.add(n);
+        } catch (SQLException e) {
+            throw new PersistenciaException("Erro ao deletar notificação: " + e.getMessage());
         }
-
-    } catch (SQLException e) {
-        throw new PersistenciaException("Erro ao listar todas as notificações: " + e.getMessage());
     }
-
-    return lista;
-}
 
     public List<Notificacao> listarPorUsuario(int idUsuario) throws PersistenciaException {
         List<Notificacao> lista = new ArrayList<>();
@@ -100,22 +83,13 @@ public class NotificacaoDAO {
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, idUsuario);
+
             try (ResultSet rs = ps.executeQuery()) {
                 UsuarioDAO usuarioDAO = UsuarioDAO.getInstance();
 
                 while (rs.next()) {
-                    Notificacao n = new Notificacao();
-                    n.setId(rs.getInt("id"));
-                    n.setTitulo(rs.getString("titulo"));
-                    n.setMensagem(rs.getString("mensagem"));
-                    n.setDataDoEnvio(rs.getTimestamp("data_do_envio").toLocalDateTime());
-                    n.setTipo(TipoNotificacao.valueOf(rs.getString("tipo")));
-                    n.setLida(rs.getBoolean("lida"));
-
-                    int destinatarioId = rs.getInt("destinatario_id");
-                    Usuario u = usuarioDAO.buscarPorId(destinatarioId);
-                    n.setDestinatario(u);
-
+                    Notificacao n = fromResultSet(rs);
+                    n.setDestinatario(usuarioDAO.buscarPorId(idUsuario));
                     lista.add(n);
                 }
             }
@@ -126,18 +100,29 @@ public class NotificacaoDAO {
 
         return lista;
     }
+    
+    public List<Notificacao> listarTodas() {
+    List<Notificacao> lista = new ArrayList<>();
 
-    public void deletar(int id) throws PersistenciaException {
-        String sql = "DELETE FROM notificacao WHERE id = ?";
+    String sql = "SELECT * FROM notificacoes ORDER BY dataCriada DESC";
 
-        try (Connection con = ConexaoDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+    try (Connection con = ConexaoDB.getConnection();
+         PreparedStatement stmt = con.prepareStatement(sql);
+         ResultSet rs = stmt.executeQuery()) {
 
-            ps.setInt(1, id);
-            ps.executeUpdate();
+        while (rs.next()) {
+            Notificacao n = new Notificacao();
+            n.setId(rs.getInt("id"));
+            n.setMensagem(rs.getString("mensagem"));
+            n.setDataDoEnvio(rs.getTimestamp("dataCriada").toLocalDateTime());
+            n.setLida(rs.getBoolean("lida"));
 
-        } catch (SQLException e) {
-            throw new PersistenciaException("Erro ao deletar notificação: " + e.getMessage());
+            lista.add(n);
         }
+    } catch (SQLException e) {
+        System.out.println("Erro ao listar notificações: " + e.getMessage());
     }
+
+    return lista;
+}
 }

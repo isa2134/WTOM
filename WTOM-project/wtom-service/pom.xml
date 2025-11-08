@@ -8,13 +8,15 @@
         <groupId>wtom</groupId>
         <artifactId>WTOM-project</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>wtom-service</artifactId>
     <packaging>jar</packaging>
 
     <properties>
-        <maven.compiler.release>24</maven.compiler.release>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <exec.mainClass>WtomService</exec.mainClass>
     </properties>
 
@@ -22,7 +24,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>wtom-common</artifactId>
+            <artifactId>wtom-domain</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -34,7 +36,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>wtom-domain</artifactId>
+            <artifactId>wtom-common</artifactId>
             <version>${project.version}</version>
         </dependency>
 

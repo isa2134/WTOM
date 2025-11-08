@@ -21,15 +21,17 @@ public class NotificacaoService {
     public List<Notificacao> listarPorUsuario(int idUsuario) throws PersistenciaException {
         return notificacaoDAO.listarPorUsuario(idUsuario);
     }
-    
+
     public List<Notificacao> listarTodas() throws PersistenciaException {
         return notificacaoDAO.listarTodas();
     }
-    public void marcarComoLida(int idNotificacao) throws PersistenciaException {
-        notificacaoDAO.marcarComoLida(idNotificacao);
+
+    public boolean marcarComoLida(int idNotificacao, int idUsuario) throws PersistenciaException {
+        return notificacaoDAO.marcarComoLida(idNotificacao, idUsuario);
     }
 
-    public void excluir(int idNotificacao) throws PersistenciaException {
-        notificacaoDAO.deletar(idNotificacao);
+    public void excluir(int idNotificacao, int idUsuario) throws PersistenciaException {
+        notificacaoDAO.deletar(idNotificacao, idUsuario);
     }
 }
+
