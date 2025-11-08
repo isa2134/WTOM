@@ -26,4 +26,5 @@ public class NegocioException extends RuntimeException {
     public List<String> getMessages() {
         return this.msgs;
     }
+    
 }
