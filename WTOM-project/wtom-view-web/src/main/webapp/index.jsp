@@ -16,6 +16,7 @@
           </aside>
 
           <main class="content" role="main">
+
             <div id="role-select-modal" class="modal hidden" aria-modal="true" role="dialog" aria-labelledby="modal-title">
               <div class="modal-backdrop" aria-hidden="true"></div>
               <div class="modal-content">
@@ -32,6 +33,7 @@
               </div>
             </div>
 
+
             <section class="page center-page">
               <header class="page-header">
                 <h2 id="auth-title">Bem-vindo(a) ao WTOM</h2>
@@ -40,11 +42,13 @@
               <div class="form-container">
                 <div class="card">
                   <h3>Login</h3>
-                  <form id="login-form">
+                  <form action="${pageContext.request.contextPath}/login" method="post">
                     <label>Email</label>
-                    <input type="email" id="login-email" placeholder="seu@exemplo.com" required>
+                    <input type="email" name="email" id="login-email" placeholder="seu@exemplo.com" required>
+
                     <label>Senha</label>
-                    <input type="password" id="login-pass" placeholder="••••••" required>
+                    <input type="password" name="senha" id="login-pass" placeholder="••••••" required>
+
                     <div class="login-actions">
                       <button class="btn" type="submit">Entrar</button>
                       <button class="btn ghost" type="button" id="btn-show-recover">Cadastrar</button>
@@ -54,8 +58,8 @@
               </div>
             </section>
           </main>
-
         </div>
+
         <script src="js/cssControl.js"></script>
     </body>
 </html>
