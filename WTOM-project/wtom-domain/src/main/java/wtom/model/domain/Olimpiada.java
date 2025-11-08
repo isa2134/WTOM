@@ -6,18 +6,31 @@ import java.util.List;
 public class Olimpiada {
     private String nome;
     private String topico;
-    private LocalDate dataDeVencimento;
+    private LocalDate dataLimiteInscricao;
+    private LocalDate dataProva;
     private String descricao;
     private double pesoOlimpiada;
-    protected int idOlimpiada;
+    private final int idOlimpiada;
     protected List<Inscricao> inscritos;
     
-    public Olimpiada(String nome, String topico, LocalDate dataDeVenc, String descricao, double peso){
+    public Olimpiada(String nome, String topico, LocalDate dataLimite, LocalDate dataProva, String descricao, double peso){
         this.nome = nome;
         this.topico = topico;
-        this.dataDeVencimento = dataDeVenc;
+        this.dataLimiteInscricao = dataLimite;
+        this.dataProva = dataProva;
         this.descricao = descricao;
         this.pesoOlimpiada = peso;
+        this.idOlimpiada = definicaoIdOlimpiada();
+    }
+    
+    public Olimpiada(String nome, String topico, LocalDate dataLimite, LocalDate dataProva, String descricao, double peso, int id){
+        this.nome = nome;
+        this.topico = topico;
+        this.dataLimiteInscricao = dataLimite;
+        this.dataProva = dataProva;
+        this.descricao = descricao;
+        this.pesoOlimpiada = peso;
+        this.idOlimpiada = id;
     }
 
     public String getNome() {
@@ -36,12 +49,20 @@ public class Olimpiada {
         this.topico = topico;
     }
 
-    public LocalDate getDataDeVencimento() {
-        return dataDeVencimento;
+    public LocalDate getDataLimiteInscricao() {
+        return dataLimiteInscricao;
     }
 
-    public void setDataDeVencimento(LocalDate dataDeVencimento) {
-        this.dataDeVencimento = dataDeVencimento;
+    public void setDataLimiteInscricao(LocalDate dataLimiteInscricao) {
+        this.dataLimiteInscricao = dataLimiteInscricao;
+    }
+
+    public LocalDate getDataProva() {
+        return dataProva;
+    }
+
+    public void setDataProva(LocalDate dataProva) {
+        this.dataProva = dataProva;
     }
 
     public String getDescricao() {
@@ -67,6 +88,13 @@ public class Olimpiada {
     public void setInscritos(List<Inscricao> inscritos) {
         this.inscritos = inscritos;
     }
+
+    private int definicaoIdOlimpiada(){
+        return (nome.hashCode() + dataProva.hashCode());
+    }
     
+    public int getIdOlimpiada(){
+        return this.idOlimpiada;
+    }
     
 }
