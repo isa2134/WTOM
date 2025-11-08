@@ -15,14 +15,14 @@ public class Usuario {
     private String senha;
     private String login;
     private UsuarioTipo tipo;
-    private Map<String, String> premiacoes; 
-    // Exemplo: {"OBMEP2025": "Ouro", "Canguru2025": "Prata"}
+    private Map<String, String> premiacoes;
 
     public Usuario(String login, String cpf) {
         this.login = login;
         this.cpf = cpf;
     }
-    public Usuario(String login, String senha, String nome, String email, int id) {
+
+    public Usuario(String login, String senha, String nome, String email, Long id) {
         this.login = login;
         this.senha = senha;
         this.nome = nome;
@@ -30,8 +30,9 @@ public class Usuario {
         this.id = id;
     }
 
-    public Usuario(Long id, String cpf, String nome, String telefone, String email, LocalDate dataDeNascimento,
-                   String senha, String login, UsuarioTipo tipo, Map<String, String> premiacoes) {
+    public Usuario(Long id, String cpf, String nome, String telefone, String email,
+                   LocalDate dataDeNascimento, String senha, String login,
+                   UsuarioTipo tipo, Map<String, String> premiacoes) {
         this.id = id;
         this.cpf = cpf;
         this.nome = nome;
