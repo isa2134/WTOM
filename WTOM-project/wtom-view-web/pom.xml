@@ -55,6 +55,11 @@
             <artifactId>jakarta.servlet.jsp.jstl</artifactId>
             <version>2.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wtom-domain</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     
     <build>
