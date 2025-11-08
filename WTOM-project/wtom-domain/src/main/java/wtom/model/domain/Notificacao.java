@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class Notificacao {
 
-    private int id;
+    private long id;
     private String titulo;
     private String mensagem;
     private LocalDateTime dataDoEnvio;
@@ -36,11 +36,11 @@ public class Notificacao {
         this.lida = false;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

@@ -11,12 +11,12 @@ import java.util.List;
 public class GestaoNotificacao {
 
     private final NotificacaoService notificacaoService;
-    private final MandaEmail email;
+    private final EmailService email;
     private final UsuarioDAO usuarioDAO;
 
     public GestaoNotificacao() {
         this.notificacaoService = new NotificacaoService();
-        this.email = new MandaEmail();
+        this.email = new EmailService();
         this.usuarioDAO = UsuarioDAO.getInstance();
     }
 
@@ -29,7 +29,7 @@ public class GestaoNotificacao {
                     throw new PersistenciaException("Destinatário deve ser informado no alcance INDIVIDUAL.");
 
                 notificacaoService.enviar(notificacao);
-                email.enviarEmail(notificacao);
+                //email.enviaEmail(notificacao);
             }
 
             case GERAL -> {
@@ -55,7 +55,7 @@ public class GestaoNotificacao {
             copia.setDestinatario(u);
 
             notificacaoService.enviar(copia);
-            email.enviarEmail(copia);
+            //email.enviarEmail(copia);
         }
     }
 }

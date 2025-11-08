@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class Usuario {
 
-    private Long id;
+    private long id;
     private String cpf;
     private String nome;
     private String telefone;
@@ -21,8 +21,7 @@ public class Usuario {
         this.login = login;
         this.cpf = cpf;
     }
-
-    public Usuario(String login, String senha, String nome, String email, Long id) {
+    public Usuario(String login, String senha, String nome, String email, long id) {
         this.login = login;
         this.senha = senha;
         this.nome = nome;
