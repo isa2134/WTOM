@@ -1,61 +1,56 @@
 package wtom.controller;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.*;
 import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import wtom.model.service.UsuarioService;
 import wtom.model.domain.Usuario;
-import wtom.model.service.exception.UsuarioInvalidoException;
 
+
+@WebServlet(name = "LoginController", urlPatterns = {"/LoginController"})
 public class LoginController extends HttpServlet {
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String jsp = logar(request);
-        request.getRequestDispatcher(jsp).forward(request, response);
-    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String jsp = logout(request);
-        request.getRequestDispatcher(jsp).forward(request, response);
     }
 
-    public static String logar(HttpServletRequest request) {
-        String jsp = "";
-        try {
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try{
             String login = request.getParameter("login");
             String senha = request.getParameter("senha");
-
-            if (login == null || login.isEmpty() || senha == null || senha.isEmpty()) {
-                request.setAttribute("erro", "Preencha todos os campos.");
-                return "/index.jsp";
+            
+            UsuarioService manterUsuario = new UsuarioService();
+            Usuario usuario = manterUsuario.buscarPorLogin(login);
+            
+            if(usuario != null){
+                HttpSession sessao = request.getSession();
+                sessao.setAttribute("usuario", usuario);
+                response.sendRedirect(request.getContextPath() + "/core/menu.jsp");
             }
+            else{
+                request.getSession().setAttribute("erroLogin", "Login ou senha incorretos");
+                response.sendRedirect(request.getContextPath() + "/index.jsp");
 
-            UsuarioService manterPessoa = new UsuarioService();
-            Usuario pessoa = manterPessoa.buscarPorLogin(login);
-
-            HttpSession session = request.getSession();
-            session.setAttribute("usuario", pessoa);
-            System.out.println("Usuário logado: " + pessoa.getLogin());
-            System.out.println("Redirecionando para /core/menu.jsp");
-            jsp = "/core/menu.jsp";
-
-        } catch (UsuarioInvalidoException e) {
-            request.setAttribute("erro", e.getMessage());
-            jsp = "/index.jsp";
-        } catch (Exception e) {
+            }
+        }catch(Exception e){
             e.printStackTrace();
-            request.setAttribute("erro", "Erro interno no servidor.");
-            jsp = "/core/erro.jsp";
         }
-        return jsp;
     }
 
-    public static String logout(HttpServletRequest request) {
-        request.getSession().invalidate();
-        return "/index.jsp";
-    }
 }
