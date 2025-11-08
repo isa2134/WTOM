@@ -1,61 +1,67 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<%
+String erro = (String)request.getAttribute("erro");
+%>
+
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>TOM</title>
-        <link rel="stylesheet" href="css/estilos.css">
-        <link rel="stylesheet" href="css/menu.css">
-    </head>
-    <body>
-        <div class="app">
-          <aside class="sidebar collapsed" id="sidebar" aria-label="Menu lateral">
-            <div class="brand">
-              <div class="logo" id="sidebar-toggle" title="Esconder/Exibir Menu" role="button">TOM</div>
-            </div>
-          </aside>
-
-          <main class="content" role="main">
-            <div id="role-select-modal" class="modal hidden" aria-modal="true" role="dialog" aria-labelledby="modal-title">
-              <div class="modal-backdrop" aria-hidden="true"></div>
-              <div class="modal-content">
-                <div class="card" style="padding: 30px;">
-                  <button class="close-btn" id="btn-close-modal" aria-label="Fechar janela de seleção de perfil">×</button>
-                  <h3 id="modal-title" style="margin-top: 0; color: var(--accent);">Selecione seu Perfil</h3>
-                  <p style="color: var(--muted); margin-bottom: 25px;">Para continuar, você se cadastrará como:</p>
-
-                  <div class="role-selection-actions">
-                    <button class="btn" id="btn-select-aluno" data-role="aluno">Aluno</button>
-                    <button class="btn secondary" id="btn-select-professor" data-role="professor">Professor</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <section class="page center-page">
-              <header class="page-header">
-                <h2 id="auth-title">Bem-vindo(a) ao WTOM</h2>
-              </header>
-
-              <div class="form-container">
-                <div class="card">
-                  <h3>Login</h3>
-                  <form id="login-form">
-                    <label>Email</label>
-                    <input type="email" id="login-email" placeholder="seu@exemplo.com" required>
-                    <label>Senha</label>
-                    <input type="password" id="login-pass" placeholder="••••••" required>
-                    <div class="login-actions">
-                      <button class="btn" type="submit">Entrar</button>
-                      <button class="btn ghost" type="button" id="btn-show-recover">Cadastrar</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </section>
-          </main>
-
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WTOM</title>
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar collapsed" id="sidebar" aria-label="Menu lateral">
+        <div class="brand">
+            <div class="logo" id="sidebar-toggle" title="Esconder/Exibir Menu" role="button">WTOM</div>
         </div>
-        <script src="js/cssControl.js"></script>
-    </body>
+    </aside>
+
+    <main class="content" role="main">
+        <div id="role-select-modal" class="modal hidden" aria-modal="true" role="dialog" aria-labelledby="modal-title">
+            <div class="modal-backdrop" aria-hidden="true"></div>
+            <div class="modal-content">
+                <div class="card" style="padding: 30px;">
+                    <button class="close-btn" id="btn-close-modal" aria-label="Fechar janela de seleção de perfil">×</button>
+                    <h3 id="modal-title" style="margin-top: 0; color: var(--accent);">Selecione seu Perfil</h3>
+                    <p style="color: var(--muted); margin-bottom: 25px;">Para continuar, você se cadastrará como:</p>
+                    <div class="role-selection-actions">
+                        <button class="btn" id="btn-select-aluno" data-role="aluno">Aluno</button>
+                        <button class="btn secondary" id="btn-select-professor" data-role="professor">Professor</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="page center-page">
+            <header class="page-header">
+                <h2 id="auth-title">Bem-vindo(a) ao WTOM</h2>
+            </header>
+
+            <div class="login-form-container">
+                <div class="card section-block">
+                    <h3>Login</h3>
+                    <form name="frmLogin" action="${pageContext.request.contextPath}/LoginController" method="post">
+                        <label for="login">Email</label>
+                        <input type="email" id="login" name="login" placeholder="seu@exemplo.com" required>
+                        <label for="senha">Senha</label>
+                        <input type="password" id="senha" name="senha" placeholder="••••••" required>
+                        <div class="login-actions">
+                            <button class="btn" type="submit">Entrar</button>
+                            <button class="btn ghost" type="button" id="btn-show-recover">Cadastrar</button>
+                        </div>
+                        <c:if test="${not empty erro}">
+                            <div class="alert alert-danger">${erro}</div>
+                        </c:if>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+<script src="${pageContext.request.contextPath}/js/js.js"></script>
+</body>
 </html>

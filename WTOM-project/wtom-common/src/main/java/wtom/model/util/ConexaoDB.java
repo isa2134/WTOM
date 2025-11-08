@@ -2,26 +2,21 @@ package wtom.model.util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.Statement;
 import java.sql.SQLException;
 
 public class ConexaoDB {
-    
-    private static final String url = "jdbc:mysql://localhost:3306/";
-    private static final String db_name = "wtom";
-    private static final String user = "root";
-    private static final String password = "";
-    
-    public static Connection getConnection() throws SQLException{
-        try(Connection connection = DriverManager.getConnection(url, user, password);
-            Statement statement = connection.createStatement()){
-            
-            statement.executeUpdate("CREATE DATABASE IF NOT EXISTS " + db_name);
-        }
-        
-        Connection connection = DriverManager.getConnection(url + db_name, user, password);
-        return connection;
-        
-    }  
-}
 
+    private static final String URL = "jdbc:mysql://localhost:3306/wtom?useSSL=false&serverTimezone=UTC";
+    private static final String USER = "root";
+    private static final String PASSWORD = "";
+
+    public static Connection getConnection() throws SQLException {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("Driver MySQL não encontrado.", e);
+        }
+
+        return DriverManager.getConnection(URL, USER, PASSWORD);
+    }
+}
