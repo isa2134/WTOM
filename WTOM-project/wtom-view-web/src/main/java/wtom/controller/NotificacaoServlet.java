@@ -6,6 +6,7 @@ import wtom.model.dao.UsuarioDAO;
 import wtom.model.domain.AlcanceNotificacao;
 import wtom.model.domain.Notificacao;
 import wtom.model.domain.Usuario;
+import wtom.model.domain.TipoNotificacao;
 import wtom.dao.exception.PersistenciaException;
 
 import jakarta.servlet.ServletException;
@@ -31,7 +32,6 @@ public class NotificacaoServlet extends HttpServlet {
         
         HttpSession sessao = req.getSession(false);
         Usuario usuario = (sessao != null) ? (Usuario) sessao.getAttribute("usuario") : null;
-        
 
         if (usuario == null) {
             resp.sendRedirect(req.getContextPath() + "/index.jsp");
@@ -45,7 +45,6 @@ public class NotificacaoServlet extends HttpServlet {
             req.setAttribute("notificacoes", notificacoes);
             
             req.getRequestDispatcher("/core/Notificacao.jsp").forward(req, resp);
-            
         } catch (PersistenciaException e) {
             req.setAttribute("erro", e.getMessage());
             req.getRequestDispatcher("/core/erro.jsp").forward(req, resp);
@@ -57,7 +56,6 @@ public class NotificacaoServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String acao = req.getParameter("acao");
-
         if (acao == null) {
             resp.sendRedirect("notificacao");
             return;
@@ -81,7 +79,6 @@ public class NotificacaoServlet extends HttpServlet {
 
         HttpSession sessao = req.getSession(false);
         Usuario remetente = (sessao != null) ? (Usuario) sessao.getAttribute("usuario") : null;
-        
 
         if (remetente == null) {
             resp.sendRedirect(req.getContextPath() + "/index.jsp");
@@ -91,32 +88,23 @@ public class NotificacaoServlet extends HttpServlet {
         String titulo = req.getParameter("titulo");
         String mensagem = req.getParameter("mensagem");
         String alcanceStr = req.getParameter("alcance");
-        
+
         AlcanceNotificacao alcance = AlcanceNotificacao.valueOf(alcanceStr);
 
         Notificacao n = new Notificacao();
         n.setTitulo(titulo);
         n.setMensagem(mensagem);
-
-        n.setAlcance(alcance);    
+        n.setAlcance(alcance);
 
         if (alcance == AlcanceNotificacao.INDIVIDUAL) {
-            String idDestStr = req.getParameter("idUsuario");
-            
-            if (idDestStr == null || idDestStr.isBlank()) {
+            String emailDest = req.getParameter("emailUsuario");
+
+            if (emailDest == null || emailDest.isBlank()) {
                 resp.sendRedirect("notificacao?erro=destinatario_obrigatorio");
                 return;
             }
 
-            long idDest;
-            try {
-                idDest = Long.parseLong(idDestStr);
-            } catch (NumberFormatException e) {
-                 resp.sendRedirect("notificacao?erro=formato_id_invalido");
-                 return;
-            }
-            
-            Usuario destinatario = usuarioDAO.buscarPorId(idDest);
+            Usuario destinatario = usuarioDAO.buscarPorLogin(emailDest); // CAUSA O ERRO 2
 
             if (destinatario == null) {
                 resp.sendRedirect("notificacao?erro=destinatario_inexistente");
@@ -125,11 +113,10 @@ public class NotificacaoServlet extends HttpServlet {
 
             n.setDestinatario(destinatario);
         } else {
-            n.setDestinatario(remetente);    
+            n.setDestinatario(remetente);
         }
 
-        gestaoNotificacao.selecionaAlcance(n, alcance);    
-
+        gestaoNotificacao.selecionaAlcance(n, alcance);
         resp.sendRedirect("notificacao?status=enviado");
     }
 
@@ -155,7 +142,6 @@ public class NotificacaoServlet extends HttpServlet {
         }
 
         notificacaoService.marcarComoLida(idNotificacao, usuario.getId());
-
         resp.sendRedirect("notificacao");
     }
 
@@ -181,7 +167,6 @@ public class NotificacaoServlet extends HttpServlet {
         }
 
         notificacaoService.excluir(idNotificacao, usuario.getId());
-
         resp.sendRedirect("notificacao");
     }
 }

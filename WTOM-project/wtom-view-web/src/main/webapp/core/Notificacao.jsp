@@ -45,23 +45,35 @@
                         <form action="${pageContext.request.contextPath}/notificacao" method="post">
                             <input type="hidden" name="acao" value="enviar">
                             
+                            <label for="tipo">Conteudo</label>
+                            <select id="tipo" name="tipo" onchange="atualizarCampos()" required>
+                                <option value="OUTROS">Outros</option>
+                                <option value="OLIMPIADA_ABERTA">Olimpíada Aberta</option>
+                                <option value="REUNIAO_AGENDADA">Reunião Agendada</option>
+                                <option value="REUNIAO_CHEGANDO">Reunião Chegando</option>
+                                <option value="DESAFIO_SEMANAL">Desafio Semanal</option>
+                                <option value="CORRECAO_DE_EXERCICIO">Correção de Exercício</option>
+                            </select><br>
+
+                            <label for="alcance">Alcance:</label>
+                            <select id="alcance" name="alcance" onchange="atualizarCampos()" required>
+                                <option value="GERAL">Todo mundo</option>
+                                <option value="PROFESSORES">Todos os professores</option>
+                                <option value="ALUNOS">Todos os alunos</option>
+                                <option value="INDIVIDUAL">Individual</option>
+                            </select><br>
+
+                            <div id="campoDestinatario" style="display:none;">
+                                <label for="emailUsuario">Email Destinatário:</label>
+                                <input type="email" id="emailUsuario" name="emailUsuario">
+                            </div>
+
                             <label for="titulo">Título:</label>
                             <input type="text" id="titulo" name="titulo" required><br>
 
                             <label for="mensagem">Mensagem:</label>
                             <textarea name="mensagem" required style="width: 100%; border-radius: 8px; padding: 12px; box-sizing: border-box; border: 1px solid #ddd;"></textarea><br>
 
-                            <label for="alcance">Alcance:</label>
-                            <select id="alcance" name="alcance" onchange="atualizarVisibilidadeDestinatario()" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; box-sizing: border-box; font-family: inherit;">
-                                <option value="GERAL">Geral</option>
-                                <option value="INDIVIDUAL">Individual</option>
-                            </select><br>
-                            
-                            <div id="campoDestinatario" style="display:none;">
-                                <label for="idUsuario">ID Destinatário:</label>
-                                <input type="number" id="idUsuario" name="idUsuario">
-                            </div>
-                            
                             <div style="display: flex; gap: 10px; margin-top: 20px;">
                                 <button type="submit" class="btn">Enviar</button>
                                 <button type="button" class="btn ghost" onclick="toggleEnvioNotificacao()">Cancelar</button>
