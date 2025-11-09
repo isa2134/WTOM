@@ -29,7 +29,7 @@ public class NotificacaoServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
+        
         HttpSession sessao = req.getSession(false);
         Usuario usuario = (sessao != null) ? (Usuario) sessao.getAttribute("usuario") : null;
 
@@ -38,9 +38,12 @@ public class NotificacaoServlet extends HttpServlet {
             return;
         }
 
+        req.setAttribute("usuarioLogado", usuario);
+
         try {
             List<Notificacao> notificacoes = notificacaoService.listarPorUsuario(usuario.getId());
             req.setAttribute("notificacoes", notificacoes);
+            
             req.getRequestDispatcher("/core/Notificacao.jsp").forward(req, resp);
         } catch (PersistenciaException e) {
             req.setAttribute("erro", e.getMessage());
@@ -81,19 +84,16 @@ public class NotificacaoServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/index.jsp");
             return;
         }
-
+        
         String titulo = req.getParameter("titulo");
         String mensagem = req.getParameter("mensagem");
         String alcanceStr = req.getParameter("alcance");
-        String tipoStr = req.getParameter("tipo");
 
         AlcanceNotificacao alcance = AlcanceNotificacao.valueOf(alcanceStr);
-        TipoNotificacao tipo = TipoNotificacao.valueOf(tipoStr);
 
         Notificacao n = new Notificacao();
         n.setTitulo(titulo);
         n.setMensagem(mensagem);
-        n.setTipo(tipo);
         n.setAlcance(alcance);
 
         if (alcance == AlcanceNotificacao.INDIVIDUAL) {
@@ -104,7 +104,7 @@ public class NotificacaoServlet extends HttpServlet {
                 return;
             }
 
-            Usuario destinatario = usuarioDAO.buscarPorLogin(emailDest);
+            Usuario destinatario = usuarioDAO.buscarPorLogin(emailDest); // CAUSA O ERRO 2
 
             if (destinatario == null) {
                 resp.sendRedirect("notificacao?erro=destinatario_inexistente");
@@ -130,15 +130,24 @@ public class NotificacaoServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/index.jsp");
             return;
         }
+        
+        String idNotificacaoStr = req.getParameter("id");
+        long idNotificacao;
+        
+        try {
+            idNotificacao = Long.parseLong(idNotificacaoStr);
+        } catch (NumberFormatException e) {
+            resp.sendRedirect("notificacao?erro=formato_id_invalido");
+            return;
+        }
 
-        long idNotificacao = Long.parseLong(req.getParameter("id"));
         notificacaoService.marcarComoLida(idNotificacao, usuario.getId());
         resp.sendRedirect("notificacao");
     }
 
     private void excluir(HttpServletRequest req, HttpServletResponse resp)
             throws PersistenciaException, IOException {
-
+        
         HttpSession sessao = req.getSession(false);
         Usuario usuario = (sessao != null) ? (Usuario) sessao.getAttribute("usuario") : null;
 
@@ -147,7 +156,16 @@ public class NotificacaoServlet extends HttpServlet {
             return;
         }
 
-        long idNotificacao = Long.parseLong(req.getParameter("id"));
+        String idNotificacaoStr = req.getParameter("id");
+        long idNotificacao;
+        
+        try {
+            idNotificacao = Long.parseLong(idNotificacaoStr);
+        } catch (NumberFormatException e) {
+            resp.sendRedirect("notificacao?erro=formato_id_invalido");
+            return;
+        }
+
         notificacaoService.excluir(idNotificacao, usuario.getId());
         resp.sendRedirect("notificacao");
     }
