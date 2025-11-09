@@ -192,7 +192,16 @@ public class UsuarioDAO {
         u.setNome(rs.getString("nome"));
         u.setTelefone(rs.getString("telefone"));
         u.setEmail(rs.getString("email"));
-        u.setDataDeNascimento(rs.getDate("data_nascimento").toLocalDate());
+        
+        // 🚨 CORREÇÃO APLICADA AQUI:
+        // Verifica se o java.sql.Date retornado é nulo antes de chamar toLocalDate()
+        java.sql.Date dataSql = rs.getDate("data_nascimento");
+        if (dataSql != null) {
+            u.setDataDeNascimento(dataSql.toLocalDate());
+        } else {
+            u.setDataDeNascimento(null); // Define como null se o campo no BD for nulo
+        }
+        
         u.setSenha(rs.getString("senha"));
         u.setTipo(UsuarioTipo.valueOf(rs.getString("tipo")));
         return u;

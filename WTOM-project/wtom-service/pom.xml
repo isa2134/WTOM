@@ -11,7 +11,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>wtom</groupId>
     <artifactId>wtom-service</artifactId>
     <packaging>jar</packaging>
 
@@ -21,17 +20,19 @@
     </properties>
 
     <dependencies>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wtom-domain</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wtom-dao-sql</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wtom-common</artifactId>
@@ -63,4 +64,5 @@
             <version>8.4.0</version>
         </dependency>
     </dependencies>
+
 </project>

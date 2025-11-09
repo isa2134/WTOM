@@ -22,49 +22,55 @@
         <!-- Já estava 17, mantido. -->
         <maven.compiler.release>17</maven.compiler.release>
     </properties>
+    
+<dependencies>
 
-    <dependencies>
-        <!-- Jakarta EE Web API (Servlets, JSP, etc.) - provided pelo Tomcat -->
-        <dependency>
-            <groupId>jakarta.platform</groupId>
-            <artifactId>jakarta.jakartaee-web-api</artifactId>
-            <version>${jakartaee}</version>
-            <scope>provided</scope>
-        </dependency>
-        
-        <!-- DEPENDÊNCIAS INTERNAS (para acessar a lógica do projeto) -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>wtom-domain</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>wtom-service</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
-        <!-- JSTL (Versões duplicadas removidas e consolidadas para 3.x) -->
-        <dependency>
-            <groupId>jakarta.servlet.jsp.jstl</groupId>
-            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
-            <version>3.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>jakarta.servlet.jsp.jstl</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-        
-        <!-- MySQL Driver (Necessário para a aplicação web, versão compatível) -->
-        <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <version>8.3.0</version>
-        </dependency>
+    <dependency>
+        <groupId>jakarta.platform</groupId>
+        <artifactId>jakarta.jakartaee-api</artifactId>
+        <version>10.0.0</version>
+        <scope>provided</scope>
+    </dependency>
 
-    </dependencies>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>wtom-domain</artifactId>
+        <version>${project.version}</version>
+    </dependency>
 
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>wtom-service</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.mysql</groupId>
+        <artifactId>mysql-connector-j</artifactId>
+        <version>8.1.0</version>
+        <scope>runtime</scope>
+    </dependency>
+    
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>wtom-dao-sql</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>jakarta.servlet.jsp.jstl</groupId>
+        <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+        <version>2.0.0</version>
+    </dependency>
+    <dependency>
+        <groupId>org.glassfish.web</groupId>
+        <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+        <version>2.0.0</version>
+    </dependency>
+
+</dependencies>
+
+    
     <build>
         <plugins>
             <plugin>

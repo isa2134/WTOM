@@ -19,11 +19,12 @@
   </properties>
 
   <modules>
-    <module>wtom-common</module>
+            
     <module>wtom-dao-sql</module>
     <module>wtom-domain</module>
     <module>wtom-service</module>
     <module>wtom-view-web</module>
+    <module>wtom-common</module>
   </modules>
 
   <build>

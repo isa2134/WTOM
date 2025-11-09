@@ -5,57 +5,79 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import wtom.model.service.UsuarioService;
 import wtom.model.domain.Usuario;
-import wtom.model.service.exception.UsuarioInvalidoException;
 
 public class LoginController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String jsp = logar(request);
-        request.getRequestDispatcher(jsp).forward(request, response);
+        logar(request, response);
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String jsp = logout(request);
-        request.getRequestDispatcher(jsp).forward(request, response);
+        logout(request, response);
     }
 
-    public static String logar(HttpServletRequest request) {
-        String jsp = "";
-        try {
-            String login = request.getParameter("login");
-            String senha = request.getParameter("senha");
+    private void logar(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
 
-            if (login == null || login.isEmpty() || senha == null || senha.isEmpty()) {
-                request.setAttribute("erro", "Preencha todos os campos.");
-                return "/index.jsp";
+        String login = request.getParameter("login");
+        String senha = request.getParameter("senha");
+
+        // Logs de diagnóstico
+        System.out.println("🔹 LOGIN RECEBIDO: " + login + " | " + senha);
+
+        if (login == null || senha == null || login.isEmpty() || senha.isEmpty()) {
+            System.out.println("⚠️ Campos vazios detectados.");
+            request.setAttribute("erro", "Preencha todos os campos!");
+            request.getRequestDispatcher("/index.jsp").forward(request, response);
+            return;
+        }
+
+        try {
+            UsuarioService service = new UsuarioService();
+            Usuario usuario = service.buscarPorLogin(login);
+
+            System.out.println("🔹 USUARIO ENCONTRADO: " + (usuario != null ? usuario.getEmail() : "null"));
+            if (usuario != null) {
+                System.out.println("🔹 SENHA NO BANCO: " + usuario.getSenha());
             }
 
-            UsuarioService manterPessoa = new UsuarioService();
-            Usuario pessoa = manterPessoa.buscarPorLogin(login);
+            if (usuario == null || !usuario.getSenha().equals(senha)) {
+                System.out.println("❌ Email ou senha inválidos!");
+                request.setAttribute("erro", "Email ou senha inválidos!");
+                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                return;
+            }
 
-            HttpSession session = request.getSession();
-            session.setAttribute("usuario", pessoa);
-            System.out.println("Usuário logado: " + pessoa.getLogin());
-            System.out.println("Redirecionando para /core/menu.jsp");
-            jsp = "/core/menu.jsp";
+            HttpSession sessao = request.getSession(true);
+            sessao.setAttribute("usuario", usuario); // A chave correta para o NotificacaoServlet
+            sessao.setAttribute("usuarioTipo", usuario.getTipo());
 
-        } catch (UsuarioInvalidoException e) {
-            request.setAttribute("erro", e.getMessage());
-            jsp = "/index.jsp";
-        } catch (Exception e) {
-            e.printStackTrace();
-            request.setAttribute("erro", "Erro interno no servidor.");
-            jsp = "/core/erro.jsp";
+            System.out.println("✅ LOGIN OK → " + usuario.getEmail());
+            System.out.println("➡️ Redirecionando para: " + request.getContextPath() + "/core/menu.jsp");
+
+            response.sendRedirect(request.getContextPath() + "/core/menu.jsp");
         }
-        return jsp;
+        catch (wtom.model.service.exception.UsuarioInvalidoException ex) {
+            System.out.println("🚫 Exceção de login: " + ex.getMessage());
+            request.setAttribute("erro", ex.getMessage());
+            request.getRequestDispatcher("/index.jsp").forward(request, response);
+        }
+        catch (Exception e) {
+            System.out.println("💥 Erro inesperado: " + e.getMessage());
+            e.printStackTrace();
+            request.setAttribute("erro", "Erro interno ao tentar logar.");
+            request.getRequestDispatcher("/index.jsp").forward(request, response);
+        }
     }
 
-    public static String logout(HttpServletRequest request) {
+    private void logout(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         request.getSession().invalidate();
-        return "/index.jsp";
+        System.out.println("👋 Logout realizado. Redirecionando para index.jsp");
+        response.sendRedirect(request.getContextPath() + "/index.jsp");
     }
 }
