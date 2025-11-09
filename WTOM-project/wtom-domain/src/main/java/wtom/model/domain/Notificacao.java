@@ -8,7 +8,7 @@ public class Notificacao {
     private String titulo;
     private String mensagem;
     private LocalDateTime dataDoEnvio;
-    // REMOVIDO: private TipoNotificacao tipo; 
+    private TipoNotificacao tipo; 
     private AlcanceNotificacao alcance;
     private boolean lida = false;
     private Usuario destinatario;
@@ -17,22 +17,20 @@ public class Notificacao {
         this.dataDoEnvio = LocalDateTime.now();
     }
 
-    // CONSTRUTOR CORRIGIDO: TipoNotificacao removido da assinatura
     public Notificacao(String titulo, String mensagem, Usuario destinatario, 
                        AlcanceNotificacao alcance) {
         this.titulo = titulo;
         this.mensagem = mensagem;
         this.destinatario = destinatario;
-        // REMOVIDO: this.tipo = tipo;
+        this.tipo = tipo;
         this.alcance = alcance;
         this.dataDoEnvio = LocalDateTime.now();
     }
 
-    // CONSTRUTOR DE CÓPIA CORRIGIDO:
     public Notificacao(Notificacao original) {
         this.titulo = original.titulo;
         this.mensagem = original.mensagem;
-        // REMOVIDO: this.tipo = original.tipo;
+        this.tipo = original.tipo;
         this.alcance = original.alcance;
         this.dataDoEnvio = LocalDateTime.now();
         this.lida = false;
@@ -70,8 +68,6 @@ public class Notificacao {
         this.dataDoEnvio = dataDoEnvio;
     }
     
-    // REMOVIDO: getTipo() e setTipo()
-    /*
     public TipoNotificacao getTipo() {
         return tipo;
     }
@@ -79,7 +75,6 @@ public class Notificacao {
     public void setTipo(TipoNotificacao tipo) {
         this.tipo = tipo;
     }
-    */
 
     public AlcanceNotificacao getAlcance() {
         return alcance;

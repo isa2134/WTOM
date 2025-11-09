@@ -102,25 +102,24 @@ public class InitDB {
         }
     }
 
-    public void initNotificacoes() throws SQLException {
-        String sql = """
-            CREATE TABLE IF NOT EXISTS notificacao (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                titulo VARCHAR(255) NOT NULL,
-                mensagem TEXT NOT NULL,
-                data_do_envio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                alcance ENUM('INDIVIDUAL','GERAL','ALUNOS','PROFESSORES') NOT NULL DEFAULT 'INDIVIDUAL',
-                lida BOOLEAN NOT NULL DEFAULT FALSE,
-                destinatario_id BIGINT NOT NULL,
-                FOREIGN KEY (destinatario_id) REFERENCES usuario(id)
-                    ON DELETE CASCADE
-                    ON UPDATE CASCADE
-            );
-        """;
+public void initNotificacoes() throws SQLException {
+    String sql = """
+        CREATE TABLE IF NOT EXISTS notificacao (
+            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            titulo VARCHAR(255) NOT NULL,
+            mensagem TEXT NOT NULL,
+            data_do_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            tipo ENUM('OLIMPIADA_ABERTA', 'REUNIAO_AGENDADA', 'REUNIAO_CHEGANDO',
+                      'DESAFIO_SEMANAL', 'CORRECAO_DE_EXERCICIO', 'OUTROS') NOT NULL,
+            alcance ENUM('GERAL', 'INDIVIDUAL', 'ALUNOS', 'PROFESSORES') NOT NULL,
+            lida BOOLEAN DEFAULT FALSE,
+            destinatario_id BIGINT,
+            FOREIGN KEY (destinatario_id) REFERENCES usuario(id)
+        );
+    """;
 
-        try (Statement st = con.createStatement()) {
-            st.executeUpdate(sql);
-        }
+    try (Statement st = con.createStatement()) {
+        st.executeUpdate(sql);
     }
     public void initOlimpiadas() throws SQLException{
         String sql = "CREATE TABLE IF NOT EXISTS olimpiadas("

@@ -84,6 +84,23 @@ public class UsuarioDAO {
         }
         return null;
     }
+    
+    public Usuario buscarPorLogin(String login) throws PersistenciaException {
+        String sql = "SELECT * FROM usuario WHERE login = ?";
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, login);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSet(rs);
+                }
+            }
+        } catch (SQLException e) {
+            throw new PersistenciaException("Erro ao buscar usuário por login: " + e.getMessage());
+        }
+        return null;
+    }
 
     public List<Usuario> listarTodos() throws PersistenciaException {
         String sql = "SELECT * FROM usuario";
@@ -193,13 +210,11 @@ public class UsuarioDAO {
         u.setTelefone(rs.getString("telefone"));
         u.setEmail(rs.getString("email"));
         
-        // 🚨 CORREÇÃO APLICADA AQUI:
-        // Verifica se o java.sql.Date retornado é nulo antes de chamar toLocalDate()
         java.sql.Date dataSql = rs.getDate("data_nascimento");
         if (dataSql != null) {
             u.setDataDeNascimento(dataSql.toLocalDate());
         } else {
-            u.setDataDeNascimento(null); // Define como null se o campo no BD for nulo
+            u.setDataDeNascimento(null); 
         }
         
         u.setSenha(rs.getString("senha"));
