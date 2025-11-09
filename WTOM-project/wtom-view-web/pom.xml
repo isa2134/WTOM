@@ -19,6 +19,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jakartaee>10.0.0</jakartaee>
+        <!-- Já estava 17, mantido. -->
         <maven.compiler.release>17</maven.compiler.release>
     </properties>
     

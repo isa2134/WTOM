@@ -10,7 +10,7 @@ public class ConexaoDB {
     private static final String URL_BASE = "jdbc:mysql://localhost:3306/";
     private static final String DB_NAME = "wtom";
     private static final String USER = "root";
-    private static final String PASSWORD = "admin"; // ⬅️ Coloque aqui a senha real do seu MySQL (ex: "123456")
+    private static final String PASSWORD = "Wtom2025!"; // ⬅️ Coloque aqui a senha real do seu MySQL (ex: "123456")
 
     public static Connection getConnection() throws SQLException {
         try {
