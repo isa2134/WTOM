@@ -21,7 +21,7 @@ public class OlimpiadaController {
 
             Olimpiada nova = new Olimpiada(nome, topico, dataLimite, dataProva, descricao, peso);
             gestao.cadastrarOlimpiada(nova);
-            return "redirect:/main?acao=listarOlimpiada";
+            return "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -45,7 +45,7 @@ public class OlimpiadaController {
             Olimpiada ol = new Olimpiada(nome, topico, dataLimite, dataProva, descricao, peso, id);
             gestao.alterarOlimpiada(ol);
 
-            return "redirect:/main?acao=listarOlimpiada";
+            return "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,7 +60,7 @@ public class OlimpiadaController {
             GestaoOlimpiada gestao = new GestaoOlimpiada();
             gestao.excluirOlimpiada(id);
 
-            return "redirect:/main?acao=listarOlimpiada";
+            return "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
 
         } catch (Exception e) {
             e.printStackTrace();

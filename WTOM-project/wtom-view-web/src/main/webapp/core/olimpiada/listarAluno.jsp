@@ -60,10 +60,27 @@
     }
 
   </style>
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/menu.css">
 </head>
 <body>
 
   <h1>Olimpíadas Disponíveis</h1>
+  
+    <aside class="sidebar" id="sidebar" aria-label="Menu lateral">
+        <div class="brand">
+           <div class="logo" id="sidebar-toggle" title="Esconder/Exibir Menu" role="button">TOM</div>
+        </div>
+        <nav class="menu">
+            <a href="menu.jsp" class="active"> <span>Início</span></a>
+            <a href=""> <span>Olimpíadas</span></a>
+            <a href=""> <span>Ranking</span></a>
+            <a href="conteudos/listar.jsp" class="active"> <span>Materiais</span></a>
+            <a href=""> <span>Dúvidas</span></a>
+            <a href="/core/Notificacao.jsp" class="active"> <span>Notificações</span></a>
+            <a href=""> <span>Perfil</span></a>
+         </nav>
+    </aside>
 
   <div id="lista-olimp">
     <c:choose>
@@ -98,7 +115,7 @@
 
     function voltar() {
       // retorna à página principal (professor/admin ou menu principal)
-      window.location.href = "main";
+      window.location.href = "olimpiada?";
     }
   </script>
 

@@ -19,7 +19,7 @@
 
             <nav class="menu">
                 <a href="${pageContext.request.contextPath}/"> <span>Início</span></a>
-                <a href="${pageContext.request.contextPath}/olimpiadas"> <span>Olimpíadas</span></a>
+                <a href="${pageContext.request.contextPath}/olimpiada"> <span>Olimpíadas</span></a>
                 <a href="${pageContext.request.contextPath}/ranking"> <span>Ranking</span></a>
                 <a href="${pageContext.request.contextPath}/materiais"> <span>Materiais</span></a>
                 <a href="${pageContext.request.contextPath}/duvidas"> <span>Dúvidas</span></a>

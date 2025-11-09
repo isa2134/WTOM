@@ -62,6 +62,7 @@ public class LoginController extends HttpServlet {
             else{
                 request.getSession().setAttribute("erroLogin", "Login ou senha incorretos");
                 response.sendRedirect(request.getContextPath() + "/index.jsp");
+            }
 
             if (usuario == null || !usuario.getSenha().equals(senha)) {
                 System.out.println("❌ Email ou senha inválidos!");

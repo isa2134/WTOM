@@ -100,10 +100,27 @@
       margin-top: 4px;
     }
   </style>
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/menu.css">
 </head>
 <body>
 
   <h1>Lista de Olimpíadas</h1>
+  
+  <aside class="sidebar" id="sidebar" aria-label="Menu lateral">
+            <div class="brand">
+                <div class="logo" id="sidebar-toggle" title="Esconder/Exibir Menu" role="button">TOM</div>
+            </div>
+            <nav class="menu">
+                <a href="menu.jsp" class="active"> <span>Início</span></a>
+                <a href=""> <span>Olimpíadas</span></a>
+                <a href=""> <span>Ranking</span></a>
+                <a href="conteudos/listar.jsp" class="active"> <span>Materiais</span></a>
+                <a href=""> <span>Dúvidas</span></a>
+                <a href="/core/Notificacao.jsp" class="active"> <span>Notificações</span></a>
+                <a href=""> <span>Perfil</span></a>
+            </nav>
+        </aside>
 
   <div id="lista-olimp">
     <c:choose>
@@ -117,13 +134,13 @@
             <p><strong>Peso:</strong> ${o.pesoOlimpiada}</p>
             <p><strong>Descrição:</strong> ${o.descricao}</p>
 
-            <form class="form-excluir" action="main" method="post" style="display:inline;">
+            <form class="form-excluir" action="olimpiada" method="post" style="display:inline;">
               <input type="hidden" name="acao" value="excluirOlimpiada">
-              <input type="hidden" name="idOlimpiada" value="${o.getIdOlimpiada()}">
-              <button type="button" class="btn btn-excluir" data-nome="${o.getNome()}">Excluir</button>
+              <input type="hidden" name="idOlimpiada" value="${o.IdOlimpiada}">
+              <button type="button" class="btn btn-excluir" data-nome="${o.nome}">Excluir</button>
             </form>
 
-            <form action="main" method="post" style="display:inline;">
+            <form action="olimpiada" method="post" style="display:inline;">
               <input type="hidden" name="acao" value="editarOlimpiadaForm">
               <input type="hidden" name="idOlimpiada" value="${o.getIdOlimpiada()}">
               <button type="submit" class="btn">Alterar</button>
