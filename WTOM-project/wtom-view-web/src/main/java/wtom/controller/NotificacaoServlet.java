@@ -88,13 +88,19 @@ public class NotificacaoServlet extends HttpServlet {
         String titulo = req.getParameter("titulo");
         String mensagem = req.getParameter("mensagem");
         String alcanceStr = req.getParameter("alcance");
-
+        
+        // 🟢 INÍCIO DA CORREÇÃO
+        String tipoStr = req.getParameter("tipo"); // 1. LÊ o tipo do formulário
+        
         AlcanceNotificacao alcance = AlcanceNotificacao.valueOf(alcanceStr);
-
+        TipoNotificacao tipo = TipoNotificacao.valueOf(tipoStr); // 2. CONVERTE para o Enum
+        
         Notificacao n = new Notificacao();
         n.setTitulo(titulo);
         n.setMensagem(mensagem);
+        n.setTipo(tipo); // 3. ATRIBUI o TipoNotificacao. ISSO EVITA O NullPointerException.
         n.setAlcance(alcance);
+        // 🟢 FIM DA CORREÇÃO
 
         if (alcance == AlcanceNotificacao.INDIVIDUAL) {
             String emailDest = req.getParameter("emailUsuario");
@@ -104,7 +110,7 @@ public class NotificacaoServlet extends HttpServlet {
                 return;
             }
 
-            Usuario destinatario = usuarioDAO.buscarPorLogin(emailDest); // CAUSA O ERRO 2
+            Usuario destinatario = usuarioDAO.buscarPorLogin(emailDest); 
 
             if (destinatario == null) {
                 resp.sendRedirect("notificacao?erro=destinatario_inexistente");
