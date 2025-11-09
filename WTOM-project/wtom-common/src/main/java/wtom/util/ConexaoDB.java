@@ -7,10 +7,10 @@ import java.sql.SQLException;
 
 public class ConexaoDB {
 
-    private static final String url = "jdbc:mysql://localhost:3306/";
-    private static final String db_name = "wtom";
-    private static final String user = "root";
-    private static final String password = "";
+    private static final String URL_BASE = "jdbc:mysql://localhost:3306/";
+    private static final String DB_NAME = "wtom";
+    private static final String USER = "root";
+    private static final String PASSWORD = "admin"; // ⬅️ Coloque aqui a senha real do seu MySQL (ex: "123456")
 
     public static Connection getConnection() throws SQLException {
         try {
@@ -19,17 +19,15 @@ public class ConexaoDB {
             throw new SQLException("Driver JDBC não encontrado!", e);
         }
 
-        // Conecta ao MySQL padrão
-        Connection con = DriverManager.getConnection(url, user, password);
-        try (Statement st = con.createStatement()) {
-            st.executeUpdate("CREATE DATABASE IF NOT EXISTS " + db_name);
+        // 1️⃣ Conecta no MySQL base (sem banco específico)
+        try (Connection con = DriverManager.getConnection(URL_BASE, USER, PASSWORD);
+             Statement st = con.createStatement()) {
+            st.executeUpdate("CREATE DATABASE IF NOT EXISTS " + DB_NAME);
         } catch (SQLException e) {
-            throw new SQLException("Erro ao criar o banco de dados: " + e.getMessage(), e);
-        } finally {
-            con.close();
+            throw new SQLException("Erro ao criar/verificar o banco de dados: " + e.getMessage(), e);
         }
 
-        // Conecta ao banco específico
-        return DriverManager.getConnection(url + db_name, user, password);
+        // 2️⃣ Conecta ao banco específico
+        return DriverManager.getConnection(URL_BASE + DB_NAME, USER, PASSWORD);
     }
 }
