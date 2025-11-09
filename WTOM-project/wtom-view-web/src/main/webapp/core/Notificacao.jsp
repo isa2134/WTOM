@@ -17,13 +17,13 @@
                 <div class="logo" id="sidebar-toggle" title="Esconder/Exibir Menu" role="button">TOM</div>
             </div>
             <nav class="menu">
-                <a href="menu.jsp" class="active"> <span>Início</span></a>
-                <a href=""> <span>Olimpíadas</span></a>
-                <a href=""> <span>Ranking</span></a>
-                <a href="conteudos/listar.jsp" class="active"> <span>Materiais</span></a>
-                <a href=""> <span>Dúvidas</span></a>
-                <a href="/core/Notificacao.jsp" class="active"> <span>Notificações</span></a>
-                <a href=""> <span>Perfil</span></a>
+                <a href="${pageContext.request.contextPath}/menu.jsp" class="active"> <span>Início</span></a>
+                <a href="${pageContext.request.contextPath}/olimpiadas"> <span>Olimpíadas</span></a>
+                <a href="${pageContext.request.contextPath}/ranking"> <span>Ranking</span></a>
+                <a href="${pageContext.request.contextPath}/conteudos/listar" class="active"> <span>Materiais</span></a>
+                <a href="${pageContext.request.contextPath}/duvidas"> <span>Dúvidas</span></a>
+                <a href="${pageContext.request.contextPath}/notificacao" class="active"> <span>Notificações</span></a>
+                <a href="${pageContext.request.contextPath}/perfil"> <span>Perfil</span></a>
             </nav>
         </aside>
 
@@ -31,39 +31,44 @@
             <div class="page">
                 <header class="page-header">
                     <h2>Minhas Notificações</h2>
-                    <button class="btn" style="width: auto;" onclick="toggleEnvioNotificacao()">
-                        <i class="fa-solid fa-bell"></i> Enviar Notificação
-                    </button>
+
+                    <c:if test="${usuarioLogado.tipo.name() eq 'ADMINISTRADOR' or usuarioLogado.tipo.name() eq 'PROFESSOR'}">
+                        <button class="btn" style="width: auto;" onclick="toggleEnvioNotificacao()">
+                            <i class="fa-solid fa-bell"></i> Enviar Notificação
+                        </button>
+                    </c:if>
                 </header>
 
-                <div id="hubEnvio" class="card" style="display:none; margin-bottom: var(--section-separation);">
-                    <h3>Enviar Notificação</h3>
-                    <form action="${pageContext.request.contextPath}/notificacao" method="post">
-                        <input type="hidden" name="acao" value="enviar">
-                        
-                        <label for="titulo">Título:</label>
-                        <input type="text" id="titulo" name="titulo" required><br>
+                <c:if test="${usuarioLogado.tipo.name() eq 'ADMINISTRADOR' or usuarioLogado.tipo.name() eq 'PROFESSOR'}">
+                    <div id="hubEnvio" class="card" style="display:none; margin-bottom: var(--section-separation);">
+                        <h3>Enviar Notificação</h3>
+                        <form action="${pageContext.request.contextPath}/notificacao" method="post">
+                            <input type="hidden" name="acao" value="enviar">
+                            
+                            <label for="titulo">Título:</label>
+                            <input type="text" id="titulo" name="titulo" required><br>
 
-                        <label for="mensagem">Mensagem:</label>
-                        <textarea name="mensagem" required style="width: 100%; border-radius: 8px; padding: 12px; box-sizing: border-box; border: 1px solid #ddd;"></textarea><br>
+                            <label for="mensagem">Mensagem:</label>
+                            <textarea name="mensagem" required style="width: 100%; border-radius: 8px; padding: 12px; box-sizing: border-box; border: 1px solid #ddd;"></textarea><br>
 
-                        <label for="alcance">Alcance:</label>
-                        <select id="alcance" name="alcance" onchange="atualizarVisibilidadeDestinatario()" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; box-sizing: border-box; font-family: inherit;">
-                            <option value="GERAL">Geral</option>
-                            <option value="INDIVIDUAL">Individual</option>
-                        </select><br>
-                        
-                        <div id="campoDestinatario" style="display:none;">
-                            <label for="idUsuario">ID Destinatário:</label>
-                            <input type="number" id="idUsuario" name="idUsuario">
-                        </div>
-                        
-                        <div style="display: flex; gap: 10px; margin-top: 20px;">
-                            <button type="submit" class="btn">Enviar</button>
-                            <button type="button" class="btn ghost" onclick="toggleEnvioNotificacao()">Cancelar</button>
-                        </div>
-                    </form>
-                </div>
+                            <label for="alcance">Alcance:</label>
+                            <select id="alcance" name="alcance" onchange="atualizarVisibilidadeDestinatario()" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; box-sizing: border-box; font-family: inherit;">
+                                <option value="GERAL">Geral</option>
+                                <option value="INDIVIDUAL">Individual</option>
+                            </select><br>
+                            
+                            <div id="campoDestinatario" style="display:none;">
+                                <label for="idUsuario">ID Destinatário:</label>
+                                <input type="number" id="idUsuario" name="idUsuario">
+                            </div>
+                            
+                            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                                <button type="submit" class="btn">Enviar</button>
+                                <button type="button" class="btn ghost" onclick="toggleEnvioNotificacao()">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                </c:if>
 
                 <div id="listaNotificacoes">
                     <c:choose>
@@ -107,6 +112,6 @@
             </div>
         </main>
         
-        <script src="../js/cssControl.js"></script>
-        </body>
+        <script src="${pageContext.request.contextPath}/js/cssControl.js"></script>
+    </body>
 </html>
