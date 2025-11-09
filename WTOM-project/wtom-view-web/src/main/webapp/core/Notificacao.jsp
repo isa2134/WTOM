@@ -1,13 +1,13 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
     <head>
         <title>Notificações - TOM</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <script src="${pageContext.request.contextPath}/js/notificacao.js"></script>
-        <link rel="stylesheet" href="../css/estilos.css">
-        <link rel="stylesheet" href="../css/menu.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/menu.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     </head>
     <body>
@@ -22,7 +22,7 @@
                 <a href=""> <span>Ranking</span></a>
                 <a href="conteudos/listar.jsp" class="active"> <span>Materiais</span></a>
                 <a href=""> <span>Dúvidas</span></a>
-                <a href="Notificacao.jsp" class="active"> <span>Notificações</span></a>
+                <a href="/core/Notificacao.jsp" class="active"> <span>Notificações</span></a>
                 <a href=""> <span>Perfil</span></a>
             </nav>
         </aside>
@@ -49,7 +49,7 @@
 
                         <label for="alcance">Alcance:</label>
                         <select id="alcance" name="alcance" onchange="atualizarVisibilidadeDestinatario()" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; box-sizing: border-box; font-family: inherit;">
-                            <option value="GLOBAL">Global</option>
+                            <option value="GERAL">Geral</option>
                             <option value="INDIVIDUAL">Individual</option>
                         </select><br>
                         

@@ -1,20 +1,20 @@
-package wtom.autorizacao;
+package wtom.model.service.autorizacao;
 
 import java.util.HashSet;
 import java.util.Set;
-import wtom.model.domain.Usuario;
+import wtom.model.domain.util.UsuarioTipo;
 
-class Permissao {
+public class Permissao {
 
     private String recurso;
-    private Set<Usuario> usuarios;
+    private Set<UsuarioTipo> usuarios;
 
     public Permissao(String recurso) {
         this.recurso = recurso;
         this.usuarios = new HashSet();
     }
 
-    public void addUsuarioGrupo(Usuario usuario) {
+    public void addUsuarioGrupo(UsuarioTipo usuario) {
         usuarios.add(usuario);
     }
 
@@ -22,7 +22,7 @@ class Permissao {
         return recurso;
     }
 
-    public boolean check(Usuario usuario) {
-        return usuarios.contains(usuario);
+    public boolean check(UsuarioTipo usuario) {
+            return usuarios.contains(usuario);
     }
 }

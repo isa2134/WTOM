@@ -1,7 +1,7 @@
 package wtom.model.dao;
 
 import wtom.util.ConexaoDB;
-import wtom.model.domain.TipoNotificacao;
+// REMOVIDO: import wtom.model.domain.TipoNotificacao; 
 import wtom.model.domain.AlcanceNotificacao;
 import wtom.model.domain.Notificacao;
 import wtom.model.domain.Usuario;
@@ -22,18 +22,19 @@ public class NotificacaoDAO {
     }
 
     public void inserir(Notificacao notificacao) throws PersistenciaException {
-        String sql = "INSERT INTO notificacao (titulo, mensagem, data_do_envio, tipo, alcance, lida, destinatario_id) " +
-                     "VALUES (?, ?, NOW(), ?, ?, ?, ?)";
+        // SQL CORRIGIDO: Removido o campo "tipo"
+        String sql = "INSERT INTO notificacao (titulo, mensagem, data_do_envio, alcance, lida, destinatario_id) " +
+                     "VALUES (?, ?, NOW(), ?, ?, ?)";
 
         try (Connection con = ConexaoDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, notificacao.getTitulo());
             ps.setString(2, notificacao.getMensagem());
-            ps.setString(3, notificacao.getTipo().name());
-            ps.setString(4, notificacao.getAlcance().name());
-            ps.setBoolean(5, notificacao.getLida());
-            ps.setLong(6, notificacao.getDestinatario().getId());
+            // REMOVIDO: ps.setString(3, notificacao.getTipo().name());
+            ps.setString(3, notificacao.getAlcance().name()); // O índice 3 é agora o Alcance
+            ps.setBoolean(4, notificacao.getLida());          // O índice 4 é agora Lida
+            ps.setLong(5, notificacao.getDestinatario().getId()); // O índice 5 é agora Destinatario
             ps.executeUpdate();
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -126,9 +127,10 @@ public class NotificacaoDAO {
         n.setTitulo(rs.getString("titulo"));
         n.setMensagem(rs.getString("mensagem"));
         n.setDataDoEnvio(rs.getTimestamp("data_do_envio").toLocalDateTime());
-        n.setTipo(TipoNotificacao.valueOf(rs.getString("tipo")));
+        // REMOVIDO: n.setTipo(TipoNotificacao.valueOf(rs.getString("tipo")));
         n.setAlcance(AlcanceNotificacao.valueOf(rs.getString("alcance")));
         n.setLida(rs.getBoolean("lida"));
-        return n;
+        // O destinatário será setado nos métodos que chamam mapResultSet (listarPorUsuario e listarTodas)
+        return n; 
     }
 }

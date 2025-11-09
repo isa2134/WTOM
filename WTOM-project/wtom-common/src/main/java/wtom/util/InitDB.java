@@ -109,8 +109,6 @@ public class InitDB {
                 titulo VARCHAR(255) NOT NULL,
                 mensagem TEXT NOT NULL,
                 data_do_envio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                tipo ENUM('OLIMPIADA_ABERTA', 'REUNIAO_AGENDADA', 'AVISO_GERAL', 
-                          'REUNIAO_CHEGANDO', 'DESAFIO_SEMANAL', 'CORRECAO_DE_EXERCICIO') NOT NULL,
                 alcance ENUM('INDIVIDUAL','GERAL','ALUNOS','PROFESSORES') NOT NULL DEFAULT 'INDIVIDUAL',
                 lida BOOLEAN NOT NULL DEFAULT FALSE,
                 destinatario_id BIGINT NOT NULL,
@@ -169,7 +167,6 @@ public class InitDB {
         }
     }
 
-    // ---- MAIN ----
     public static void main(String[] args) throws PersistenciaException {
         try {
             Connection con = ConexaoDB.getConnection();
