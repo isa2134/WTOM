@@ -1,21 +1,36 @@
 package wtom.controller;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.*;
 import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import wtom.model.service.UsuarioService;
 import wtom.model.domain.Usuario;
 
+
+@WebServlet(name = "LoginController", urlPatterns = {"/LoginController"})
 public class LoginController extends HttpServlet {
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         logar(request, response);
     }
 
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         logout(request, response);
     }
@@ -44,6 +59,9 @@ public class LoginController extends HttpServlet {
             if (usuario != null) {
                 System.out.println("🔹 SENHA NO BANCO: " + usuario.getSenha());
             }
+            else{
+                request.getSession().setAttribute("erroLogin", "Login ou senha incorretos");
+                response.sendRedirect(request.getContextPath() + "/index.jsp");
 
             if (usuario == null || !usuario.getSenha().equals(senha)) {
                 System.out.println("❌ Email ou senha inválidos!");

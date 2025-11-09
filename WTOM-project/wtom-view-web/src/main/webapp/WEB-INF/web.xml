@@ -25,17 +25,8 @@
     </error-page>
 
     <session-config>
-        <session-timeout>30</session-timeout>
+        <session-timeout>
+            30
+        </session-timeout>
     </session-config>
-
-    <servlet>
-        <servlet-name>LoginController</servlet-name>
-        <servlet-class>wtom.controller.LoginController</servlet-class>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>LoginController</servlet-name>
-        <url-pattern>/LoginController</url-pattern>
-    </servlet-mapping>
-
 </web-app>

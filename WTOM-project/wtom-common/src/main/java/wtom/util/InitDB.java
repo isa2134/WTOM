@@ -14,6 +14,7 @@ import wtom.dao.exception.PersistenciaException;
 import wtom.model.domain.Olimpiada;
 import wtom.util.ConexaoDB;
 
+
 public class InitDB {
 
     private final Connection con;
@@ -121,6 +122,36 @@ public class InitDB {
             st.executeUpdate(sql);
         }
     }
+    public void initOlimpiadas() throws SQLException{
+        String sql = "CREATE TABLE IF NOT EXISTS olimpiadas("
+                +"nome VARCHAR(100) NOT NULL, "
+                +"id INT PRIMARY KEY, "
+                +"topico VARCHAR(100) NOT NULL, "
+                +"data_limite_inscricao DATE NOT NULL, "
+                +"data_prova DATE NOT NULL, "
+                +"descricao VARCHAR(100) NOT NULL, "
+                +"peso DOUBLE NOT NULL"
+                +")";
+        
+        try(Statement st = con.createStatement()){
+            st.executeUpdate(sql);
+        }
+    }
+    
+    public void initInscricoes() throws SQLException {
+        String sql = "CREATE TABLE IF NOT EXISTS inscricoes("
+            + "nome VARCHAR(100) NOT NULL, "
+            + "cpf VARCHAR(100) NOT NULL, "
+            + "data_nascimento DATE NOT NULL, "
+            + "peso DOUBLE NOT NULL, "
+            + "id_olimpiada INT NOT NULL, "
+            + "FOREIGN KEY (id_olimpiada) REFERENCES olimpiadas(id)"
+            + ")";
+    
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
 
     public void initTodos() throws PersistenciaException {
         try {
@@ -129,6 +160,8 @@ public class InitDB {
             initAluno();        
             initConteudos();     
             initNotificacoes();  
+            initOlimpiadas();
+            initInscricoes();
         } catch (SQLException e) {
             throw new PersistenciaException("erro ao inicializar tabelas: " + e.getMessage());
         }
