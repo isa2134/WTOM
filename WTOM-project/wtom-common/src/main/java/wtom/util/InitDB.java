@@ -123,21 +123,6 @@ public void initNotificacoes() throws SQLException {
     }
 }
 
-    public void initOlimpiadas() throws SQLException{
-        String sql = "CREATE TABLE IF NOT EXISTS olimpiadas("
-                +"nome VARCHAR(100) NOT NULL, "
-                +"id INT PRIMARY KEY, "
-                +"topico VARCHAR(100) NOT NULL, "
-                +"data_limite_inscricao DATE NOT NULL, "
-                +"data_prova DATE NOT NULL, "
-                +"descricao VARCHAR(100) NOT NULL, "
-                +"peso DOUBLE NOT NULL"
-                +")";
-        
-        try(Statement st = con.createStatement()){
-            st.executeUpdate(sql);
-        }
-    }
     public void initInscricoes() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS inscricoes("
             + "nome VARCHAR(100) NOT NULL, "
@@ -164,6 +149,22 @@ public void initNotificacoes() throws SQLException {
             initInscricoes();
         } catch (SQLException e) {
             throw new PersistenciaException("erro ao inicializar tabelas: " + e.getMessage());
+        }
+    }
+    
+        public void initOlimpiadas() throws SQLException{
+        String sql = "CREATE TABLE IF NOT EXISTS olimpiadas("
+                +"nome VARCHAR(100) NOT NULL, "
+                +"id INT PRIMARY KEY, "
+                +"topico VARCHAR(100) NOT NULL, "
+                +"data_limite_inscricao DATE NOT NULL, "
+                +"data_prova DATE NOT NULL, "
+                +"descricao VARCHAR(100) NOT NULL, "
+                +"peso DOUBLE NOT NULL"
+                +")";
+        
+        try(Statement st = con.createStatement()){
+            st.executeUpdate(sql);
         }
     }
 

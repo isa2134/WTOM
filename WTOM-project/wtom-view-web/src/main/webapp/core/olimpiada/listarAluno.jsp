@@ -115,7 +115,7 @@
 
     function voltar() {
       // retorna à página principal (professor/admin ou menu principal)
-      window.location.href = "olimpiada?";
+      window.location.href = "olimpiada";
     }
   </script>
 

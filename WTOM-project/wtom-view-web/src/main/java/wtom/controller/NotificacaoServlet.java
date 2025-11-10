@@ -87,30 +87,18 @@ public class NotificacaoServlet extends HttpServlet {
         String titulo = req.getParameter("titulo");
         String mensagem = req.getParameter("mensagem");
         String alcanceStr = req.getParameter("alcance");
+        
+        // 🟢 INÍCIO DA CORREÇÃO
         String tipoStr = req.getParameter("tipo");
-
-        TipoNotificacao tipo;
-        try {
-            tipo = (tipoStr != null && !tipoStr.isBlank())
-                    ? TipoNotificacao.valueOf(tipoStr)
-                    : TipoNotificacao.OUTROS; 
-        } catch (IllegalArgumentException e) {
-            tipo = TipoNotificacao.OUTROS;
-        }
-
-        AlcanceNotificacao alcance;
-        try {
-            alcance = AlcanceNotificacao.valueOf(alcanceStr);
-        } catch (IllegalArgumentException | NullPointerException e) {
-            resp.sendRedirect("notificacao?erro=alcance_invalido");
-            return;
-        }
-
+        
+        AlcanceNotificacao alcance = AlcanceNotificacao.valueOf(alcanceStr);
+        TipoNotificacao tipo = TipoNotificacao.valueOf(tipoStr); 
+        
         Notificacao n = new Notificacao();
         n.setTitulo(titulo);
         n.setMensagem(mensagem);
-        n.setAlcance(alcance);
         n.setTipo(tipo); 
+        n.setAlcance(alcance);
 
         if (alcance == AlcanceNotificacao.INDIVIDUAL) {
             String emailDest = req.getParameter("emailUsuario");
@@ -120,15 +108,11 @@ public class NotificacaoServlet extends HttpServlet {
                 return;
             }
 
-            Usuario destinatario = usuarioDAO.buscarPorLogin(emailDest);
+            Usuario destinatario = usuarioDAO.buscarPorLogin(emailDest); 
 
             if (destinatario == null) {
                 resp.sendRedirect("notificacao?erro=destinatario_inexistente");
-                return;
-            }
-
             n.setDestinatario(destinatario);
-        } else {
             n.setDestinatario(remetente);
         }
 

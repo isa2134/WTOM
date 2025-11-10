@@ -58,8 +58,8 @@
     <body>
         <h1>Cadastrar nova Olimpíada</h1>
 
-        <form action="${pageContext.request.contextPath}/main" method="post">
-            <input type="hidden" name="acao" value="cadastrarOlimpiada">
+  <form action="${pageContext.request.contextPath}/olimpiada" method="post">
+    <input type="hidden" name="acao" value="cadastrarOlimpiada">
 
             <label>Nome: <input name="nome" required></label>
             <label>Assunto: <input name="topico" required></label>
@@ -68,17 +68,10 @@
             <label>Peso: <input type="number" name="peso" step="0.1" required></label>
             <label>Descrição: <input name="descricao" required></label>
 
-            <label for="alcance">Notificar sobre o material</label>
-            <select id="alcance" name="alcance" onchange="atualizarCampos()" required>
-                <option value="GERAL">Todo mundo</option>
-                <option value="PROFESSORES">Todos os professores</option>
-                <option value="ALUNOS">Todos os alunos</option>
-            </select><br>
-
-            <div class="actions">
-                <button type="button" class="btn cancelar" onclick="window.location.href = '${pageContext.request.contextPath}/main'">Cancelar</button>
-                <button type="submit" class="btn">Cadastrar</button>
-            </div>
-        </form>
-    </body>
+    <div class="actions">
+      <button type="button" class="btn cancelar" onclick="window.location.href='${pageContext.request.contextPath}/olimpiada'">Cancelar</button>
+      <button type="submit" class="btn">Cadastrar</button>
+    </div>
+  </form>
+</body>
 </html>
