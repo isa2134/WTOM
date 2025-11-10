@@ -1,42 +1,53 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>TOM</title>
-        <link rel="stylesheet" href="estilos.css">
-        <link rel="stylesheet" href="menu.css">
-    </head>
-    <body>
-        <main class="content">
-            <section class="page">
-                <header class="page-header">
-                    <h2>Conteúdos Didáticos</h2>
-                </header>
-                <div>
-                    <div class="card">
-                        <!--<h3>Conteúdos Didáticos</h3>-->
-                        <div style="display:flex;gap:8px;align-items:center">
-                        <!--<button class="btn ghost" id="btn-add-material" data-role-only="professor,admin">Adicionar material</button>-->                        </div>
-                        <div style="margin-top:12px" id="materiais-list">
-                            <div class="card" style="box-shadow:none;border:1px solid #f2f3f4;margin-bottom:8px;">
-                                <div style="display:flex;justify-content:space-between;align-items:center">
-                                    <div>
-                                        <div style="font-weight:800">Aula: equações lineares</div>
-                                        <div class="small muted">Prof. João • 27/08/25</div>
-                                    </div>
-                                    <div style="display:flex;gap:8px">
-                                        <button class="btn ghost material-btn">Abrir</button>
-                                        <button class="btn ghost material-btn" onclick="editMaterial(1)">Editar</button>
-                                        <button class="btn danger ghost material-btn" onclick="deleteMaterial(1)">Excluir</button>
-                                    </div>
-                                </div>
+<%@page import="wtom.model.domain.util.UsuarioTipo" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+<%@include file="/core/header.jsp" %>
+
+<main class="content">
+    <section class="page">
+        <header class="page-header">
+            <h2>Conteúdos Didáticos</h2>
+        </header>
+    
+        <c:if test="${not empty sessionScope.mensagemSucesso}">
+            <p style="color: green;">${sessionScope.mensagemSucesso}</p>
+            <c:remove var="mensagemSucesso" scope="session"/>
+        </c:if>
+
+        <c:if test="${not empty sessionScope.erro}">
+            <p style="color: red;">${sessionScope.erro}</p>
+            <c:remove var="erro" scope="session"/>
+        </c:if>
+            
+        <div>
+            <div class="btn-add">
+                <c:if test="${usuario.tipo == UsuarioTipo.PROFESSOR}">
+                    <button class="btn" onclick="window.location.href='${pageContext.request.contextPath}/core/conteudos/adicionar-alterar.jsp'">Adicionar material</button>
+                </c:if>
+            </div>
+            <div class="card"style="margin-top:12px">
+                <c:forEach var="conteudo" items="${listaConteudos}">
+                    <div class="content-list-item">
+                        <div class="content-item-layout">
+                            <div>
+                                <div style="font-weight:800">${conteudo.titulo}</div>
+                                <div class="small muted">${conteudo.data}</div>
+                            </div>
+                            <div class="content-actions">
+                                <button class="btn" onclick="window.location.href='${pageContext.request.contextPath}/ConteudoController?acao=visualizar&id=${conteudo.id}'">Abrir</button>
+                                <c:if test="${usuario.tipo == UsuarioTipo.PROFESSOR}">
+                                    <button class="btn ghost" onclick="window.location.href='${pageContext.request.contextPath}/ConteudoController?acao=editar&id=${conteudo.id}'">Editar</button>
+                                    <button class="btn danger ghost" onclick="if(confirm('Deseja excluir esse conteúdo?'))window.location.href='${pageContext.request.contextPath}/ConteudoController?acao=excluir&id=${conteudo.id}'">Excluir</button>
+                                </c:if>
                             </div>
                         </div>
-
                     </div>
-                </div>
-            </section>
-        </main>
-    </body>
-</html>
+                </c:forEach>
+            </div>
+
+        </div>
+    </section>
+</main>
+
+<%@include file="/core/footer.jsp" %>

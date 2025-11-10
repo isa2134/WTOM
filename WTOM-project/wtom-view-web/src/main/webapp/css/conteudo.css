@@ -205,3 +205,30 @@ textarea {
     margin-bottom: 24px; /* Espaço para separar do visualizador de conteúdo */
     width: auto;
 }
+
+.btn-add{
+    display:flex;
+    justify-content: flex-end;
+    gap:8px;
+    width: auto;
+}
+
+.content-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px; /* Era style="display:flex;gap:8px" */
+    align-items: center; 
+}
+.content-list-item {
+    box-shadow: none;
+    border: 1px solid #f2f3f4;
+    margin-bottom: 8px;
+    padding: 16px; /* Adicionado para garantir o padding do card */
+    border-radius: 10px; /* Adicionado para garantir o border-radius do card */
+    background: var(--surface); /* Adicionado para garantir o background do card */
+}
+.content-item-layout{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
