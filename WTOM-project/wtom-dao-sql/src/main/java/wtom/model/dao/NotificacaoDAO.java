@@ -96,7 +96,7 @@ public class NotificacaoDAO {
                 while (rs.next()) {
                     Notificacao n = mapResultSet(rs);
                     n.setDestinatario(usuarioDAO.buscarPorId(idUsuario));
-                    lista.add(n);*/
+                    lista.add(n);
                 }
             }
 

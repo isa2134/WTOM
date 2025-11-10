@@ -10,7 +10,7 @@
 
         <h2 style="color:var(--accent)">${conteudo.titulo}</h2>
         <a href="${pageContext.request.contextPath}/ConteudoController?acao=listarTodos" class="btn">Voltar</a>
-        <c:if test="${usuario.tipo == UsuarioTipo.PROFESSOR}">
+        <c:if test="${usuario.tipo == UsuarioTipo.PROFESSOR || usuario.tipo == UsuarioTipo.ADMINISTRADOR}">
             <div class="top-actions-bar">
                 <div id="professor-actions" class="professor-actions">
                     <a href="${pageContext.request.contextPath}/ConteudoController?acao=editar&id=${conteudo.id}" class="btn">Editar</a>

@@ -22,7 +22,7 @@
             
         <div>
             <div class="btn-add">
-                <c:if test="${usuario.tipo == UsuarioTipo.PROFESSOR}">
+                <c:if test="${usuario.tipo == UsuarioTipo.PROFESSOR || usuario.tipo == UsuarioTipo.ADMINISTRADOR}">
                     <button class="btn" onclick="window.location.href='${pageContext.request.contextPath}/core/conteudos/adicionar-alterar.jsp'">Adicionar material</button>
                 </c:if>
             </div>
@@ -36,7 +36,7 @@
                             </div>
                             <div class="content-actions">
                                 <button class="btn" onclick="window.location.href='${pageContext.request.contextPath}/ConteudoController?acao=visualizar&id=${conteudo.id}'">Abrir</button>
-                                <c:if test="${usuario.tipo == UsuarioTipo.PROFESSOR}">
+                                <c:if test="${usuario.tipo == UsuarioTipo.PROFESSOR || usuario.tipo == UsuarioTipo.ADMINISTRADOR}">
                                     <button class="btn ghost" onclick="window.location.href='${pageContext.request.contextPath}/ConteudoController?acao=editar&id=${conteudo.id}'">Editar</button>
                                     <button class="btn danger ghost" onclick="if(confirm('Deseja excluir esse conteúdo?'))window.location.href='${pageContext.request.contextPath}/ConteudoController?acao=excluir&id=${conteudo.id}'">Excluir</button>
                                 </c:if>
