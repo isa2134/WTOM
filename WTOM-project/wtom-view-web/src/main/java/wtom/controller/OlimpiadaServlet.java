@@ -7,6 +7,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import wtom.model.domain.Usuario;
+import wtom.model.domain.util.UsuarioTipo;
 import wtom.model.service.GestaoOlimpiada;
 
 @WebServlet(name = "Olimpiada", urlPatterns = {"/olimpiada"})
@@ -18,6 +21,14 @@ public class OlimpiadaServlet extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
         String acao = request.getParameter("acao");
+        HttpSession sessao = request.getSession(false);
+        Usuario usuario = (sessao != null) ? (Usuario) sessao.getAttribute("usuario") : null;
+
+        if (usuario == null) {
+            response.sendRedirect(request.getContextPath() + "/index.jsp");
+            return;
+        }
+
         String jsp = "/core/olimpiada/listar.jsp";
 
         GestaoOlimpiada gestaoOlimpiada = new GestaoOlimpiada();
@@ -46,21 +57,26 @@ public class OlimpiadaServlet extends HttpServlet {
                     break;
 
                 case "listarOlimpiadaAluno":
-                    // Já usa o método correto (filtrado pelo Service)
                     request.setAttribute("olimpiadas", gestaoOlimpiada.pesquisarOlimpiadasAtivas());
                     jsp = "/core/olimpiada/listarAluno.jsp";
                     break;
 
                 case "listarOlimpiadaAdminProf":
-                    // 🎯 CORREÇÃO: Usa o método Service que agora chama o DAO.pesquisar() filtrado.
-                    request.setAttribute("olimpiadas", gestaoOlimpiada.pesquisarOlimpiadasAtivas()); 
+                    request.setAttribute("olimpiadas", gestaoOlimpiada.pesquisarTodasOlimpiadas());
                     jsp = "/core/olimpiada/listar.jsp";
                     break;
 
                 default:
-                    // 🎯 CORREÇÃO: Usa o método Service que agora chama o DAO.pesquisar() filtrado.
-                    request.setAttribute("olimpiadas", gestaoOlimpiada.pesquisarOlimpiadasAtivas());
-                    jsp = "/core/olimpiada/listar.jsp";
+                    // Comparação com enum de forma correta
+                    if (usuario.getTipo() == UsuarioTipo.ADMINISTRADOR || usuario.getTipo() == UsuarioTipo.PROFESSOR) {
+                        request.setAttribute("olimpiadas", gestaoOlimpiada.pesquisarTodasOlimpiadas());
+                        jsp = "/core/olimpiada/listar.jsp";
+                    } else if (usuario.getTipo() == UsuarioTipo.ALUNO) {
+                        request.setAttribute("olimpiadas", gestaoOlimpiada.pesquisarOlimpiadasAtivas());
+                        jsp = "/core/olimpiada/listarAluno.jsp";
+                    } else {
+                        jsp = request.getContextPath() + "/index.jsp";
+                    }
                     break;
             }
 
@@ -76,13 +92,11 @@ public class OlimpiadaServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("erro", "Erro interno: " + e.getMessage());
-            
-            // Tenta recarregar a lista mesmo em caso de erro para evitar ClassNotFoundException no JSP
+
             try {
-                // 🎯 AJUSTE: Tentando carregar a lista FILTRADA em caso de erro
-                request.setAttribute("olimpiadas", gestaoOlimpiada.pesquisarOlimpiadasAtivas());
+                request.setAttribute("olimpiadas", gestaoOlimpiada.pesquisarTodasOlimpiadas());
             } catch (Exception ignore) {}
-            
+
             RequestDispatcher rd = request.getRequestDispatcher("/core/olimpiada/listar.jsp");
             rd.forward(request, response);
         }

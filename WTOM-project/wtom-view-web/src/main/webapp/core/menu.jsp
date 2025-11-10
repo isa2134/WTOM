@@ -23,8 +23,6 @@
                 <a href="${pageContext.request.contextPath}/ranking"> <span>Ranking</span></a>
                 <a href="${pageContext.request.contextPath}/materiais"> <span>Materiais</span></a>
                 <a href="${pageContext.request.contextPath}/duvidas"> <span>Dúvidas</span></a>
-                
-                <%-- ✅ CORREÇÃO: Usar o Servlet /notificacao --%>
                 <a href="${pageContext.request.contextPath}/notificacao"> <span>Notificações</span></a>
                 <a href="${pageContext.request.contextPath}/perfil"> <span>Perfil</span></a>
             </nav>

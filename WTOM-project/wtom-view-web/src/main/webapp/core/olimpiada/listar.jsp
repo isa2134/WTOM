@@ -164,13 +164,13 @@
             <div class="logo">TOM</div>
         </div>
         <nav class="menu">
-                <a href="${pageContext.request.contextPath}/"> <span>Início</span></a>
-                <a href="${pageContext.request.contextPath}/olimpiada"> <span>Olimpíadas</span></a>
-                <a href="${pageContext.request.contextPath}/ranking"> <span>Ranking</span></a>
-                <a href="${pageContext.request.contextPath}/materiais"> <span>Materiais</span></a>
-                <a href="${pageContext.request.contextPath}/duvidas"> <span>Dúvidas</span></a>
-                <a href="${pageContext.request.contextPath}/notificacao"> <span>Notificações</span></a>
-                <a href="${pageContext.request.contextPath}/perfil"> <span>Perfil</span></a>
+            <a href="menu.jsp" class="active"><span>Início</span></a>
+            <a href="#"><span>Olimpíadas</span></a>
+            <a href="#"><span>Ranking</span></a>
+            <a href="conteudos/listar.jsp"><span>Materiais</span></a>
+            <a href="#"><span>Dúvidas</span></a>
+            <a href="/core/Notificacao.jsp"><span>Notificações</span></a>
+            <a href="#"><span>Perfil</span></a>
         </nav>
     </aside>
 
@@ -189,8 +189,7 @@
                             <p><strong>Peso:</strong> ${o.pesoOlimpiada}</p>
                             <p><strong>Descrição:</strong> ${o.descricao}</p>
 
-                            <%-- 🟢 CSU 10: Mostra botões de gerência apenas para ADMIN e PROFESSOR --%>
-                            <c:if test="${usuarioLogado.tipo eq 'ADMINISTRADOR' or usuarioLogado.tipo eq 'PROFESSOR'}">
+                          
                                 <form class="form-excluir" action="olimpiada" method="post" style="display:inline;">
                                     <input type="hidden" name="acao" value="excluirOlimpiada">
                                     <input type="hidden" name="idOlimpiada" value="${o.idOlimpiada}"> 
@@ -202,7 +201,6 @@
                                     <input type="hidden" name="idOlimpiada" value="${o.idOlimpiada}"> 
                                     <button type="submit" class="btn">Alterar</button>
                                 </form>
-                            </c:if>
                         </div>
                     </c:forEach>
                 </c:when>
