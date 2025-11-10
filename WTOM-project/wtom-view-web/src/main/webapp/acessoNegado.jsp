@@ -1,9 +1,3 @@
-<%-- 
-    Document   : acessoNegado.jsp
-    Created on : 4 de nov. de 2025, 20:33:22
-    Author     : Luis
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>

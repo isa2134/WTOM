@@ -28,7 +28,6 @@ public class OlimpiadaController {
             return false;
         }
         
-        // CSU 10: Apenas Professor e Administrador
         String tipoUsuario = usuario.getTipo().toString(); 
         return tipoUsuario.equals("ADMINISTRADOR") || tipoUsuario.equals("PROFESSOR");
     }
