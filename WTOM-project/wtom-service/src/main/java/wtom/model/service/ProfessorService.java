@@ -10,14 +10,15 @@ import java.util.List;
 public class ProfessorService {
 
     private final ProfessorDAO professorDAO = new ProfessorDAO();
-    private final UsuarioService usuarioService = new UsuarioService();
 
     public void cadastrarProfessor(Professor professor) throws NegocioException {
-        usuarioService.cadastrarUsuario(professor.getUsuario());
-
-
         try {
+            if (professor.getUsuario() == null || professor.getUsuario().getId() == null) {
+                throw new NegocioException("Usuário do professor não encontrado ou sem ID válido.");
+            }
+
             professorDAO.inserir(professor);
+
         } catch (PersistenciaException e) {
             throw new NegocioException("Erro ao cadastrar professor: " + e.getMessage());
         }
@@ -39,7 +40,7 @@ public class ProfessorService {
 
     public void atualizarProfessor(Professor professor) throws NegocioException {
         try {
-            usuarioService.atualizarUsuario(professor.getUsuario());
+            new UsuarioService().atualizarUsuario(professor.getUsuario());
         } catch (NegocioException e) {
             throw new NegocioException("Erro ao atualizar professor: " + e.getMessage());
         }

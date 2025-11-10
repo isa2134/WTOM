@@ -27,6 +27,6 @@
                 <a href="${pageContext.request.contextPath}/ConteudoController?acao=listarTodos"><span>Materiais</span></a>
                 <a href="${pageContext.request.contextPath}/duvidas"> <span>Dúvidas</span></a>
                 <a href="${pageContext.request.contextPath}/notificacao"> <span>Notificações</span></a>
-                <a href="${pageContext.request.contextPath}/perfil"> <span>Perfil</span></a>
+                <a href="${usuarios/perfil}"> <span>Perfil</span></a>
             </nav>
         </aside>

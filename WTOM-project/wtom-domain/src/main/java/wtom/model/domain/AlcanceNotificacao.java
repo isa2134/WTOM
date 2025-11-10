@@ -6,4 +6,3 @@ public enum AlcanceNotificacao {
     PROFESSORES,       
     INDIVIDUAL         
 }
-

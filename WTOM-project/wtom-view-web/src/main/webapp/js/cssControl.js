@@ -24,18 +24,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (btnCloseModal) {
-        btnCloseModal.addEventListener('click', () => {
-            toggleModal(false);
-        });
+        btnCloseModal.addEventListener('click', () => toggleModal(false));
     }
 
     if (backdrop) {
-        backdrop.addEventListener('click', () => {
-            toggleModal(false);
+        backdrop.addEventListener('click', () => toggleModal(false));
+    }
+
+    if (btnSelectAluno) {
+        btnSelectAluno.addEventListener('click', () => {
+            window.location.href = 'usuarios/cadastro.jsp?tipo=ALUNO';
         });
     }
 
-
+    if (btnSelectProfessor) {
+        btnSelectProfessor.addEventListener('click', () => {
+            window.location.href = 'usuarios/cadastro.jsp?tipo=PROFESSOR';
+        });
+    }
 });
 
 document.addEventListener('DOMContentLoaded', () => {
