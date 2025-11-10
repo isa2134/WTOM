@@ -74,4 +74,18 @@ public class UsuarioService {
             throw new UsuarioInvalidoException("Erro ao buscar usuário: " + e.getMessage());
         }
     }
+    public Usuario buscarPorLoginSenha(String login, String senha)throws UsuarioInvalidoException {
+        try {
+            List<Usuario> usuarios = usuarioDAO.listarTodos();
+            for (Usuario u : usuarios) {
+                if (u.getLogin().equalsIgnoreCase(login) && u.getSenha().equalsIgnoreCase(senha)) {
+                    return u;
+                }
+            }
+            throw new UsuarioInvalidoException("Usuário não encontrado para login: " + login);
+        } catch (PersistenciaException e) {
+            throw new UsuarioInvalidoException("Erro ao buscar usuário: " + e.getMessage());
+        }
+    }
+    
 }
