@@ -1,7 +1,7 @@
 package wtom.model.dao;
 
 import wtom.util.ConexaoDB;
-import wtom.model.domain.TipoNotificacao; 
+import wtom.model.domain.TipoNotificacao;
 import wtom.model.domain.AlcanceNotificacao;
 import wtom.model.domain.Notificacao;
 import wtom.model.domain.Usuario;

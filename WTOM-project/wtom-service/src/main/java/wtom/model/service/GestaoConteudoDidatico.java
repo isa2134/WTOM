@@ -16,7 +16,7 @@ public class GestaoConteudoDidatico {
         conteudoDAO = ConteudoDidaticoDAO.getInstance();
     }
     
-    public int cadastrar(ConteudoDidatico conteudo) throws PersistenciaException{
+    public Long cadastrar(ConteudoDidatico conteudo) throws PersistenciaException{
         List<String> erros = ConteudoDidaticoHelper.validarConteudo(conteudo);
         
         if(!erros.isEmpty())
@@ -37,11 +37,11 @@ public class GestaoConteudoDidatico {
         conteudoDAO.alterar(conteudo);
     }
     
-    public void excluir(ConteudoDidatico conteudo) throws PersistenciaException{
-        conteudoDAO.deletar(conteudo);
+    public void excluir(Long id) throws PersistenciaException{
+        conteudoDAO.deletar(id);
     }
     
-    public ConteudoDidatico pesquisarPorId(int id_conteudo) throws PersistenciaException{
+    public ConteudoDidatico pesquisarPorId(Long id_conteudo) throws PersistenciaException{
         return conteudoDAO.pesquisarPorId(id_conteudo);
     }
     
@@ -49,7 +49,7 @@ public class GestaoConteudoDidatico {
         return conteudoDAO.listarTodos();
     }
     
-    public List<ConteudoDidatico> listarPorProfessor(int id_professor) throws PersistenciaException{
+    public List<ConteudoDidatico> listarPorProfessor(Long id_professor) throws PersistenciaException{
         return conteudoDAO.listarPorProfessor(id_professor);
     }
     

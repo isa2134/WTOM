@@ -20,12 +20,12 @@ public class ConteudoDidaticoDAO {
     }
     
     public void inserir(ConteudoDidatico conteudo) throws PersistenciaException {
-        String sql = "INSERT INTO conteudos (id_professor, titulo, descricao, arquivo, data) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO conteudos (id_professor, titulo, descricao, arquivo, data) VALUES (?, ?, ?, ?, ?)";
         
         try(Connection con = ConexaoDB.getConnection();
-            PreparedStatement ps = con.prepareStatement(sql)){
+            PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
             
-            ps.setInt(1, conteudo.getIdProfessor());
+            ps.setLong(1, conteudo.getIdProfessor());
             ps.setString(2, conteudo.getTitulo());
             ps.setString(3, conteudo.getDescricao());
             ps.setString(4, conteudo.getArquivo());
@@ -35,7 +35,7 @@ public class ConteudoDidaticoDAO {
             
             try(ResultSet rs = ps.getGeneratedKeys()){
                 if(rs.next()){
-                    conteudo.setId(rs.getInt(1));
+                    conteudo.setId(rs.getLong(1));
                 }
             }
            
@@ -56,7 +56,7 @@ public class ConteudoDidaticoDAO {
             ps.setString(2, conteudo.getDescricao());
             ps.setString(3, conteudo.getArquivo());
             ps.setString(4, conteudo.getData());
-            ps.setInt(5, conteudo.getId());
+            ps.setLong(5, conteudo.getId());
             
             ps.executeUpdate();
             
@@ -66,21 +66,25 @@ public class ConteudoDidaticoDAO {
         }
     }
     
-    public ConteudoDidatico pesquisarPorId(int id_conteudo) throws PersistenciaException{
+    public ConteudoDidatico pesquisarPorId(Long id_conteudo) throws PersistenciaException{
         String sql = "SELECT * FROM conteudos WHERE id=?";
+        ConteudoDidatico c = null;
         
         try(Connection con = ConexaoDB.getConnection();
-            PreparedStatement ps = con.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery()){
+            PreparedStatement ps = con.prepareStatement(sql)){
             
-            ConteudoDidatico c = new ConteudoDidatico();
-            ps.setInt(1, id_conteudo);
-            while(rs.next()){
-                c.setIdProfessor(rs.getInt("id_professor"));
-                c.setTitulo(rs.getString("titulo"));
-                c.setDescricao(rs.getString("descricao"));
-                c.setArquivo(rs.getString("arquivo"));
-                c.setData(rs.getString("data"));
+            ps.setLong(1, id_conteudo);
+            
+            try(ResultSet rs = ps.executeQuery()){
+                if(rs.next()){
+                    c = new ConteudoDidatico();
+                    c.setId(rs.getLong("id"));
+                    c.setIdProfessor(rs.getLong("id_professor"));
+                    c.setTitulo(rs.getString("titulo"));
+                    c.setDescricao(rs.getString("descricao"));
+                    c.setArquivo(rs.getString("arquivo"));
+                    c.setData(rs.getString("data"));
+                }
             }
             return c;
             
@@ -100,8 +104,8 @@ public class ConteudoDidaticoDAO {
             
             while(rs.next()){
                 ConteudoDidatico c = new ConteudoDidatico();
-                c.setId(rs.getInt("id"));
-                c.setIdProfessor(rs.getInt("id_professor"));
+                c.setId(rs.getLong("id"));
+                c.setIdProfessor(rs.getLong("id_professor"));
                 c.setTitulo(rs.getString("titulo"));
                 c.setDescricao(rs.getString("descricao"));
                 c.setArquivo(rs.getString("arquivo"));
@@ -117,7 +121,7 @@ public class ConteudoDidaticoDAO {
         }
     }
     
-    public List<ConteudoDidatico> listarPorProfessor(int id_professor) throws PersistenciaException{
+    public List<ConteudoDidatico> listarPorProfessor(Long id_professor) throws PersistenciaException{
         List<ConteudoDidatico> lista = new ArrayList<>();
         String sql = "SELECT * FROM conteudos WHERE id_professor=?";
         
@@ -125,11 +129,11 @@ public class ConteudoDidaticoDAO {
             PreparedStatement ps = con.prepareStatement(sql);
             ResultSet rs = ps.executeQuery()){
             
-            ps.setInt(1, id_professor);
+            ps.setLong(1, id_professor);
             while(rs.next()){
                 ConteudoDidatico c = new ConteudoDidatico();
-                c.setId(rs.getInt("id"));
-                c.setIdProfessor(rs.getInt("id_professor"));
+                c.setId(rs.getLong("id"));
+                c.setIdProfessor(rs.getLong("id_professor"));
                 c.setTitulo(rs.getString("titulo"));
                 c.setDescricao(rs.getString("descricao"));
                 c.setArquivo(rs.getString("arquivo"));
@@ -155,8 +159,8 @@ public class ConteudoDidaticoDAO {
             ps.setString(1, titulo);
             while(rs.next()){
                 ConteudoDidatico c = new ConteudoDidatico();
-                c.setId(rs.getInt("id"));
-                c.setIdProfessor(rs.getInt("id_professor"));
+                c.setId(rs.getLong("id"));
+                c.setIdProfessor(rs.getLong("id_professor"));
                 c.setTitulo(rs.getString("titulo"));
                 c.setDescricao(rs.getString("descricao"));
                 c.setArquivo(rs.getString("srquivo"));
@@ -170,13 +174,13 @@ public class ConteudoDidaticoDAO {
         }
     }
     
-    public void deletar(ConteudoDidatico conteudo) throws PersistenciaException{
+    public void deletar(Long id_conteudo) throws PersistenciaException{
         String sql = "DELETE FROM conteudos WHERE id=?";
         
         try(Connection con = ConexaoDB.getConnection();
             PreparedStatement ps = con.prepareStatement(sql)){
             
-            ps.setInt(1, conteudo.getId());
+            ps.setLong(1, id_conteudo);
             ps.executeUpdate();
         }
         catch(SQLException e){
