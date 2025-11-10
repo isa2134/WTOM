@@ -10,9 +10,9 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>TOM</title>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/menu.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/conteudo.css"/>
+        <link rel="stylesheet" href="../css/estilos.css">
+        <link rel="stylesheet" href="../css/menu.css">
+        <link rel="stylesheet" href="../css/conteudo.css"/>
     </head>
     <body>
         <aside class="sidebar" id="sidebar" aria-label="Menu lateral">
@@ -21,12 +21,12 @@
             </div>
 
             <nav class="menu">
-                <a href=""> <span>Início</span></a>
+                <a href="menu.jsp" class="active"> <span>Início</span></a>
                 <a href=""> <span>Olimpíadas</span></a>
                 <a href=""> <span>Ranking</span></a>
                 <a href="${pageContext.request.contextPath}/ConteudoController?acao=listarTodos"><span>Materiais</span></a>
                 <a href=""> <span>Dúvidas</span></a>
-                <a href="notificacoes.jsp"> <span>Notificações</span></a>
+                <a href="Notificacao.jsp" class="active"> <span>Notificações</span></a>
                 <a href=""> <span>Perfil</span></a>
             </nav>
         </aside>

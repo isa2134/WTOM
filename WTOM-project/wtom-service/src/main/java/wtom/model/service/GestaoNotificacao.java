@@ -7,29 +7,28 @@ import wtom.model.domain.AlcanceNotificacao;
 import wtom.dao.exception.PersistenciaException;
 
 import java.util.List;
+import wtom.model.domain.TipoNotificacao;
 
 public class GestaoNotificacao {
 
     private final NotificacaoService notificacaoService;
-    private final MandaEmail email;
+    private final EmailService email;
     private final UsuarioDAO usuarioDAO;
 
     public GestaoNotificacao() {
         this.notificacaoService = new NotificacaoService();
-        this.email = new MandaEmail();
+        this.email = new EmailService();
         this.usuarioDAO = UsuarioDAO.getInstance();
     }
 
     public void selecionaAlcance(Notificacao notificacao, AlcanceNotificacao alcance) throws PersistenciaException {
-
+        selecionaNome(notificacao);
         switch (alcance) {
-
+            
             case INDIVIDUAL -> {
                 if (notificacao.getDestinatario() == null)
                     throw new PersistenciaException("Destinatário deve ser informado no alcance INDIVIDUAL.");
-
                 notificacaoService.enviar(notificacao);
-                //email.enviarEmail(notificacao);
             }
 
             case GERAL -> {
@@ -55,7 +54,12 @@ public class GestaoNotificacao {
             copia.setDestinatario(u);
 
             notificacaoService.enviar(copia);
-            //email.enviarEmail(copia);
+        }
+    }
+    private void selecionaNome(Notificacao notificacao){
+        if(notificacao.getTipo() != TipoNotificacao.OUTROS){
+            String tituloFinal = notificacao.getTipo().getDescricao();
+            notificacao.setTitulo(tituloFinal);
         }
     }
 }

@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class Usuario {
 
-    private Long id;
+    private long id;
     private String cpf;
     private String nome;
     private String telefone;
@@ -15,8 +15,7 @@ public class Usuario {
     private String senha;
     private String login;
     private UsuarioTipo tipo;
-    private Map<String, String> premiacoes; 
-    // Exemplo: {"OBMEP2025": "Ouro", "Canguru2025": "Prata"}
+    private Map<String, String> premiacoes;
 
     public Usuario(String login, String cpf) {
         this.login = login;
@@ -30,8 +29,9 @@ public class Usuario {
         this.id = id;
     }
 
-    public Usuario(Long id, String cpf, String nome, String telefone, String email, LocalDate dataDeNascimento,
-                   String senha, String login, UsuarioTipo tipo, Map<String, String> premiacoes) {
+    public Usuario(Long id, String cpf, String nome, String telefone, String email,
+                   LocalDate dataDeNascimento, String senha, String login,
+                   UsuarioTipo tipo, Map<String, String> premiacoes) {
         this.id = id;
         this.cpf = cpf;
         this.nome = nome;

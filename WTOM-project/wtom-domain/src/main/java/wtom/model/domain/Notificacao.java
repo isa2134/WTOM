@@ -4,11 +4,11 @@ import java.time.LocalDateTime;
 
 public class Notificacao {
 
-    private int id;
+    private long id;
     private String titulo;
     private String mensagem;
     private LocalDateTime dataDoEnvio;
-    private TipoNotificacao tipo;
+    private TipoNotificacao tipo; 
     private AlcanceNotificacao alcance;
     private boolean lida = false;
     private Usuario destinatario;
@@ -18,7 +18,7 @@ public class Notificacao {
     }
 
     public Notificacao(String titulo, String mensagem, Usuario destinatario, 
-                       TipoNotificacao tipo, AlcanceNotificacao alcance) {
+                       AlcanceNotificacao alcance) {
         this.titulo = titulo;
         this.mensagem = mensagem;
         this.destinatario = destinatario;
@@ -36,11 +36,11 @@ public class Notificacao {
         this.lida = false;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -67,7 +67,7 @@ public class Notificacao {
     public void setDataDoEnvio(LocalDateTime dataDoEnvio) {
         this.dataDoEnvio = dataDoEnvio;
     }
-
+    
     public TipoNotificacao getTipo() {
         return tipo;
     }
