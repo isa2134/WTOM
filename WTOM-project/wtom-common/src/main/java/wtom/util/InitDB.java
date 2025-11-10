@@ -21,7 +21,7 @@ public class InitDB {
     public InitDB(Connection con) {
         this.con = con;
     }
-
+    
     public void initUsuario() throws SQLException {
         String sql = """
             CREATE TABLE IF NOT EXISTS usuario (
@@ -34,7 +34,6 @@ public class InitDB {
                 senha VARCHAR(100) NOT NULL,
                 login VARCHAR(50) UNIQUE NOT NULL,
                 tipo ENUM('ADMINISTRADOR', 'PROFESSOR', 'ALUNO') NOT NULL,
-                premiacoes JSON DEFAULT NULL,
                 criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             );

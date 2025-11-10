@@ -1,7 +1,7 @@
 package wtom.model.dao;
 
 import wtom.util.ConexaoDB;
-import wtom.model.domain.TipoNotificacao; 
+import wtom.model.domain.TipoNotificacao;
 import wtom.model.domain.AlcanceNotificacao;
 import wtom.model.domain.Notificacao;
 import wtom.model.domain.Usuario;
@@ -96,7 +96,7 @@ public class NotificacaoDAO {
                 while (rs.next()) {
                     Notificacao n = mapResultSet(rs);
                     n.setDestinatario(usuarioDAO.buscarPorId(idUsuario));
-                    lista.add(n);
+                    lista.add(n);*/
                 }
             }
 

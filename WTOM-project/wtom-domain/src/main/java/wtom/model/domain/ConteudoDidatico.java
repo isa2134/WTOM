@@ -5,8 +5,8 @@ import java.time.format.DateTimeFormatter;
 
 
 public class ConteudoDidatico {
-    private int id;
-    private int idProfessor;
+    private Long id;
+    private Long idProfessor;
     private String titulo;
     private String descricao;
     private String arquivo; //caminho do arquivo
@@ -15,7 +15,7 @@ public class ConteudoDidatico {
     public ConteudoDidatico(){
     }
     
-    public ConteudoDidatico(int professorId, String titulo, String descricao, String arquivo){
+    public ConteudoDidatico(Long professorId, String titulo, String descricao, String arquivo){
         this.idProfessor = professorId;
         this.titulo = titulo;
         this.descricao = descricao;
@@ -28,19 +28,19 @@ public class ConteudoDidatico {
         this.data = dataFormatada;
     }
     
-    public void setId(int id){
+    public void setId(Long id){
         this.id = id;
     }
     
-    public int getId(){
+    public Long getId(){
         return id;
     }
     
-    public void setIdProfessor(int professorId){
+    public void setIdProfessor(Long professorId){
         this.idProfessor = professorId;
     }
     
-    public int getIdProfessor(){
+    public Long getIdProfessor(){
         return idProfessor;
     }
     

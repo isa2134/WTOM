@@ -44,3 +44,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const fileInput = document.getElementById('arquivo');
+    const fileWrapper = document.getElementById('file-upload-box');
+    const fileNameDisplay = document.getElementById('file-name-display');
+
+    if (!fileInput || !fileWrapper || !fileNameDisplay) return;
+
+    // Abre o seletor de arquivos ao clicar no wrapper
+    fileWrapper.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    // Atualiza o nome do arquivo ao selecionar
+    fileInput.addEventListener('change', (event) => {
+        const files = event.target.files;
+        if (files && files.length > 0) {
+            let fileName = files[0].name;
+            if (fileName.length > 35) fileName = fileName.substring(0, 32) + '...';
+            fileNameDisplay.textContent = `Arquivo selecionado: ${fileName}`;
+            fileNameDisplay.style.color = 'var(--accent)';
+        } else {
+            fileNameDisplay.textContent = 'Nenhum arquivo selecionado (PDF, Vídeo, Documento)';
+            fileNameDisplay.style.color = 'var(--muted)';
+        }
+    });
+});

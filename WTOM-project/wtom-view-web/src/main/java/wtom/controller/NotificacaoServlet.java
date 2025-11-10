@@ -1,4 +1,4 @@
-package wtom.controller;
+/*package wtom.controller;
 
 import wtom.model.service.GestaoNotificacao;
 import wtom.model.service.NotificacaoService;
