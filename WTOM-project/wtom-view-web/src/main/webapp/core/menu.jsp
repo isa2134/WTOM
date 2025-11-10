@@ -20,7 +20,7 @@
                 <a href=""> <span>Materiais</span></a>
                 <a href=""> <span>Dúvidas</span></a>
                 <a href="notificacoes.jsp"> <span>Notificações</span></a>
-                <a href=""> <span>Perfil</span></a>
+                <a href="../usuarios/perfil.jsp"> <span>Perfil</span></a>
             </nav>
         </aside>
         <script src="../js/cssControl.js"></script>

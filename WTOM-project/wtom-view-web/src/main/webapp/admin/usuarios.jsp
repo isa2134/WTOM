@@ -36,7 +36,7 @@
                             <td><%= u.getEmail() %></td>
                             <td><%= u.getTipo() %></td>
                             <td>
-                                <a class="btn" href="${pageContext.request.contextPath}/EditarUsuarioController?id=<%= u.getId() %>">Editar</a>
+                                <a class="btn" href="${pageContext.request.contextPath}/usuarios/editar.jsp?id=<%= u.getId() %>">Editar</a>
 
                                 <form action="${pageContext.request.contextPath}/ExcluirUsuarioController" method="post" style="display:inline;">
                                     <input type="hidden" name="id" value="<%= u.getId() %>">

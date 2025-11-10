@@ -36,14 +36,14 @@
             <% if (usuario == null) { %>
                 <p>Usuário não encontrado.</p>
             <% } else { %>
-                <form action="${pageContext.request.contextPath}/EditarUsuarioController" method="post">
+                <form action="${pageContext.request.contextPath}/adminEditarUsuario" method="post">
                     <input type="hidden" name="id" value="<%= usuario.getId() %>">
 
                     <label>Nome</label>
                     <input type="text" name="nome" value="<%= usuario.getNome() %>" required>
 
                     <label>CPF</label>
-                    <input type="text" name="cpf" value="<%= usuario.getCpf() %>" disabled>
+                    <input type="text" name="cpf" value="<%= usuario.getCpf() %>" required>
 
                     <label>E-mail</label>
                     <input type="email" name="email" value="<%= usuario.getEmail() %>" required>
@@ -73,7 +73,7 @@
 
                     <div class="login-actions">
                         <button type="submit" class="btn">Salvar</button>
-                        <a href="${pageContext.request.contextPath}/usuarios/perfil.jsp?id=<%= usuario.getId() %>" class="btn ghost">Cancelar</a>
+                        <a href="${pageContext.request.contextPath}/admin/usuarios %>" class="btn ghost">Cancelar</a>
                     </div>
                 </form>
             <% } %>

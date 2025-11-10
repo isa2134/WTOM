@@ -56,7 +56,7 @@
             <% } %>
 
             <div class="login-actions">
-                <a href="${pageContext.request.contextPath}/EditarUsuarioController?id=<%= usuario.getId() %>" class="btn">Editar Dados</a>
+                <a href="editar.jsp?id=<%= usuario.getId() %>" class="btn">Editar Dados</a>
             </div>
         <% } %>
     </div>

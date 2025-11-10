@@ -1,4 +1,4 @@
-package wtom.controller.usuario;
+package wtom.controller.admin;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -8,13 +8,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
 import wtom.model.domain.Usuario;
-import wtom.model.domain.util.UsuarioTipo;
 import wtom.model.service.UsuarioService;
 import wtom.model.service.exception.NegocioException;
 import wtom.util.ValidadorUtil;
 
-@WebServlet("/EditarUsuarioController")
-public class EditarUsuarioController extends HttpServlet {
+@WebServlet("/adminEditarUsuario")
+public class AdminEditarUsuarioController extends HttpServlet {
 
     private final UsuarioService usuarioService = new UsuarioService();
 
@@ -22,11 +21,16 @@ public class EditarUsuarioController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         try {
-            HttpSession session = req.getSession();
-            Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+            String idParam = req.getParameter("id");
+            if (idParam == null || idParam.isEmpty()) {
+                throw new NegocioException("ID do usuário não fornecido.");
+            }
+
+            Long usuarioId = Long.parseLong(idParam);
+            Usuario usuario = usuarioService.buscarPorId(usuarioId);
 
             if (usuario == null) {
-                throw new NegocioException("Sessão expirada. Faça login novamente.");
+                throw new NegocioException("Usuário não encontrado.");
             }
 
             String nome = req.getParameter("nome");
@@ -35,12 +39,14 @@ public class EditarUsuarioController extends HttpServlet {
             String dataStr = req.getParameter("dataDeNascimento");
             String senha = req.getParameter("senha");
 
-            if (email == null || !ValidadorUtil.validarEmail(email))
+            if (email == null || !ValidadorUtil.validarEmail(email)) {
                 throw new NegocioException("E-mail inválido.");
+            }
 
             LocalDate data = LocalDate.parse(dataStr);
-            if (!ValidadorUtil.validarData(data))
+            if (!ValidadorUtil.validarData(data)) {
                 throw new NegocioException("Data de nascimento inválida.");
+            }
 
             usuario.setNome(nome);
             usuario.setTelefone(telefone);
@@ -50,23 +56,20 @@ public class EditarUsuarioController extends HttpServlet {
 
             usuarioService.atualizarUsuario(usuario);
 
-            Usuario atualizado = usuarioService.buscarPorId(usuario.getId());
-            session.setAttribute("usuarioLogado", atualizado);
-
-            session.setAttribute("sucesso", "Dados atualizados com sucesso!");
-            resp.sendRedirect(req.getContextPath() + "/usuarios/perfil.jsp");
+            req.setAttribute("sucesso", "Dados do usuário atualizados com sucesso!");
+            resp.sendRedirect(req.getContextPath() + "/admin/usuarios");
 
         } catch (NegocioException e) {
             req.setAttribute("erro", e.getMessage());
-            req.getRequestDispatcher("/usuarios/editar.jsp").forward(req, resp);
+            req.getRequestDispatcher("/admin/editar.jsp").forward(req, resp);
 
         } catch (DateTimeParseException e) {
             req.setAttribute("erro", "Formato de data inválido.");
-            req.getRequestDispatcher("/usuarios/editar.jsp").forward(req, resp);
+            req.getRequestDispatcher("/admin/editar.jsp").forward(req, resp);
 
         } catch (Exception e) {
             req.setAttribute("erro", "Erro inesperado: " + e.getMessage());
-            req.getRequestDispatcher("/usuarios/editar.jsp").forward(req, resp);
+            req.getRequestDispatcher("/admin/editar.jsp").forward(req, resp);
         }
     }
 }
