@@ -2,7 +2,6 @@ document.getElementById('sidebar-toggle').addEventListener('click', () => {
     document.getElementById('sidebar').classList.toggle('collapsed');
 });
 
-
 const toggleModal = (show) => {
     const modal = document.getElementById('role-select-modal');
     if (modal) {
@@ -11,16 +10,17 @@ const toggleModal = (show) => {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    const btnShowRegister = document.getElementById('btn-show-recover');
-    const btnCloseModal = document.getElementById('btn-close-modal');
-    const backdrop = document.querySelector('.modal-backdrop');
-
+    const btnShowRegister = document.getElementById('btn-show-recover'); 
+    const btnCloseModal = document.getElementById('btn-close-modal'); 
+    const backdrop = document.querySelector('.modal-backdrop'); 
+    
     const btnSelectAluno = document.getElementById('btn-select-aluno');
     const btnSelectProfessor = document.getElementById('btn-select-professor');
 
-
     if (btnShowRegister) {
-        btnShowRegister.addEventListener('click', () => toggleModal(true));
+        btnShowRegister.addEventListener('click', () => {
+            toggleModal(true); 
+        });
     }
 
     if (btnCloseModal) {
@@ -42,4 +42,29 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = 'usuarios/cadastro.jsp?tipo=PROFESSOR';
         });
     }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const fileInput = document.getElementById('arquivo');
+    const fileWrapper = document.getElementById('file-upload-box');
+    const fileNameDisplay = document.getElementById('file-name-display');
+
+    if (!fileInput || !fileWrapper || !fileNameDisplay) return;
+
+    fileWrapper.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (event) => {
+        const files = event.target.files;
+        if (files && files.length > 0) {
+            let fileName = files[0].name;
+            if (fileName.length > 35) fileName = fileName.substring(0, 32) + '...';
+            fileNameDisplay.textContent = `Arquivo selecionado: ${fileName}`;
+            fileNameDisplay.style.color = 'var(--accent)';
+        } else {
+            fileNameDisplay.textContent = 'Nenhum arquivo selecionado (PDF, Vídeo, Documento)';
+            fileNameDisplay.style.color = 'var(--muted)';
+        }
+    });
 });
