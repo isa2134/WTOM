@@ -132,9 +132,9 @@ public class InitDB {
         String sql = """
             INSERT IGNORE INTO usuario (cpf, nome, telefone, email, data_nascimento, senha, login, tipo)
             VALUES 
-                ('123.456.789-00', 'Administrador Geral', '11999999999', 'admin@gmail.com', '1980-01-01', 'admin123', 'admin@gmail.com', 'ADMINISTRADOR'),
-                ('987.654.321-00', 'Professor Padrão', '11888888888', 'professor@gmail.com', '1985-05-10', 'prof123', 'professor@gmail.com', 'PROFESSOR'),
-                ('111.222.333-44', 'Aluno Exemplo', '11777777777', 'aluno@gmail.com', '2005-08-15', 'aluno123', 'aluno@gmail.com', 'ALUNO');
+                ('123.456.789-00', 'Administrador', '11999999999', 'admin@gmail.com', '1980-01-01', 'admin123', 'admin@gmail.com', 'ADMINISTRADOR'),
+                ('987.654.321-00', 'Professor', '11888888888', 'professor@gmail.com', '1985-05-10', 'prof123', 'professor@gmail.com', 'PROFESSOR'),
+                ('111.222.333-44', 'Aluno', '11777777777', 'aluno@gmail.com', '2005-08-15', 'aluno123', 'aluno@gmail.com', 'ALUNO');
         """;
 
         try (Statement st = con.createStatement()) {

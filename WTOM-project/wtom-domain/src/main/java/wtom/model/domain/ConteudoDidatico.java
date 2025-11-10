@@ -44,7 +44,6 @@ public class ConteudoDidatico {
         return idProfessor;
     }
     
-    
     public void setTitulo(String titulo){
         this.titulo = titulo;
     }
