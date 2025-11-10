@@ -100,6 +100,23 @@ input{
     color:var(--accent)
 }
 
+.btn-light {
+    background-color: #e9f1f3;
+    color: #0e3c4b;
+    border: 1px solid #c9d6da;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.btn-light:hover {
+    background-color: #d8e7ea;
+    border-color: #b9cacc;
+}
+
 /* Ajuste para card com sombra para separação */
 .card{
     background:var(--surface);
@@ -236,4 +253,7 @@ input{
 nav.menu a.active {
   background: rgba(255,255,255,0.1); /* Um fundo sutil para destacar */
   transform: none; /* Remove a animação de hover */
+}
+.app{
+    min-width: 100%;
 }

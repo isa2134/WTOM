@@ -12,8 +12,8 @@
                     <c:otherwise>Adicionar conteúdo didático</c:otherwise>
                 </c:choose>
             </h2>
+            <a href="${pageContext.request.contextPath}/ConteudoController?acao=listarTodos" class="btn-light">Voltar</a>
         </header>
-        <a href="${pageContext.request.contextPath}/ConteudoController?acao=listarTodos" class="btn">Voltar</a>
         <div class="card">
         <p class="small muted">Preencha os campos abaixo e faça o upload do arquivo para criar um novo conteúdo.</p>
  

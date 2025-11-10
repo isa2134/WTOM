@@ -16,18 +16,12 @@ import wtom.model.domain.TipoNotificacao;
 
 public class OlimpiadaController {
 
-    /**
-     * 🟢 CSU 10: Verifica se o usuário logado tem permissão de ADMIN ou PROFESSOR.
-     * @param request A requisição HTTP.
-     * @return true se tiver permissão, false caso contrário.
-     */
     private static boolean verificarPermissao(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null) {
             return false;
         }
         
-        // 🎯 Usando a chave correta da sessão: "usuarioLogado"
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogado"); 
         
         if (usuario == null) {
@@ -39,10 +33,8 @@ public class OlimpiadaController {
         return tipoUsuario.equals("ADMINISTRADOR") || tipoUsuario.equals("PROFESSOR");
     }
     
-    // --- MÉTODOS DE GERENCIAMENTO ---
 
     public static String cadastrar(HttpServletRequest request) {
-        // 🔒 Aplicação do CSU 10
         if (!verificarPermissao(request)) {
             request.setAttribute("erro", "Acesso negado: Somente Administradores e Professores podem cadastrar olimpíadas.");
             return "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
@@ -92,7 +84,6 @@ public class OlimpiadaController {
 
 
     public static String alterar(HttpServletRequest request) {
-        // 🔒 Aplicação do CSU 10
         if (!verificarPermissao(request)) {
             request.setAttribute("erro", "Acesso negado: Somente Administradores e Professores podem alterar olimpíadas.");
             return "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
@@ -122,7 +113,6 @@ public class OlimpiadaController {
     }
 
     public static String excluir(HttpServletRequest request) {
-        // 🔒 Aplicação do CSU 10
         if (!verificarPermissao(request)) {
             request.setAttribute("erro", "Acesso negado: Somente Administradores e Professores podem excluir olimpíadas.");
             return "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";

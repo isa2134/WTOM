@@ -89,18 +89,16 @@ public class NotificacaoServlet extends HttpServlet {
         String mensagem = req.getParameter("mensagem");
         String alcanceStr = req.getParameter("alcance");
         
-        // 🟢 INÍCIO DA CORREÇÃO
-        String tipoStr = req.getParameter("tipo"); // 1. LÊ o tipo do formulário
+        String tipoStr = req.getParameter("tipo"); 
         
         AlcanceNotificacao alcance = AlcanceNotificacao.valueOf(alcanceStr);
-        TipoNotificacao tipo = TipoNotificacao.valueOf(tipoStr); // 2. CONVERTE para o Enum
+        TipoNotificacao tipo = TipoNotificacao.valueOf(tipoStr); 
         
         Notificacao n = new Notificacao();
         n.setTitulo(titulo);
         n.setMensagem(mensagem);
-        n.setTipo(tipo); // 3. ATRIBUI o TipoNotificacao. ISSO EVITA O NullPointerException.
+        n.setTipo(tipo); 
         n.setAlcance(alcance);
-        // 🟢 FIM DA CORREÇÃO
 
         if (alcance == AlcanceNotificacao.INDIVIDUAL) {
             String emailDest = req.getParameter("emailUsuario");
