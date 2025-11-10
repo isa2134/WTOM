@@ -13,7 +13,13 @@ public class ConexaoDB {
     private static final String password = "";
     
     public static Connection getConnection() throws SQLException{
-        try(Connection connection = DriverManager.getConnection(url, user, password);
+        try{
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        }catch(ClassNotFoundException e){
+            throw new SQLException("Driver JDBC nao encontrado!", e);
+        }
+        
+        try(Connection connection = DriverManager.getConnection(url + "mysql", user, password);
             Statement statement = connection.createStatement()){
             
             statement.executeUpdate("CREATE DATABASE IF NOT EXISTS " + db_name);
@@ -24,3 +30,4 @@ public class ConexaoDB {
         
     }  
 }
+

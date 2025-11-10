@@ -11,7 +11,8 @@
     <artifactId>wtom-dao-sql</artifactId>
     <packaging>jar</packaging>
     <properties>
-        <maven.compiler.release>24</maven.compiler.release>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <exec.mainClass>WtomDaoSql</exec.mainClass>
     </properties>
     
@@ -21,6 +22,7 @@
             <artifactId>wtom-domain</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wtom-common</artifactId>

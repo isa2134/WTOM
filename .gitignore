@@ -27,3 +27,8 @@ replay_pid*
 /WTOM-project/wtom-domain/target/
 /WTOM-project/wtom-dao-sql/target/
 /WTOM-project/wtom-service/target/
+/WTOM-project/wtom-common/target/
+/WTOM-project/wtom-domain/target/
+/WTOM-project/wtom-service/target/
+/WTOM-project/wtom-view-web/target/
+/WTOM-project/wtom-dao-sql/target/
