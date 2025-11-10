@@ -1,48 +1,82 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <jsp:include page="/includes/header.jsp">
-    <jsp:param name="pageTitle" value="Cadastro de Usu�rio" />
+    <jsp:param name="pageTitle" value="Cadastro de Usuário" />
 </jsp:include>
 
+<%
+    String tipoParam = request.getParameter("tipo");
+    String erro = (String) request.getAttribute("erro");
+%>
+
 <div class="page">
-    <header class="page-header">
-        <h2>Novo Usu�rio</h2>
-    </header>
+    <header class="page-header"><h2>Novo Usuário</h2></header>
 
-    <form action="${pageContext.request.contextPath}/usuarios" method="post" class="form-container">
+    <div class="form-container">
         <div class="card">
-            <label>Nome</label>
-            <input type="text" name="nome" required>
+            <% if (erro != null) { %>
+                <div class="alert alert-danger"><%= erro %></div>
+            <% } %>
 
-            <label>CPF</label>
-            <input type="text" name="cpf" required>
+            <form action="${pageContext.request.contextPath}/CadastroUsuarioController" method="post">
+                <label>Nome</label>
+                <input type="text" name="nome" value="<%= request.getParameter("nome") != null ? request.getParameter("nome") : "" %>" required>
 
-            <label>E-mail</label>
-            <input type="email" name="email" required>
+                <label>CPF</label>
+                <input type="text" name="cpf" value="<%= request.getParameter("cpf") != null ? request.getParameter("cpf") : "" %>" required>
 
-            <label>Telefone</label>
-            <input type="text" name="telefone">
+                <label>E-mail</label>
+                <input type="email" name="email" value="<%= request.getParameter("email") != null ? request.getParameter("email") : "" %>" required>
 
-            <label>Login</label>
-            <input type="text" name="login" required>
+                <label>Telefone</label>
+                <input type="text" name="telefone" value="<%= request.getParameter("telefone") != null ? request.getParameter("telefone") : "" %>">
 
-            <label>Senha</label>
-            <input type="password" name="senha" required>
+                <label>Login</label>
+                <input type="text" name="login" value="<%= request.getParameter("login") != null ? request.getParameter("login") : "" %>" required>
 
-            <label>Data de Nascimento</label>
-            <input type="date" name="dataDeNascimento" required>
+                <label>Senha</label>
+                <input type="password" name="senha" required>
 
-            <label>Tipo</label>
-            <select name="tipo" required>
-                <option value="ALUNO">Aluno</option>
-                <option value="PROFESSOR">Professor</option>
-                <option value="ADMINISTRADOR">Administrador</option>
-            </select>
+                <label>Data de Nascimento</label>
+                <input type="date" name="dataDeNascimento" value="<%= request.getParameter("dataDeNascimento") != null ? request.getParameter("dataDeNascimento") : "" %>" required>
 
-            <div class="login-actions">
-                <button type="submit" class="btn">Cadastrar</button>
-                <a href="${pageContext.request.contextPath}/usuarios" class="btn ghost">Voltar</a>
-            </div>
+                <label>Tipo</label>
+                <select name="tipo" id="tipoSelect" required>
+                    <option value="ALUNO" <%= "ALUNO".equals(tipoParam) ? "selected" : "" %>>Aluno</option>
+                    <option value="PROFESSOR" <%= "PROFESSOR".equals(tipoParam) ? "selected" : "" %>>Professor</option>
+                    <option value="ADMINISTRADOR" <%= "ADMINISTRADOR".equals(tipoParam) ? "selected" : "" %>>Administrador</option>
+                </select>
+
+                <div id="alunoFields" style="<%= "ALUNO".equals(tipoParam) ? "" : "display:none" %>">
+                    <label>Curso</label>
+                    <input type="text" name="curso" value="<%= request.getParameter("curso") != null ? request.getParameter("curso") : "" %>">
+                    <label>Série</label>
+                    <input type="text" name="serie" value="<%= request.getParameter("serie") != null ? request.getParameter("serie") : "" %>">
+                </div>
+
+                <div id="professorFields" style="<%= "PROFESSOR".equals(tipoParam) ? "" : "display:none" %>">
+                    <label>Área</label>
+                    <input type="text" name="area" value="<%= request.getParameter("area") != null ? request.getParameter("area") : "" %>">
+                </div>
+
+                <div class="login-actions">
+                    <button type="submit" class="btn">Cadastrar</button>
+                    <a href="${pageContext.request.contextPath}/index.jsp" class="btn ghost">Voltar</a>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const tipo = document.getElementById('tipoSelect');
+        const alunoFields = document.getElementById('alunoFields');
+        const profFields = document.getElementById('professorFields');
+        tipo.addEventListener('change', () => {
+            alunoFields.style.display = (tipo.value === 'ALUNO') ? '' : 'none';
+            profFields.style.display = (tipo.value === 'PROFESSOR') ? '' : 'none';
+        });
+    });
+</script>
 
 <jsp:include page="/includes/footer.jsp" />

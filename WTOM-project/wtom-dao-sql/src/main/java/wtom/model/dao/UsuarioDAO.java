@@ -22,7 +22,8 @@ public class UsuarioDAO {
         return instance;
     }
 
-    public void inserir(Usuario u) throws PersistenciaException {
+
+    public Usuario inserirERetornar(Usuario u) throws PersistenciaException {
         String sql = """
             INSERT INTO usuario (cpf, nome, telefone, email, data_nascimento, senha, login, tipo)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?);
@@ -41,13 +42,42 @@ public class UsuarioDAO {
             ps.setString(8, u.getTipo().name());
             ps.executeUpdate();
 
-            ResultSet rs = ps.getGeneratedKeys();
-            if (rs.next()) {
-                u.setId(rs.getLong(1));
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    u.setId(rs.getLong(1));
+                }
             }
 
+            return u;
+
         } catch (SQLException e) {
+            if (e.getMessage().contains("Duplicate") || e.getMessage().contains("UNIQUE")) {
+                throw new PersistenciaException("Já existe um usuário com este CPF, e-mail ou login.");
+            }
             throw new PersistenciaException("Erro ao inserir usuário: " + e.getMessage());
+        }
+    }
+
+   
+    public Usuario buscarPorCpfOuEmail(String cpf, String email) throws PersistenciaException {
+        String sql = "SELECT * FROM usuario WHERE cpf = ? OR email = ? LIMIT 1";
+
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, cpf);
+            ps.setString(2, email);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSet(rs);
+                }
+            }
+
+            return null;
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("Erro ao buscar usuário por CPF ou e-mail: " + e.getMessage());
         }
     }
 
@@ -68,7 +98,6 @@ public class UsuarioDAO {
         }
     }
 
-
     public List<Usuario> listarTodos() throws PersistenciaException {
         String sql = "SELECT * FROM usuario";
         List<Usuario> usuarios = new ArrayList<>();
@@ -80,6 +109,7 @@ public class UsuarioDAO {
             while (rs.next()) {
                 usuarios.add(mapResultSet(rs));
             }
+
         } catch (SQLException e) {
             throw new PersistenciaException("Erro ao listar usuários: " + e.getMessage());
         }
