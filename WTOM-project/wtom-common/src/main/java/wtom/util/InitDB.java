@@ -121,6 +121,8 @@ public void initNotificacoes() throws SQLException {
     try (Statement st = con.createStatement()) {
         st.executeUpdate(sql);
     }
+}
+
     public void initOlimpiadas() throws SQLException{
         String sql = "CREATE TABLE IF NOT EXISTS olimpiadas("
                 +"nome VARCHAR(100) NOT NULL, "
@@ -136,7 +138,6 @@ public void initNotificacoes() throws SQLException {
             st.executeUpdate(sql);
         }
     }
-    
     public void initInscricoes() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS inscricoes("
             + "nome VARCHAR(100) NOT NULL, "

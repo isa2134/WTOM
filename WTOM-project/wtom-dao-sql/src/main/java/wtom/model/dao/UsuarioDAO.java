@@ -85,22 +85,6 @@ public class UsuarioDAO {
         return null;
     }
     
-    public Usuario buscarPorLogin(String login) throws PersistenciaException {
-        String sql = "SELECT * FROM usuario WHERE login = ?";
-        try (Connection con = ConexaoDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, login);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapResultSet(rs);
-                }
-            }
-        } catch (SQLException e) {
-            throw new PersistenciaException("Erro ao buscar usuário por login: " + e.getMessage());
-        }
-        return null;
-    }
 
     public List<Usuario> listarTodos() throws PersistenciaException {
         String sql = "SELECT * FROM usuario";

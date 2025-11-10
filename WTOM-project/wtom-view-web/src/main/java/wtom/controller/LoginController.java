@@ -16,24 +16,17 @@ import wtom.model.domain.Usuario;
 public class LoginController extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        logar(request, response);
-    }
+protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    logout(request, response); // GET → logout
+}
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        logout(request, response);
-    }
+@Override
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    logar(request, response); // POST → login
+}
+
 
     private void logar(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
