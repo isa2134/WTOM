@@ -53,8 +53,16 @@ public class LoginController extends HttpServlet {
             }
 
             HttpSession sessao = request.getSession(true);
-            sessao.setAttribute("usuario", usuario); // A chave correta para o NotificacaoServlet
-            sessao.setAttribute("usuarioTipo", usuario.getTipo());
+            
+            // 🎯 Solução de Compatibilidade: Salvando com AMBAS as chaves
+            // 1. Chave Antiga: Para não quebrar o NotificacaoServlet/site (que esperam "usuario")
+            sessao.setAttribute("usuario", usuario); 
+            
+            // 2. Chave Nova: Para corrigir a permissão das Olimpíadas (JSP/Controller esperam "usuarioLogado")
+            sessao.setAttribute("usuarioLogado", usuario); 
+            
+            // Mantendo esta linha caso ela seja usada em outro lugar
+            sessao.setAttribute("usuarioTipo", usuario.getTipo()); 
 
             System.out.println("✅ LOGIN OK → " + usuario.getEmail());
             System.out.println("➡️ Redirecionando para: " + request.getContextPath() + "/core/menu.jsp");
