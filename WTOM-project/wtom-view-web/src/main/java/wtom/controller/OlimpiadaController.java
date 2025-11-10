@@ -5,30 +5,59 @@ import java.time.LocalDate;
 import java.util.List;
 import wtom.model.domain.Olimpiada;
 import wtom.model.service.GestaoOlimpiada;
+import wtom.model.service.GestaoNotificacao;
+import wtom.model.service.NotificacaoService;
+import wtom.model.dao.UsuarioDAO;
+import wtom.model.domain.AlcanceNotificacao;
+import wtom.model.domain.Notificacao;
+import wtom.model.domain.Usuario;
+import wtom.model.domain.TipoNotificacao;
 
 public class OlimpiadaController {
 
     public static String cadastrar(HttpServletRequest request) {
-        GestaoOlimpiada gestao = new GestaoOlimpiada();
+    GestaoOlimpiada gestao = new GestaoOlimpiada();
+    GestaoNotificacao gestaoNotificacao = new GestaoNotificacao();
 
+    try {
+        String nome = request.getParameter("nome");
+        String topico = request.getParameter("topico");
+        LocalDate dataLimite = LocalDate.parse(request.getParameter("data_limite"));
+        LocalDate dataProva = LocalDate.parse(request.getParameter("data_prova"));
+        String descricao = request.getParameter("descricao");
+        double peso = Double.parseDouble(request.getParameter("peso"));
+
+        Olimpiada nova = new Olimpiada(nome, topico, dataLimite, dataProva, descricao, peso);
+        gestao.cadastrarOlimpiada(nova); 
+
+        Notificacao notificacao = new Notificacao();
+        notificacao.setMensagem(
+            "Foi aberta a olimpíada \"" + nome + "\". " +
+            "Inscrições até " + dataLimite + " e prova em " + dataProva + "."
+        );
+        notificacao.setTipo(TipoNotificacao.OLIMPIADA_ABERTA);
+
+        AlcanceNotificacao alcance;
         try {
-            String nome = request.getParameter("nome");
-            String topico = request.getParameter("topico");
-            LocalDate dataLimite = LocalDate.parse(request.getParameter("data_limite"));
-            LocalDate dataProva = LocalDate.parse(request.getParameter("data_prova"));
-            String descricao = request.getParameter("descricao");
-            double peso = Double.parseDouble(request.getParameter("peso"));
-
-            Olimpiada nova = new Olimpiada(nome, topico, dataLimite, dataProva, descricao, peso);
-            gestao.cadastrarOlimpiada(nova);
-            return "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            request.setAttribute("erro", "Erro ao cadastrar olimpíada: " + e.getMessage());
-            return "/core/olimpiada/inserir.jsp";
+            String alcanceStr = request.getParameter("alcance");
+            alcance = (alcanceStr != null) ? AlcanceNotificacao.valueOf(alcanceStr) : AlcanceNotificacao.GERAL;
+        } catch (IllegalArgumentException e) {
+            alcance = AlcanceNotificacao.GERAL;
         }
+
+        notificacao.setAlcance(alcance);
+
+        gestaoNotificacao.selecionaAlcance(notificacao, alcance);
+
+        return "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        request.setAttribute("erro", "Erro ao cadastrar olimpíada: " + e.getMessage());
+        return "/core/olimpiada/inserir.jsp";
     }
+}
+
 
     public static String alterar(HttpServletRequest request) {
         GestaoOlimpiada gestao = new GestaoOlimpiada();
