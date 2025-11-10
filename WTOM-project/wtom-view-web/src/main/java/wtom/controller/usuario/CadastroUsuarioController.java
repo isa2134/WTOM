@@ -1,5 +1,6 @@
 package wtom.controller.usuario;
 
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -74,15 +75,18 @@ public class CadastroUsuarioController extends HttpServlet {
             if (tipo == UsuarioTipo.ALUNO) {
                 String curso = req.getParameter("curso");
                 String serie = req.getParameter("serie");
-                if (curso == null || curso.isBlank()) throw new NegocioException("Curso é obrigatório para alunos.");
-                if (serie == null || serie.isBlank()) throw new NegocioException("Série é obrigatória para alunos.");
+                if (curso == null || curso.isBlank())
+                    throw new NegocioException("Curso é obrigatório para alunos.");
+                if (serie == null || serie.isBlank())
+                    throw new NegocioException("Série é obrigatória para alunos.");
 
                 Aluno a = new Aluno(criado, curso, serie);
                 alunoService.cadastrarAluno(a);
 
             } else if (tipo == UsuarioTipo.PROFESSOR) {
                 String area = req.getParameter("area");
-                if (area == null || area.isBlank()) throw new NegocioException("Área é obrigatória para professores.");
+                if (area == null || area.isBlank())
+                    throw new NegocioException("Área é obrigatória para professores.");
 
                 Professor p = new Professor(criado, area);
                 professorService.cadastrarProfessor(p);
@@ -91,7 +95,8 @@ public class CadastroUsuarioController extends HttpServlet {
             HttpSession session = req.getSession();
             session.setAttribute("usuarioLogado", criado);
             session.setAttribute("sucesso", "Usuário cadastrado com sucesso!");
-            resp.sendRedirect(req.getContextPath() + "/PerfilUsuarioController");
+
+            resp.sendRedirect(req.getContextPath() + "/core/menu.jsp");
 
         } catch (NegocioException e) {
             req.setAttribute("erro", e.getMessage());
