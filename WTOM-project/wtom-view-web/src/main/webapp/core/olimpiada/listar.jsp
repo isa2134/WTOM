@@ -189,8 +189,7 @@
                             <p><strong>Peso:</strong> ${o.pesoOlimpiada}</p>
                             <p><strong>Descrição:</strong> ${o.descricao}</p>
 
-                            <%-- 🟢 CSU 10: Mostra botões de gerência apenas para ADMIN e PROFESSOR --%>
-                            <c:if test="${usuarioLogado.tipo eq 'ADMINISTRADOR' or usuarioLogado.tipo eq 'PROFESSOR'}">
+                          
                                 <form class="form-excluir" action="olimpiada" method="post" style="display:inline;">
                                     <input type="hidden" name="acao" value="excluirOlimpiada">
                                     <input type="hidden" name="idOlimpiada" value="${o.idOlimpiada}"> 
@@ -202,7 +201,6 @@
                                     <input type="hidden" name="idOlimpiada" value="${o.idOlimpiada}"> 
                                     <button type="submit" class="btn">Alterar</button>
                                 </form>
-                            </c:if>
                         </div>
                     </c:forEach>
                 </c:when>
