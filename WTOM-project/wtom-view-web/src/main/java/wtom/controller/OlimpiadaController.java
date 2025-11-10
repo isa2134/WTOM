@@ -1,22 +1,22 @@
 package wtom.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession; 
+//import jakarta.servlet.http.HttpSession; 
 import java.time.LocalDate;
-import java.util.List;
+//import java.util.List;
 import wtom.model.domain.Olimpiada;
 import wtom.model.service.GestaoOlimpiada;
 import wtom.model.service.GestaoNotificacao;
-import wtom.model.service.NotificacaoService;
-import wtom.model.dao.UsuarioDAO;
+//import wtom.model.service.NotificacaoService;
+//import wtom.model.dao.UsuarioDAO;
 import wtom.model.domain.AlcanceNotificacao;
 import wtom.model.domain.Notificacao;
-import wtom.model.domain.Usuario;
+//import wtom.model.domain.Usuario;
 import wtom.model.domain.TipoNotificacao;
 
 public class OlimpiadaController {
 
-    private static boolean verificarPermissao(HttpServletRequest request) {
+    /*private static boolean verificarPermissao(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null) {
             return false;
@@ -30,14 +30,14 @@ public class OlimpiadaController {
         
         String tipoUsuario = usuario.getTipo().toString(); 
         return tipoUsuario.equals("ADMINISTRADOR") || tipoUsuario.equals("PROFESSOR");
-    }
+    }*/
     
 
     public static String cadastrar(HttpServletRequest request) {
-        if (!verificarPermissao(request)) {
+        /*if (!verificarPermissao(request)) {
             request.setAttribute("erro", "Acesso negado: Somente Administradores e Professores podem cadastrar olimpíadas.");
             return "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
-        }
+        }*/
         
         GestaoOlimpiada gestao = new GestaoOlimpiada();
         GestaoNotificacao gestaoNotificacao = new GestaoNotificacao();
@@ -83,10 +83,11 @@ public class OlimpiadaController {
 
 
     public static String alterar(HttpServletRequest request) {
-        if (!verificarPermissao(request)) {
+        /*if (!verificarPermissao(request)) {
             request.setAttribute("erro", "Acesso negado: Somente Administradores e Professores podem alterar olimpíadas.");
+            System.out.println("não tem per  ");
             return "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
-        }
+        }*/
         
         GestaoOlimpiada gestao = new GestaoOlimpiada();
 
@@ -112,16 +113,17 @@ public class OlimpiadaController {
     }
 
     public static String excluir(HttpServletRequest request) {
-        if (!verificarPermissao(request)) {
+        /*if (!verificarPermissao(request)) {
+            System.out.println("não tem permissão de excluir!");
             request.setAttribute("erro", "Acesso negado: Somente Administradores e Professores podem excluir olimpíadas.");
             return "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
-        }
+        }*/
         
         try {
             int id = Integer.parseInt(request.getParameter("idOlimpiada"));
             GestaoOlimpiada gestao = new GestaoOlimpiada();
             gestao.excluirOlimpiada(id);
-
+            System.out.println("excluiu!");
             return "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
 
         } catch (Exception e) {
