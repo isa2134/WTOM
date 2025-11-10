@@ -87,6 +87,7 @@ public class ConteudoController extends HttpServlet {
 
         String caminhoRelativo = "/uploads/" + nomeArquivo;
         System.out.println("gravou o arquivo no servidor");
+        
         GestaoNotificacao gestaoNotificacao = new GestaoNotificacao();
         Notificacao notificacao = new Notificacao();
         notificacao.setMensagem(
@@ -103,7 +104,6 @@ public class ConteudoController extends HttpServlet {
         }
 
         notificacao.setAlcance(alcance);
-
         gestaoNotificacao.selecionaAlcance(notificacao, alcance);
 
         try {
@@ -131,7 +131,7 @@ public class ConteudoController extends HttpServlet {
             String mensagem = (String) request.getSession().getAttribute("mensagemSucesso");
             if (mensagem != null) {
                 request.setAttribute("mensagemSucesso", mensagem);
-                request.getSession().removeAttribute("mensagemSucesso"); // limpa a mensagem da sessão
+                request.getSession().removeAttribute("mensagemSucesso"); 
             }
 
             RequestDispatcher rd = request.getRequestDispatcher("/core/conteudos/listar.jsp");
@@ -203,7 +203,6 @@ public class ConteudoController extends HttpServlet {
             try {
                 arquivo = request.getPart("arquivo");
             } catch (Exception ignore) {
-                // Se não for multipart, ignora
             }
 
             if (arquivo != null && arquivo.getSize() > 0) {

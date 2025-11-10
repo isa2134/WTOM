@@ -48,7 +48,7 @@
                     <input type="password" name="senha" id="login-pass" placeholder="••••••" required>
                     <div class="login-actions">
                       <button class="btn" type="submit">Entrar</button>
-                      <button class="btn ghost" type="button" id="btn-show-recover">Cadastrar</button>
+                      <button class="btn ghost" type="button" id="btn-show-recover" >Cadastrar</button>
                     </div>
                   </form>
                 </div>

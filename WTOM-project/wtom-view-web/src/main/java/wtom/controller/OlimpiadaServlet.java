@@ -67,7 +67,6 @@ public class OlimpiadaServlet extends HttpServlet {
                     break;
 
                 default:
-                    // Comparação com enum de forma correta
                     if (usuario.getTipo() == UsuarioTipo.ADMINISTRADOR || usuario.getTipo() == UsuarioTipo.PROFESSOR) {
                         request.setAttribute("olimpiadas", gestaoOlimpiada.pesquisarTodasOlimpiadas());
                         jsp = "/core/olimpiada/listar.jsp";
@@ -80,7 +79,6 @@ public class OlimpiadaServlet extends HttpServlet {
                     break;
             }
 
-            // Detecta se precisa de redirect ou forward
             if (jsp.startsWith("redirect:")) {
                 String path = jsp.substring("redirect:".length());
                 response.sendRedirect(request.getContextPath() + path);

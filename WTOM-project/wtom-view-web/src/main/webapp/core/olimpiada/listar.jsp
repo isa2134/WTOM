@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/menu.css">
 
     <style>
-        /* ====== LAYOUT GERAL ====== */
         body {
             font-family: Arial, sans-serif;
             background-color: #f6f6f6;
@@ -20,7 +19,6 @@
             display: flex;
         }
 
-        /* ====== MENU LATERAL ====== */
         .sidebar {
             width: 240px;
             background-color: #0F4C5C;

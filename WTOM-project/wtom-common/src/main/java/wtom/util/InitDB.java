@@ -1,18 +1,9 @@
 package wtom.util;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.sql.Date;
-import java.util.List;
 import wtom.dao.exception.PersistenciaException;
-import wtom.model.domain.Olimpiada;
-import wtom.util.ConexaoDB;
 
 public class InitDB {
 
@@ -100,26 +91,57 @@ public class InitDB {
         }
     }
 
-public void initNotificacoes() throws SQLException {
-    String sql = """
-        CREATE TABLE IF NOT EXISTS notificacao (
-            id BIGINT AUTO_INCREMENT PRIMARY KEY,
-            titulo VARCHAR(255) NOT NULL,
-            mensagem TEXT NOT NULL,
-            data_do_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            tipo ENUM('OLIMPIADA_ABERTA', 'REUNIAO_AGENDADA', 'REUNIAO_CHEGANDO',
-                      'DESAFIO_SEMANAL', 'CORRECAO_DE_EXERCICIO', 'OUTROS') NOT NULL,
-            alcance ENUM('GERAL', 'INDIVIDUAL', 'ALUNOS', 'PROFESSORES') NOT NULL,
-            lida BOOLEAN DEFAULT FALSE,
-            destinatario_id BIGINT,
-            FOREIGN KEY (destinatario_id) REFERENCES usuario(id)
-        );
-    """;
+    public void initNotificacoes() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS notificacao (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                titulo VARCHAR(255) NOT NULL,
+                mensagem TEXT NOT NULL,
+                data_do_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                tipo ENUM('OLIMPIADA_ABERTA', 'REUNIAO_AGENDADA', 'REUNIAO_CHEGANDO',
+                          'DESAFIO_SEMANAL', 'CORRECAO_DE_EXERCICIO', 'OUTROS') NOT NULL,
+                alcance ENUM('GERAL', 'INDIVIDUAL', 'ALUNOS', 'PROFESSORES') NOT NULL,
+                lida BOOLEAN DEFAULT FALSE,
+                destinatario_id BIGINT,
+                FOREIGN KEY (destinatario_id) REFERENCES usuario(id)
+            );
+        """;
 
-    try (Statement st = con.createStatement()) {
-        st.executeUpdate(sql);
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
     }
-}
+    
+    public void initOlimpiadas() throws SQLException{
+        String sql = "CREATE TABLE IF NOT EXISTS olimpiadas("
+                +"nome VARCHAR(100) NOT NULL, "
+                +"id INT PRIMARY KEY, "
+                +"topico VARCHAR(100) NOT NULL, "
+                +"data_limite_inscricao DATE NOT NULL, "
+                +"data_prova DATE NOT NULL, "
+                +"descricao VARCHAR(100) NOT NULL, "
+                +"peso DOUBLE NOT NULL"
+                +")";
+
+        try(Statement st = con.createStatement()){
+            st.executeUpdate(sql);
+        }
+    }
+    
+    public void initUsuariosPadrao() throws SQLException {
+        String sql = """
+            INSERT IGNORE INTO usuario (cpf, nome, telefone, email, data_nascimento, senha, login, tipo)
+            VALUES 
+                ('123.456.789-00', 'Administrador Geral', '11999999999', 'admin@gmail.com', '1980-01-01', 'admin123', 'admin@gmail.com', 'ADMINISTRADOR'),
+                ('987.654.321-00', 'Professor Padrão', '11888888888', 'professor@gmail.com', '1985-05-10', 'prof123', 'professor@gmail.com', 'PROFESSOR'),
+                ('111.222.333-44', 'Aluno Exemplo', '11777777777', 'aluno@gmail.com', '2005-08-15', 'aluno123', 'aluno@gmail.com', 'ALUNO');
+        """;
+
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
+
 
 
 
@@ -131,27 +153,12 @@ public void initNotificacoes() throws SQLException {
             initConteudos();     
             initNotificacoes();  
             initOlimpiadas();
+            initUsuariosPadrao();
         } catch (SQLException e) {
             throw new PersistenciaException("erro ao inicializar tabelas: " + e.getMessage());
         }
     }
-    
-        public void initOlimpiadas() throws SQLException{
-        String sql = "CREATE TABLE IF NOT EXISTS olimpiadas("
-                +"nome VARCHAR(100) NOT NULL, "
-                +"id INT PRIMARY KEY, "
-                +"topico VARCHAR(100) NOT NULL, "
-                +"data_limite_inscricao DATE NOT NULL, "
-                +"data_prova DATE NOT NULL, "
-                +"descricao VARCHAR(100) NOT NULL, "
-                +"peso DOUBLE NOT NULL"
-                +")";
-        
-        try(Statement st = con.createStatement()){
-            st.executeUpdate(sql);
-        }
-    }
-
+ 
     public static void main(String[] args) throws PersistenciaException {
         try {
             Connection con = ConexaoDB.getConnection();
