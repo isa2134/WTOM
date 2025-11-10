@@ -56,7 +56,7 @@
 <body>
   <h1>Cadastrar nova Olimpíada</h1>
 
-  <form action="${pageContext.request.contextPath}/main" method="post">
+  <form action="${pageContext.request.contextPath}/olimpiada" method="post">
     <input type="hidden" name="acao" value="cadastrarOlimpiada">
 
     <label>Nome: <input name="nome" required></label>
@@ -67,7 +67,7 @@
     <label>Descrição: <input name="descricao" required></label>
 
     <div class="actions">
-      <button type="button" class="btn cancelar" onclick="window.location.href='${pageContext.request.contextPath}/main'">Cancelar</button>
+      <button type="button" class="btn cancelar" onclick="window.location.href='${pageContext.request.contextPath}/olimpiada'">Cancelar</button>
       <button type="submit" class="btn">Cadastrar</button>
     </div>
   </form>

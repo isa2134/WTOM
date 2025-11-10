@@ -21,7 +21,7 @@
 
 <h1>Alterar Olimpíada</h1>
 
-<form action="main" method="post">
+<form action="olimpiada" method="post">
     <input type="hidden" name="acao" value="editarOlimpiada">
     <input type="hidden" name="idOlimpiada" value="${olimpiada.getIdOlimpiada()}">
 

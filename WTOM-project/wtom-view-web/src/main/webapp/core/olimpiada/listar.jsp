@@ -1,39 +1,116 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@taglib uri="jakarta.tags.core" prefix="c" %>
-<%@taglib uri="jakarta.tags.fmt" prefix="fmt" %>
-<%@taglib uri="jakarta.tags.functions" prefix="fn" %>
-<%@taglib uri="jakarta.tags.xml" prefix="x" %>
-<%@taglib uri="jakarta.tags.sql" prefix="sql"%>
 
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <title>WTOM - Olimpíadas</title>
+
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/menu.css">
+
   <style>
+    /* ====== LAYOUT GERAL ====== */
     body {
       font-family: Arial, sans-serif;
       background-color: #f6f6f6;
-      margin: 20px;
+      margin: 0;
+      display: flex;
+    }
+
+    /* ====== MENU LATERAL ====== */
+    .sidebar {
+      width: 240px;
+      background-color: #0F4C5C;
+      color: white;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 20px;
+    }
+
+    .sidebar .brand .logo {
+      background-color: #FFD166;
+      color: #0F4C5C;
+      font-weight: bold;
+      font-size: 22px;
+      padding: 10px 20px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 100%;
+      padding: 0 20px;
+    }
+
+    .menu a {
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+      background-color: rgba(255,255,255,0.1);
+      padding: 10px 15px;
+      border-radius: 8px;
+      transition: 0.3s;
+    }
+
+    .menu a:hover, .menu a.active {
+      background-color: rgba(255,255,255,0.25);
+    }
+
+    /* ====== CONTEÚDO PRINCIPAL ====== */
+    main {
+      flex: 1;
+      margin-left: 260px; /* espaço pro menu lateral */
+      padding: 30px;
     }
 
     h1 {
       color: #0F4C5C;
     }
 
+    /* ====== CARDS DE OLIMPÍADA ====== */
     .olimpiada-card {
       border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 12px;
-      margin: 8px 0;
-      background-color: #fafafa;
+      border-radius: 10px;
+      padding: 16px;
+      margin: 12px 0;
+      background-color: #ffffff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
     }
 
     .olimpiada-card h4 {
-      margin: 0;
+      margin: 0 0 8px;
       color: #0F4C5C;
     }
 
+    /* ====== BOTÕES ====== */
+    .btn {
+      background-color: #0F4C5C;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .btn:hover {
+      background-color: #09637b;
+    }
+
+    .btn.cancelar {
+      background-color: #ccc;
+      color: #333;
+    }
+
+    /* ====== MODAL ====== */
     .modal {
       display: none;
       position: fixed;
@@ -69,97 +146,90 @@
       margin-top: 15px;
     }
 
-    .btn {
-      background-color: #0F4C5C;
-      color: white;
+    hr {
       border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .btn:hover {
-      background-color: #09637b;
-    }
-
-    .btn.cancelar {
+      height: 1px;
       background-color: #ccc;
-      color: #333;
-    }
-
-    label {
-      display: block;
-      margin-top: 8px;
-    }
-
-    input {
-      width: 100%;
-      padding: 6px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      margin-top: 4px;
+      margin: 20px 0;
     }
   </style>
 </head>
+
 <body>
+  <!-- MENU LATERAL -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">TOM</div>
+    </div>
+    <nav class="menu">
+      <a href="menu.jsp" class="active"><span>Início</span></a>
+      <a href="#"><span>Olimpíadas</span></a>
+      <a href="#"><span>Ranking</span></a>
+      <a href="conteudos/listar.jsp"><span>Materiais</span></a>
+      <a href="#"><span>Dúvidas</span></a>
+      <a href="/core/Notificacao.jsp"><span>Notificações</span></a>
+      <a href="#"><span>Perfil</span></a>
+    </nav>
+  </aside>
 
-  <h1>Lista de Olimpíadas</h1>
+  <!-- CONTEÚDO -->
+  <main>
+    <h1>Lista de Olimpíadas</h1>
 
-  <div id="lista-olimp">
-    <c:choose>
-      <c:when test="${not empty olimpiadas}">
-        <c:forEach var="o" items="${olimpiadas}">
-          <div class="olimpiada-card">
-            <h4>${o.nome}</h4>
-            <p><strong>Assunto:</strong> ${o.topico}</p>
-            <p><strong>Data limite:</strong> ${o.dataLimiteInscricao}</p>
-            <p><strong>Prova:</strong> ${o.dataProva}</p>
-            <p><strong>Peso:</strong> ${o.pesoOlimpiada}</p>
-            <p><strong>Descrição:</strong> ${o.descricao}</p>
+    <div id="lista-olimp">
+      <c:choose>
+        <c:when test="${not empty olimpiadas}">
+          <c:forEach var="o" items="${olimpiadas}">
+            <div class="olimpiada-card">
+              <h4>${o.nome}</h4>
+              <p><strong>Assunto:</strong> ${o.topico}</p>
+              <p><strong>Data limite:</strong> ${o.dataLimiteInscricao}</p>
+              <p><strong>Prova:</strong> ${o.dataProva}</p>
+              <p><strong>Peso:</strong> ${o.pesoOlimpiada}</p>
+              <p><strong>Descrição:</strong> ${o.descricao}</p>
 
-            <form class="form-excluir" action="main" method="post" style="display:inline;">
-              <input type="hidden" name="acao" value="excluirOlimpiada">
-              <input type="hidden" name="idOlimpiada" value="${o.getIdOlimpiada()}">
-              <button type="button" class="btn btn-excluir" data-nome="${o.getNome()}">Excluir</button>
-            </form>
+              <form class="form-excluir" action="olimpiada" method="post" style="display:inline;">
+                <input type="hidden" name="acao" value="excluirOlimpiada">
+                <input type="hidden" name="idOlimpiada" value="${o.IdOlimpiada}">
+                <button type="button" class="btn btn-excluir" data-nome="${o.nome}">Excluir</button>
+              </form>
 
-            <form action="main" method="post" style="display:inline;">
-              <input type="hidden" name="acao" value="editarOlimpiadaForm">
-              <input type="hidden" name="idOlimpiada" value="${o.getIdOlimpiada()}">
-              <button type="submit" class="btn">Alterar</button>
-            </form>
+              <form action="olimpiada" method="post" style="display:inline;">
+                <input type="hidden" name="acao" value="editarOlimpiadaForm">
+                <input type="hidden" name="idOlimpiada" value="${o.getIdOlimpiada()}">
+                <button type="submit" class="btn">Alterar</button>
+              </form>
+            </div>
+          </c:forEach>
+        </c:when>
+        <c:otherwise>
+          <p>Nenhuma olimpíada cadastrada.</p>
+        </c:otherwise>
+      </c:choose>
+    </div>
 
-          </div>
-        </c:forEach>
-      </c:when>
-      <c:otherwise>
-        <p>Nenhuma olimpíada cadastrada.</p>
-      </c:otherwise>
-    </c:choose>
-  </div>
+    <hr>
 
-  <hr>
+    <button class="btn" onclick="cadastrarOlimpiada()">Cadastrar nova Olimpíada</button>
 
-  <button class="btn" onclick="cadastrarOlimpiada()">Cadastrar nova Olimpíada</button>
-
-  <!-- Modal de confirmação -->
-  <div id="modalConfirmacao" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">Confirmar Exclusão</div>
-      <p id="textoConfirmacao">Tem certeza que deseja excluir esta olimpíada?</p>
-      <div class="modal-actions">
-        <button class="btn cancelar" id="cancelarExclusao">Cancelar</button>
-        <button class="btn" id="confirmarExclusao">Excluir</button>
+    <!-- MODAL -->
+    <div id="modalConfirmacao" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">Confirmar Exclusão</div>
+        <p id="textoConfirmacao">Tem certeza que deseja excluir esta olimpíada?</p>
+        <div class="modal-actions">
+          <button class="btn cancelar" id="cancelarExclusao">Cancelar</button>
+          <button class="btn" id="confirmarExclusao">Excluir</button>
+        </div>
       </div>
     </div>
-  </div>
+  </main>
 
   <script>
     const modal = document.getElementById("modalConfirmacao");
     const cancelarBtn = document.getElementById("cancelarExclusao");
     const confirmarBtn = document.getElementById("confirmarExclusao");
     const textoConfirmacao = document.getElementById("textoConfirmacao");
-
     let formParaExcluir = null;
 
     document.querySelectorAll(".btn-excluir").forEach(btn => {
@@ -181,15 +251,12 @@
     });
 
     window.addEventListener("click", (event) => {
-      if (event.target === modal) {
-        modal.style.display = "none";
-      }
+      if (event.target === modal) modal.style.display = "none";
     });
 
     function cadastrarOlimpiada() {
-      window.location.href = "${pageContext.request.contextPath}/core/olimpiada/inserir.jsp";;
+      window.location.href = "${pageContext.request.contextPath}/core/olimpiada/inserir.jsp";
     }
   </script>
-
 </body>
 </html>

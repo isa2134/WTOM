@@ -98,7 +98,7 @@
 
     function voltar() {
       // retorna à página principal (professor/admin ou menu principal)
-      window.location.href = "main";
+      window.location.href = "olimpiada";
     }
   </script>
 
