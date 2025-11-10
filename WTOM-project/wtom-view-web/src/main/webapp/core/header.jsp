@@ -21,12 +21,12 @@
             </div>
 
             <nav class="menu">
-                <a href="menu.jsp" class="active"> <span>Início</span></a>
-                <a href=""> <span>Olimpíadas</span></a>
-                <a href=""> <span>Ranking</span></a>
+                <a href="${pageContext.request.contextPath}/"> <span>Início</span></a>
+                <a href="${pageContext.request.contextPath}/olimpiada"> <span>Olimpíadas</span></a>
+                <a href="${pageContext.request.contextPath}/ranking"> <span>Ranking</span></a>
                 <a href="${pageContext.request.contextPath}/ConteudoController?acao=listarTodos"><span>Materiais</span></a>
-                <a href=""> <span>Dúvidas</span></a>
-                <a href="${pageContext.request.contextPath}/Notificacao.jsp" class="active"> <span>Notificações</span></a>
-                <a href=""> <span>Perfil</span></a>
+                <a href="${pageContext.request.contextPath}/duvidas"> <span>Dúvidas</span></a>
+                <a href="${pageContext.request.contextPath}/notificacao"> <span>Notificações</span></a>
+                <a href="${pageContext.request.contextPath}/perfil"> <span>Perfil</span></a>
             </nav>
         </aside>
