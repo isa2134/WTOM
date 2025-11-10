@@ -26,10 +26,7 @@ public class OlimpiadaServlet extends HttpServlet {
             switch (acao == null ? "" : acao) {
 
                 case "cadastrarOlimpiada":
-                    // 🟢 CORRIGIDO: Implementação do padrão PRG (Post/Redirect/Get)
-                    // 1. Executa a lógica de cadastro
                     OlimpiadaController.cadastrar(request);
-                    // 2. Redireciona para a ação de listagem para recarregar os dados
                     jsp = "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
                     break;
 
@@ -44,24 +41,25 @@ public class OlimpiadaServlet extends HttpServlet {
                     break;
 
                 case "excluirOlimpiada":
-                    // 🟢 AJUSTADO: Aplica PRG também na exclusão
                     OlimpiadaController.excluir(request);
                     jsp = "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
                     break;
 
                 case "listarOlimpiadaAluno":
+                    // Já usa o método correto (filtrado pelo Service)
                     request.setAttribute("olimpiadas", gestaoOlimpiada.pesquisarOlimpiadasAtivas());
                     jsp = "/core/olimpiada/listarAluno.jsp";
                     break;
+
                 case "listarOlimpiadaAdminProf":
-                    // Esta é a ação que recarrega a lista completa
-                    request.setAttribute("olimpiadas", gestaoOlimpiada.pesquisarTodasOlimpiadas());
+                    // 🎯 CORREÇÃO: Usa o método Service que agora chama o DAO.pesquisar() filtrado.
+                    request.setAttribute("olimpiadas", gestaoOlimpiada.pesquisarOlimpiadasAtivas()); 
                     jsp = "/core/olimpiada/listar.jsp";
                     break;
 
                 default:
-                    // Carrega a lista por padrão
-                    request.setAttribute("olimpiadas", gestaoOlimpiada.pesquisarTodasOlimpiadas());
+                    // 🎯 CORREÇÃO: Usa o método Service que agora chama o DAO.pesquisar() filtrado.
+                    request.setAttribute("olimpiadas", gestaoOlimpiada.pesquisarOlimpiadasAtivas());
                     jsp = "/core/olimpiada/listar.jsp";
                     break;
             }
@@ -81,7 +79,8 @@ public class OlimpiadaServlet extends HttpServlet {
             
             // Tenta recarregar a lista mesmo em caso de erro para evitar ClassNotFoundException no JSP
             try {
-                request.setAttribute("olimpiadas", gestaoOlimpiada.pesquisarTodasOlimpiadas());
+                // 🎯 AJUSTE: Tentando carregar a lista FILTRADA em caso de erro
+                request.setAttribute("olimpiadas", gestaoOlimpiada.pesquisarOlimpiadasAtivas());
             } catch (Exception ignore) {}
             
             RequestDispatcher rd = request.getRequestDispatcher("/core/olimpiada/listar.jsp");

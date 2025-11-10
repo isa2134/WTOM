@@ -189,19 +189,20 @@
                             <p><strong>Peso:</strong> ${o.pesoOlimpiada}</p>
                             <p><strong>Descrição:</strong> ${o.descricao}</p>
 
-                            <form class="form-excluir" action="olimpiada" method="post" style="display:inline;">
-                                <input type="hidden" name="acao" value="excluirOlimpiada">
-                                <%-- 🟢 CORRIGIDO: Usando a convenção JavaBean (o.idOlimpiada) --%>
-                                <input type="hidden" name="idOlimpiada" value="${o.idOlimpiada}"> 
-                                <button type="button" class="btn btn-excluir" data-nome="${o.nome}">Excluir</button>
-                            </form>
+                            <%-- 🟢 CSU 10: Mostra botões de gerência apenas para ADMIN e PROFESSOR --%>
+                            <c:if test="${usuarioLogado.tipo eq 'ADMINISTRADOR' or usuarioLogado.tipo eq 'PROFESSOR'}">
+                                <form class="form-excluir" action="olimpiada" method="post" style="display:inline;">
+                                    <input type="hidden" name="acao" value="excluirOlimpiada">
+                                    <input type="hidden" name="idOlimpiada" value="${o.idOlimpiada}"> 
+                                    <button type="button" class="btn btn-excluir" data-nome="${o.nome}">Excluir</button>
+                                </form>
 
-                            <form action="olimpiada" method="post" style="display:inline;">
-                                <input type="hidden" name="acao" value="editarOlimpiadaForm">
-                                <%-- 🟢 CORRIGIDO: Usando a convenção JavaBean (o.idOlimpiada) --%>
-                                <input type="hidden" name="idOlimpiada" value="${o.idOlimpiada}"> 
-                                <button type="submit" class="btn">Alterar</button>
-                            </form>
+                                <form action="olimpiada" method="post" style="display:inline;">
+                                    <input type="hidden" name="acao" value="editarOlimpiadaForm">
+                                    <input type="hidden" name="idOlimpiada" value="${o.idOlimpiada}"> 
+                                    <button type="submit" class="btn">Alterar</button>
+                                </form>
+                            </c:if>
                         </div>
                     </c:forEach>
                 </c:when>
@@ -213,7 +214,10 @@
 
         <hr>
 
-        <button class="btn" onclick="cadastrarOlimpiada()">Cadastrar nova Olimpíada</button>
+        <%-- 🟢 CSU 10: Mostra botão de cadastro apenas para ADMIN e PROFESSOR --%>
+        <c:if test="${usuarioLogado.tipo eq 'ADMINISTRADOR' or usuarioLogado.tipo eq 'PROFESSOR'}">
+            <button class="btn" onclick="cadastrarOlimpiada()">Cadastrar nova Olimpíada</button>
+        </c:if>
 
         <div id="modalConfirmacao" class="modal">
             <div class="modal-content">

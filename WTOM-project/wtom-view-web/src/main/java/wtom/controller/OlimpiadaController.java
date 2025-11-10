@@ -1,6 +1,7 @@
 package wtom.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession; 
 import java.time.LocalDate;
 import java.util.List;
 import wtom.model.domain.Olimpiada;
@@ -15,51 +16,88 @@ import wtom.model.domain.TipoNotificacao;
 
 public class OlimpiadaController {
 
-    public static String cadastrar(HttpServletRequest request) {
-    GestaoOlimpiada gestao = new GestaoOlimpiada();
-    GestaoNotificacao gestaoNotificacao = new GestaoNotificacao();
-
-    try {
-        String nome = request.getParameter("nome");
-        String topico = request.getParameter("topico");
-        LocalDate dataLimite = LocalDate.parse(request.getParameter("data_limite"));
-        LocalDate dataProva = LocalDate.parse(request.getParameter("data_prova"));
-        String descricao = request.getParameter("descricao");
-        double peso = Double.parseDouble(request.getParameter("peso"));
-
-        Olimpiada nova = new Olimpiada(nome, topico, dataLimite, dataProva, descricao, peso);
-        gestao.cadastrarOlimpiada(nova); 
-
-        Notificacao notificacao = new Notificacao();
-        notificacao.setMensagem(
-            "Foi aberta a olimpíada \"" + nome + "\". " +
-            "Inscrições até " + dataLimite + " e prova em " + dataProva + "."
-        );
-        notificacao.setTipo(TipoNotificacao.OLIMPIADA_ABERTA);
-
-        AlcanceNotificacao alcance;
-        try {
-            String alcanceStr = request.getParameter("alcance");
-            alcance = (alcanceStr != null) ? AlcanceNotificacao.valueOf(alcanceStr) : AlcanceNotificacao.GERAL;
-        } catch (IllegalArgumentException e) {
-            alcance = AlcanceNotificacao.GERAL;
+    /**
+     * 🟢 CSU 10: Verifica se o usuário logado tem permissão de ADMIN ou PROFESSOR.
+     * @param request A requisição HTTP.
+     * @return true se tiver permissão, false caso contrário.
+     */
+    private static boolean verificarPermissao(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return false;
         }
-
-        notificacao.setAlcance(alcance);
-
-        gestaoNotificacao.selecionaAlcance(notificacao, alcance);
-
-        return "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        request.setAttribute("erro", "Erro ao cadastrar olimpíada: " + e.getMessage());
-        return "/core/olimpiada/inserir.jsp";
+        
+        // 🎯 Usando a chave correta da sessão: "usuarioLogado"
+        Usuario usuario = (Usuario) session.getAttribute("usuarioLogado"); 
+        
+        if (usuario == null) {
+            return false;
+        }
+        
+        // CSU 10: Apenas Professor e Administrador
+        String tipoUsuario = usuario.getTipo().toString(); 
+        return tipoUsuario.equals("ADMINISTRADOR") || tipoUsuario.equals("PROFESSOR");
     }
-}
+    
+    // --- MÉTODOS DE GERENCIAMENTO ---
+
+    public static String cadastrar(HttpServletRequest request) {
+        // 🔒 Aplicação do CSU 10
+        if (!verificarPermissao(request)) {
+            request.setAttribute("erro", "Acesso negado: Somente Administradores e Professores podem cadastrar olimpíadas.");
+            return "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
+        }
+        
+        GestaoOlimpiada gestao = new GestaoOlimpiada();
+        GestaoNotificacao gestaoNotificacao = new GestaoNotificacao();
+
+        try {
+            String nome = request.getParameter("nome");
+            String topico = request.getParameter("topico");
+            LocalDate dataLimite = LocalDate.parse(request.getParameter("data_limite"));
+            LocalDate dataProva = LocalDate.parse(request.getParameter("data_prova"));
+            String descricao = request.getParameter("descricao");
+            double peso = Double.parseDouble(request.getParameter("peso"));
+
+            Olimpiada nova = new Olimpiada(nome, topico, dataLimite, dataProva, descricao, peso);
+            gestao.cadastrarOlimpiada(nova); 
+
+            Notificacao notificacao = new Notificacao();
+            notificacao.setMensagem(
+                "Foi aberta a olimpíada \"" + nome + "\". " +
+                "Inscrições até " + dataLimite + " e prova em " + dataProva + "."
+            );
+            notificacao.setTipo(TipoNotificacao.OLIMPIADA_ABERTA);
+
+            AlcanceNotificacao alcance;
+            try {
+                String alcanceStr = request.getParameter("alcance");
+                alcance = (alcanceStr != null) ? AlcanceNotificacao.valueOf(alcanceStr) : AlcanceNotificacao.GERAL;
+            } catch (IllegalArgumentException e) {
+                alcance = AlcanceNotificacao.GERAL;
+            }
+
+            notificacao.setAlcance(alcance);
+
+            gestaoNotificacao.selecionaAlcance(notificacao, alcance);
+
+            return "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("erro", "Erro ao cadastrar olimpíada: " + e.getMessage());
+            return "/core/olimpiada/inserir.jsp";
+        }
+    }
 
 
     public static String alterar(HttpServletRequest request) {
+        // 🔒 Aplicação do CSU 10
+        if (!verificarPermissao(request)) {
+            request.setAttribute("erro", "Acesso negado: Somente Administradores e Professores podem alterar olimpíadas.");
+            return "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
+        }
+        
         GestaoOlimpiada gestao = new GestaoOlimpiada();
 
         try {
@@ -84,6 +122,12 @@ public class OlimpiadaController {
     }
 
     public static String excluir(HttpServletRequest request) {
+        // 🔒 Aplicação do CSU 10
+        if (!verificarPermissao(request)) {
+            request.setAttribute("erro", "Acesso negado: Somente Administradores e Professores podem excluir olimpíadas.");
+            return "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
+        }
+        
         try {
             int id = Integer.parseInt(request.getParameter("idOlimpiada"));
             GestaoOlimpiada gestao = new GestaoOlimpiada();

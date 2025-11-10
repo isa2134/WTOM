@@ -48,8 +48,31 @@ public class LoginController extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/index.jsp");
 
             }
-        }catch(Exception e){
-            System.out.println(">>> [LoginController] ERRO:");
+
+            HttpSession sessao = request.getSession(true);
+            
+            // 🎯 Solução de Compatibilidade: Salvando com AMBAS as chaves
+            // 1. Chave Antiga: Para não quebrar o NotificacaoServlet/site (que esperam "usuario")
+            sessao.setAttribute("usuario", usuario); 
+            
+            // 2. Chave Nova: Para corrigir a permissão das Olimpíadas (JSP/Controller esperam "usuarioLogado")
+            sessao.setAttribute("usuarioLogado", usuario); 
+            
+            // Mantendo esta linha caso ela seja usada em outro lugar
+            sessao.setAttribute("usuarioTipo", usuario.getTipo()); 
+
+            System.out.println("✅ LOGIN OK → " + usuario.getEmail());
+            System.out.println("➡️ Redirecionando para: " + request.getContextPath() + "/core/menu.jsp");
+
+            response.sendRedirect(request.getContextPath() + "/core/menu.jsp");
+        }
+        catch (wtom.model.service.exception.UsuarioInvalidoException ex) {
+            System.out.println("🚫 Exceção de login: " + ex.getMessage());
+            request.setAttribute("erro", ex.getMessage());
+            request.getRequestDispatcher("/index.jsp").forward(request, response);
+        }
+        catch (Exception e) {
+            System.out.println("💥 Erro inesperado: " + e.getMessage());
             e.printStackTrace();
         }
     }
