@@ -25,7 +25,7 @@
                 <a href=""> <span>Olimpíadas</span></a>
                 <a href=""> <span>Ranking</span></a>
                 <a href="${pageContext.request.contextPath}/ConteudoController?acao=listarTodos"><span>Materiais</span></a>
-                <a href=""> <span>Dúvidas</span></a>
+                <a href="${pageContext.request.contextPath}/DuvidaController?acao=listar"><span>Dúvidas</span></a>
                 <a href="Notificacao.jsp" class="active"> <span>Notificações</span></a>
                 <a href=""> <span>Perfil</span></a>
             </nav>

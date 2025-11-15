@@ -24,9 +24,7 @@ public class ConexaoDB {
             
             statement.executeUpdate("CREATE DATABASE IF NOT EXISTS " + db_name);
         }
-        
-        Connection connection = DriverManager.getConnection(url + db_name, user, password);
-        return connection;
-        
-    }  
+
+        return DriverManager.getConnection(url + db_name, user, password);
+    }
 }

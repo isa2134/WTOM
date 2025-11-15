@@ -1,97 +1,6 @@
 package wtom.util;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.sql.Date;
-import java.util.List;
-import wtom.dao.exception.PersistenciaException;
-import wtom.model.domain.Olimpiada;
-import wtom.util.ConexaoDB;
-
-
-public class InitDB {
-    
-    private final Connection con;
-    
-    public InitDB(Connection con){
-        this.con = con;
-    }
-    
-    public void initConteudos() throws SQLException{
-        String sql = "CREATE TABLE IF NOT EXISTS conteudos("
-                +"id INT AUTO_INCREMENT PRIMARY KEY, "
-                +"id_professor INT NOT NULL, "
-                +"titulo VARCHAR(100) NOT NULL, "
-                +"descricao VARCHAR(100) NOT NULL, "
-                +"arquivo VARCHAR(100) NOT NULL, "
-                +"data VARCHAR(100) NOT NULL "
-                //+"FOREIGN KEY (id_professor) REFERENCES usuarios(id)"
-                +")";
-        
-        try(Statement st = con.createStatement()){
-            st.executeUpdate(sql);
-        }
-    }
-    
-    public void initOlimpiadas() throws SQLException{
-        String sql = "CREATE TABLE IF NOT EXISTS olimpiadas("
-                +"nome VARCHAR(100) NOT NULL, "
-                +"id INT PRIMARY KEY, "
-                +"topico VARCHAR(100) NOT NULL, "
-                +"data_limite_inscricao DATE NOT NULL, "
-                +"data_prova DATE NOT NULL, "
-                +"descricao VARCHAR(100) NOT NULL, "
-                +"peso DOUBLE NOT NULL"
-                +")";
-        
-        try(Statement st = con.createStatement()){
-            st.executeUpdate(sql);
-        }
-    }
-    
-    public void initInscricoes() throws SQLException {
-        String sql = "CREATE TABLE IF NOT EXISTS inscricoes("
-            + "nome VARCHAR(100) NOT NULL, "
-            + "cpf VARCHAR(100) NOT NULL, "
-            + "data_nascimento DATE NOT NULL, "
-            + "peso DOUBLE NOT NULL, "
-            + "id_olimpiada INT NOT NULL, "
-            + "FOREIGN KEY (id_olimpiada) REFERENCES olimpiadas(id)"
-            + ")";
-    
-        try (Statement st = con.createStatement()) {
-            st.executeUpdate(sql);
-    }
-}
-    public void initTodos() throws PersistenciaException{
-        try{
-            initConteudos();
-            initOlimpiadas();
-            initInscricoes();
-            
-        }
-        catch(SQLException e){
-            throw new PersistenciaException("erro ao inicializar tabelas: " + e.getMessage());
-        }
-    }
-    
-    public static void main(String[] args) throws PersistenciaException{
-        try{
-            Connection con = ConexaoDB.getConnection();
-            InitDB init = new InitDB(con);
-            init.initTodos();  
-        }
-        catch(SQLException e){
-            throw new PersistenciaException("erro ao inicializar tabelas: "+e.getMessage());
-        }
-    }
-}  
 import java.sql.Statement;
 import java.sql.SQLException;
 import wtom.dao.exception.PersistenciaException;
@@ -116,12 +25,10 @@ public class InitDB {
                 senha VARCHAR(100) NOT NULL,
                 login VARCHAR(50) UNIQUE NOT NULL,
                 tipo ENUM('ADMINISTRADOR', 'PROFESSOR', 'ALUNO') NOT NULL,
-                premiacoes JSON DEFAULT NULL,
                 criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             );
         """;
-
         try (Statement st = con.createStatement()) {
             st.executeUpdate(sql);
         }
@@ -138,7 +45,6 @@ public class InitDB {
                     ON UPDATE CASCADE
             );
         """;
-
         try (Statement st = con.createStatement()) {
             st.executeUpdate(sql);
         }
@@ -157,7 +63,6 @@ public class InitDB {
                     ON UPDATE CASCADE
             );
         """;
-
         try (Statement st = con.createStatement()) {
             st.executeUpdate(sql);
         }
@@ -177,7 +82,6 @@ public class InitDB {
                     ON UPDATE CASCADE
             );
         """;
-
         try (Statement st = con.createStatement()) {
             st.executeUpdate(sql);
         }
@@ -186,21 +90,111 @@ public class InitDB {
     public void initNotificacoes() throws SQLException {
         String sql = """
             CREATE TABLE IF NOT EXISTS notificacao (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
                 titulo VARCHAR(255) NOT NULL,
                 mensagem TEXT NOT NULL,
-                data_do_envio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                tipo ENUM('OLIMPIADA_ABERTA', 'REUNIAO_AGENDADA', 'AVISO_GERAL', 
-                          'REUNIAO_CHEGANDO', 'DESAFIO_SEMANAL', 'CORRECAO_DE_EXERCICIO') NOT NULL,
-                alcance ENUM('INDIVIDUAL','GERAL','ALUNOS','PROFESSORES') NOT NULL DEFAULT 'INDIVIDUAL',
-                lida BOOLEAN NOT NULL DEFAULT FALSE,
-                destinatario_id BIGINT NOT NULL,
+                data_do_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                tipo ENUM('OLIMPIADA_ABERTA', 'REUNIAO_AGENDADA', 'REUNIAO_CHEGANDO',
+                          'DESAFIO_SEMANAL', 'CORRECAO_DE_EXERCICIO', 'OUTROS') NOT NULL,
+                alcance ENUM('GERAL', 'INDIVIDUAL', 'ALUNOS', 'PROFESSORES') NOT NULL,
+                lida BOOLEAN DEFAULT FALSE,
+                destinatario_id BIGINT,
                 FOREIGN KEY (destinatario_id) REFERENCES usuario(id)
+            );
+        """;
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
+
+    public void initOlimpiadas() throws SQLException{
+        String sql = """
+            CREATE TABLE IF NOT EXISTS olimpiadas(
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                nome VARCHAR(100) NOT NULL,
+                topico VARCHAR(100) NOT NULL,
+                data_limite_inscricao DATE NOT NULL,
+                data_prova DATE NOT NULL,
+                descricao VARCHAR(100) NOT NULL,
+                peso DOUBLE NOT NULL
+            );
+        """;
+        try(Statement st = con.createStatement()){
+            st.executeUpdate(sql);
+        }
+    }
+
+    public void initDuvidas() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS duvida (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                id_aluno BIGINT NOT NULL,
+                titulo VARCHAR(255) NOT NULL,
+                descricao TEXT NOT NULL,
+                data_criacao TIMESTAMP NOT NULL,
+                FOREIGN KEY (id_aluno) REFERENCES usuario(id)
                     ON DELETE CASCADE
                     ON UPDATE CASCADE
             );
         """;
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
 
+    public void initRespostas() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS resposta (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                id_duvida BIGINT NOT NULL,
+                id_professor BIGINT NOT NULL,
+                conteudo TEXT NOT NULL,
+                data TIMESTAMP NOT NULL,
+                FOREIGN KEY (id_duvida) REFERENCES duvida(id)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE,
+                FOREIGN KEY (id_professor) REFERENCES usuario(id)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE
+            );
+        """;
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
+
+    public void initUsuariosPadrao() throws SQLException {
+        String sql = """
+            INSERT IGNORE INTO usuario (cpf, nome, telefone, email, data_nascimento, senha, login, tipo)
+            VALUES 
+                ('123.456.789-00', 'Administrador', '11999999999', 'admin@gmail.com', '1980-01-01', 'admin123', 'admin@gmail.com', 'ADMINISTRADOR'),
+                ('987.654.321-00', 'Professor', '11888888888', 'professor@gmail.com', '1985-05-10', 'prof123', 'professor@gmail.com', 'PROFESSOR'),
+                ('111.222.333-44', 'Aluno', '11777777777', 'aluno@gmail.com', '2005-08-15', 'aluno123', 'aluno@gmail.com', 'ALUNO');
+        """;
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
+
+    public void initDuvidasTeste() throws SQLException {
+        String sql = """
+            INSERT INTO duvida (id_aluno, titulo, descricao, data_criacao)
+            VALUES 
+                (3, 'Como funciona a prova?', 'Gostaria de entender melhor o formato da prova.', NOW()),
+                (3, 'Dúvida sobre conteúdo', 'Não entendi o último conteúdo passado.', NOW());
+        """;
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
+
+    public void initRespostasTeste() throws SQLException {
+        String sql = """
+            INSERT INTO resposta (id_duvida, id_professor, conteudo, data)
+            VALUES 
+                (1, 2, 'A prova será aplicada em duas etapas.', NOW()),
+                (2, 2, 'Reveja o material enviado, e se precisar me pergunte.', NOW());
+        """;
         try (Statement st = con.createStatement()) {
             st.executeUpdate(sql);
         }
@@ -213,12 +207,17 @@ public class InitDB {
             initAluno();        
             initConteudos();     
             initNotificacoes();  
+            initOlimpiadas();
+            initUsuariosPadrao();
+            initDuvidas();
+            initRespostas();
+            initDuvidasTeste();
+            initRespostasTeste();
         } catch (SQLException e) {
             throw new PersistenciaException("erro ao inicializar tabelas: " + e.getMessage());
         }
     }
 
-    // ---- MAIN ----
     public static void main(String[] args) throws PersistenciaException {
         try {
             Connection con = ConexaoDB.getConnection();
