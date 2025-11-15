@@ -28,7 +28,7 @@ public class LoginController extends HttpServlet {
             String senha = request.getParameter("senha");
             
             UsuarioService manterUsuario = new UsuarioService();
-            Usuario usuario = manterUsuario.buscarPorLogin(login);
+            Usuario usuario = manterUsuario.buscarPorLoginSenha(login, senha);
             
             if(usuario != null){
                 HttpSession sessao = request.getSession();

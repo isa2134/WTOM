@@ -54,6 +54,7 @@ public class OlimpiadaServlet extends HttpServlet {
                 case "excluirOlimpiada":
                     OlimpiadaController.excluir(request);
                     jsp = "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
+                    System.out.println("Entrou no servlet -> excluirOlimpiada");
                     break;
 
                 case "listarOlimpiadaAluno":

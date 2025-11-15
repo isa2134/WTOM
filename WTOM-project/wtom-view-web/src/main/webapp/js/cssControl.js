@@ -2,47 +2,46 @@ document.getElementById('sidebar-toggle').addEventListener('click', () => {
     document.getElementById('sidebar').classList.toggle('collapsed');
 });
 
-// Função auxiliar para mostrar/esconder o modal
 const toggleModal = (show) => {
     const modal = document.getElementById('role-select-modal');
     if (modal) {
-        // Se 'show' for true, remove 'hidden'. Se for false, adiciona 'hidden'.
         modal.classList.toggle('hidden', !show);
     }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Referências aos elementos
-    const btnShowRegister = document.getElementById('btn-show-recover'); // Botão 'Cadastrar' (do formulário de login)
-    const btnCloseModal = document.getElementById('btn-close-modal'); // Botão 'X' dentro do modal
-    const backdrop = document.querySelector('.modal-backdrop'); // Fundo escuro do modal
+    const btnShowRegister = document.getElementById('btn-show-recover'); 
+    const btnCloseModal = document.getElementById('btn-close-modal'); 
+    const backdrop = document.querySelector('.modal-backdrop'); 
     
-    // Botões de Seleção de Perfil (Aluno/Professor)
     const btnSelectAluno = document.getElementById('btn-select-aluno');
     const btnSelectProfessor = document.getElementById('btn-select-professor');
 
-    // 1. Mostrar Modal ao clicar em "Cadastrar"
     if (btnShowRegister) {
         btnShowRegister.addEventListener('click', () => {
-            toggleModal(true); // Mostrar o modal
+            toggleModal(true); 
         });
     }
 
-    // 2. Fechar Modal ao clicar no 'X'
     if (btnCloseModal) {
-        btnCloseModal.addEventListener('click', () => {
-            toggleModal(false);
-        });
+        btnCloseModal.addEventListener('click', () => toggleModal(false));
     }
 
-    // 3. Fechar Modal ao clicar no Fundo Escuro (Backdrop)
     if (backdrop) {
-        backdrop.addEventListener('click', () => {
-            toggleModal(false);
+        backdrop.addEventListener('click', () => toggleModal(false));
+    }
+
+    if (btnSelectAluno) {
+        btnSelectAluno.addEventListener('click', () => {
+            window.location.href = 'usuarios/cadastro.jsp?tipo=ALUNO';
         });
     }
 
-
+    if (btnSelectProfessor) {
+        btnSelectProfessor.addEventListener('click', () => {
+            window.location.href = 'usuarios/cadastro.jsp?tipo=PROFESSOR';
+        });
+    }
 });
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -52,12 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!fileInput || !fileWrapper || !fileNameDisplay) return;
 
-    // Abre o seletor de arquivos ao clicar no wrapper
     fileWrapper.addEventListener('click', () => {
         fileInput.click();
     });
 
-    // Atualiza o nome do arquivo ao selecionar
     fileInput.addEventListener('change', (event) => {
         const files = event.target.files;
         if (files && files.length > 0) {

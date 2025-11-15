@@ -14,10 +14,8 @@ public class AutorizacaoFiltro implements Filter {
         HttpServletResponse res = (HttpServletResponse) response;
         HttpSession session = req.getSession(false);
 
-        // Normaliza o caminho em minúsculas pra evitar erro de case
         String caminho = req.getRequestURI().toLowerCase();
 
-        // Libera tudo que for público
         if (caminho.endsWith("index.jsp") ||
             caminho.contains("/css/") ||
             caminho.contains("/js/") ||
@@ -31,26 +29,14 @@ public class AutorizacaoFiltro implements Filter {
             return;
         }
 
-        // Verifica se existe sessão e usuário logado
         Object usuario = (session != null) ? session.getAttribute("usuario") : null;
 
         if (usuario == null) {
-            // Se não tiver usuário logado, volta pra tela de login
             res.sendRedirect(req.getContextPath() + "/index.jsp");
             return;
         }
 
-        // Usuário logado → segue o fluxo normalmente
         chain.doFilter(request, response);
     }
 
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        // Nada pra inicializar
-    }
-
-    @Override
-    public void destroy() {
-        // Nada pra destruir
-    }
 }

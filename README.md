@@ -1,5 +1,5 @@
 # WTOM
-Descrição do projeto.
+O projeto é um sistema que será implementado para a Equipe de Treinamento Olímpico Matemático do CEFET-MG, a TOM. O objetivo principal é oferecer um ambiente virtual eficiente, interativo e acessível que conecte ainda mais os alunos da TOM com as mais diversas olímpiadas de matemática, otimizando o estudo por meio de fóruns de discussão, divulgação de eventos e avisos, sugestões de materiais didáticos, e diversas outras funcionalidades, em um só lugar. 
 
 ## Equipe de Desenvolvimento
 | Ordem | Nome                                 |
