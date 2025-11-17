@@ -17,13 +17,14 @@
                 <div class="logo" id="sidebar-toggle" title="Esconder/Exibir Menu" role="button">TOM</div>
             </div>
             <nav class="menu">
-                <a href="${pageContext.request.contextPath}/"> <span>Início</span></a>
+                <a href="${pageContext.request.contextPath}/core/menu.jsp"> <span>Início</span></a>
                 <a href="${pageContext.request.contextPath}/olimpiada"> <span>Olimpíadas</span></a>
                 <a href="${pageContext.request.contextPath}/ranking"> <span>Ranking</span></a>
                 <a href="${pageContext.request.contextPath}/ConteudoController?acao=listarTodos"><span>Materiais</span></a>
                 <a href="${pageContext.request.contextPath}/duvidas"> <span>Dúvidas</span></a>
+                <a href="${pageContext.request.contextPath}/reuniao?acao=listar">Reuniões Online</a>
                 <a href="${pageContext.request.contextPath}/notificacao"> <span>Notificações</span></a>
-                <a href="${pageContext.request.contextPath}/perfil"> <span>Perfil</span></a>
+                <a href="${pageContext.request.contextPath}/perfil"> <sp
             </nav>
         </aside>
 

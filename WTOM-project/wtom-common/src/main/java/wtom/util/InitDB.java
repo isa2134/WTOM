@@ -142,6 +142,28 @@ public class InitDB {
         }
     }
 
+    public void initReunioes() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS reuniao (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                titulo VARCHAR(255) NOT NULL,
+                descricao TEXT,
+                data_hora DATETIME NOT NULL,
+                link VARCHAR(255),
+                criado_por BIGINT NOT NULL,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FOREIGN KEY (criado_por) REFERENCES usuario(id)
+                    ON DELETE CASCADE ON UPDATE CASCADE
+            );
+        """;
+
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
+
+
 
 
 
@@ -154,6 +176,7 @@ public class InitDB {
             initNotificacoes();  
             initOlimpiadas();
             initUsuariosPadrao();
+            initReunioes();
         } catch (SQLException e) {
             throw new PersistenciaException("erro ao inicializar tabelas: " + e.getMessage());
         }
