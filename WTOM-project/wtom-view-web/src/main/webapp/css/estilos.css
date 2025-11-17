@@ -1,11 +1,11 @@
 :root{
     --bg:#F6F4F2;
     --surface:#FFFFFF;
-    --accent:#0F4C5C;
+    --accent:#176B87;
     --muted:#6B7A81;
     --gold:#E3B23C;
     --success:#3AA76D;
-    --danger:#D8574A;
+    --danger:#dc3545;
     --danger-hover:#b84438;
     --radius:12px;
     --shadow: 0 10px 30px rgba(15,76,92,0.06);
@@ -226,6 +226,37 @@ input{
     border: none;
     cursor: pointer;
 }
+
+.btn-danger {
+    background-color: var(--danger);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none; 
+    transition: background-color 0.2s;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-light {
+    background-color: #e9f1f3; 
+    color: var(--accent);
+    border: 1px solid #c9d6da;
+    border-radius: 8px; 
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
 #hubEnvio {
     display: none;
     background: #f4f4f4;
@@ -247,3 +278,4 @@ nav.menu a.active {
 .app{
     min-width: 100%;
 }
+
