@@ -10,8 +10,8 @@
     Usuario usuario = (Usuario) session.getAttribute("usuario");
 
     boolean podeGerir = usuario != null &&
-            (usuario.getTipo() == UsuarioTipo.PROFESSOR ||
-             usuario.getTipo() == UsuarioTipo.ADMINISTRADOR);
+                (usuario.getTipo() == UsuarioTipo.PROFESSOR ||
+                usuario.getTipo() == UsuarioTipo.ADMINISTRADOR);
 
     boolean googleConectado = (session.getAttribute("googleCredential") != null);
 
@@ -26,84 +26,98 @@
 <head>
     <meta charset="utf-8"/>
     <title><%= (r.getId() == null ? "Nova Reunião" : "Editar Reunião") %></title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
 </head>
 
-<body>
+<body class="no-sidebar" style="background-color:#c2cbd3">
 <main class="content">
-    <section class="page">
-        <header class="page-header">
-            <h2><%= (r.getId() == null ? "Nova Reunião" : "Editar Reunião") %></h2>
-        </header>
+    
+    <div class="form-reuniao-container">
+        <section class="page">
+            
+            <header class="page-header">
+                <h2><%= (r.getId() == null ? "Nova Reunião" : "Editar Reunião") %></h2>
+            </header>
 
-        <div class="card">
+            <div class="card">
 
-            <% if (podeGerir) { %>
-                <div style="margin-bottom:15px;">
-                    <a href="${pageContext.request.contextPath}/googleLogin"
-                       class="btn"
-                       style="background:#4285F4; color:white;">
-                        Conectar ao Google para gerar Meet automaticamente
-                    </a>
+                <% if (podeGerir) { %>
+                    <div class="google-connect-area">
+                        <a href="${pageContext.request.contextPath}/googleLogin"
+                           class="btn google-btn">
+                            <i class="fab fa-google"></i> Conectar ao Google para gerar Meet automaticamente
+                        </a>
 
-                    <% if (googleConectado) { %>
-                        <p style="color:green; margin-top:8px;">
-                            ✔ Google conectado — o link será gerado automaticamente
-                        </p>
-                    <% } %>
-                </div>
-            <% } %>
-
-            <form action="${pageContext.request.contextPath}/reuniao" method="post">
-
-                <input type="hidden" name="acao"
-                       value="<%= (r.getId() == null ? "salvar" : "atualizar") %>">
-
-                <% if (r.getId() != null) { %>
-                    <input type="hidden" name="id" value="<%= r.getId() %>">
+                        <% if (googleConectado) { %>
+                            <p class="google-connected">
+                                <i class="fas fa-check-circle"></i> Google conectado — o link será gerado automaticamente
+                            </p>
+                        <% } %>
+                    </div>
                 <% } %>
 
-                <label>Título</label>
-                <input type="text" name="titulo"
-                       value="<%= r.getTitulo() != null ? r.getTitulo() : "" %>"
-                       required>
+                <form action="${pageContext.request.contextPath}/reuniao" method="post" class="form-grid">
 
-                <label>Descrição</label>
-                <textarea name="descricao"><%= r.getDescricao() != null ? r.getDescricao() : "" %></textarea>
+                    <input type="hidden" name="acao"
+                               value="<%= (r.getId() == null ? "salvar" : "atualizar") %>">
 
-                <label>Data e Hora</label>
-                <input type="datetime-local" name="dataHora"
-                       value="<%= dataHoraFormatada %>"
-                       required>
+                    <% if (r.getId() != null) { %>
+                        <input type="hidden" name="id" value="<%= r.getId() %>">
+                    <% } %>
 
-                <label>Link da reunião</label>
-                <input type="url" name="link"
-                       value="<%= r.getLink() != null ? r.getLink() : "" %>"
-                       <%= googleConectado ? "readonly" : "" %>
-                       placeholder="<%= googleConectado ? "Será gerado automaticamente" : "" %>">
+                    <div class="form-group form-span-2">
+                        <label for="titulo">Título</label>
+                        <input type="text" id="titulo" name="titulo"
+                               value="<%= r.getTitulo() != null ? r.getTitulo() : "" %>"
+                               required>
+                    </div>
 
-                <label>Alcance da Notificação</label>
-                <select name="alcance">
-                    <option value="GERAL">Todos</option>
-                    <option value="ALUNOS">Somente Alunos</option>
-                    <option value="PROFESSORES">Somente Professores</option>
-                    <option value="INDIVIDUAL">Individual</option>
-                </select>
+                    <div class="form-group form-span-2">
+                        <label for="descricao">Descrição</label>
+                        <textarea id="descricao" name="descricao" rows="4"><%= r.getDescricao() != null ? r.getDescricao() : "" %></textarea>
+                    </div>
 
-                <div style="margin-top:12px;">
-                    <button class="btn" type="submit">
-                        <%= (r.getId() == null ? "Salvar" : "Atualizar") %>
-                    </button>
+                    <div class="form-group">
+                        <label for="dataHora">Data e Hora</label>
+                        <input type="datetime-local" id="dataHora" name="dataHora"
+                               value="<%= dataHoraFormatada %>"
+                               required>
+                    </div>
 
-                    <a class="btn ghost"
-                       href="${pageContext.request.contextPath}/reuniao?acao=listar">
-                        Cancelar
-                    </a>
-                </div>
+                    <div class="form-group">
+                        <label for="link">Link da reunião</label>
+                        <input type="url" id="link" name="link"
+                               value="<%= r.getLink() != null ? r.getLink() : "" %>"
+                               <%= googleConectado ? "readonly" : "" %>
+                               placeholder="<%= googleConectado ? "Será gerado automaticamente" : "URL do Meet, Zoom, etc." %>">
+                    </div>
 
-            </form>
-        </div>
-    </section>
+                    <div class="form-group">
+                        <label for="alcance">Alcance da Notificação</label>
+                        <select id="alcance" name="alcance">
+                            <option value="GERAL">Todos</option>
+                            <option value="ALUNOS">Somente Alunos</option>
+                            <option value="PROFESSORES">Somente Professores</option>
+                            <option value="INDIVIDUAL">Individual</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions form-span-2">
+                        <button class="btn" type="submit">
+                            <i class="fas fa-save"></i> <%= (r.getId() == null ? "Salvar Reunião" : "Atualizar") %>
+                        </button>
+
+                        <a class="btn ghost"
+                           href="${pageContext.request.contextPath}/reuniao?acao=listar">
+                            <i class="fas fa-times"></i> Cancelar
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </section>
+    </div>
 </main>
 </body>
 </html>
