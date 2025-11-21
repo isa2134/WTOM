@@ -2,6 +2,7 @@
 <%@taglib uri="jakarta.tags.core" prefix="c" %>
 <%@taglib uri="jakarta.tags.fmt" prefix="fmt" %>
 
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -28,22 +29,7 @@
 </head>
 
 <body>
-    <aside class="sidebar">
-        <div class="brand">
-            <div class="logo">TOM</div>
-        </div>
-        <nav class="menu">
-            <a href="${pageContext.request.contextPath}/">Início</a>
-            <a href="${pageContext.request.contextPath}/olimpiada">Olimpíadas</a>
-            <a href="${pageContext.request.contextPath}/ranking">Ranking</a>
-            <a href="${pageContext.request.contextPath}/ConteudoController?acao=listarTodos">Materiais</a>
-            <a href="${pageContext.request.contextPath}/duvidas">Dúvidas</a>
-            <a href="${pageContext.request.contextPath}/notificacao">Notificações</a>
-            <a href="${pageContext.request.contextPath}/reuniao?acao=listar" class="active">Reuniões Online</a>
-            <a href="${pageContext.request.contextPath}/perfil">Perfil</a>
-        </nav>
-    </aside>
-
+    <%@ include file="/core/menu.jsp" %>
     <main class="content">
         <div class="page">
             

@@ -1,9 +1,8 @@
-<%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Notifica√ß√µes - TOM</title>
+        <title>NotificaÁıes - TOM</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <script src="${pageContext.request.contextPath}/js/notificacao.js"></script>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
@@ -11,49 +10,34 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     </head>
     <body>
-        
-        <aside class="sidebar" id="sidebar" aria-label="Menu lateral">
-            <div class="brand">
-                <div class="logo" id="sidebar-toggle" title="Esconder/Exibir Menu" role="button">TOM</div>
-            </div>
-            <nav class="menu">
-                <a href="${pageContext.request.contextPath}/core/menu.jsp"> <span>In√≠cio</span></a>
-                <a href="${pageContext.request.contextPath}/olimpiada"> <span>Olimp√≠adas</span></a>
-                <a href="${pageContext.request.contextPath}/ranking"> <span>Ranking</span></a>
-                <a href="${pageContext.request.contextPath}/ConteudoController?acao=listarTodos"><span>Materiais</span></a>
-                <a href="${pageContext.request.contextPath}/duvidas"> <span>D√∫vidas</span></a>
-                <a href="${pageContext.request.contextPath}/reuniao?acao=listar">Reuni√µes Online</a>
-                <a href="${pageContext.request.contextPath}/notificacao"> <span>Notifica√ß√µes</span></a>
-                <a href="${pageContext.request.contextPath}/perfil"> <sp
-            </nav>
-        </aside>
+       <%@ include file="/core/menu.jsp" %>
 
         <main class="content">
             <div class="page">
                 <header class="page-header">
-                    <h2>Minhas Notifica√ß√µes</h2>
+                    <h2>Minhas NotificaÁıes</h2>
 
                     <c:if test="${usuarioLogado.tipo.name() eq 'ADMINISTRADOR' or usuarioLogado.tipo.name() eq 'PROFESSOR'}">
                         <button class="btn" style="width: auto;" onclick="toggleEnvioNotificacao()">
-                            <i class="fa-solid fa-bell"></i> Enviar Notifica√ß√£o
+                            <i class="fa-solid fa-bell"></i> Enviar NotificaÁ„o
                         </button>
                     </c:if>
                 </header>
 
                 <c:if test="${usuarioLogado.tipo.name() eq 'ADMINISTRADOR' or usuarioLogado.tipo.name() eq 'PROFESSOR'}">
                     <div id="hubEnvio" class="card" style="display:none; margin-bottom: var(--section-separation);">
-                        <h3>Enviar Notifica√ß√£o</h3>
+                        <h3>Enviar NotificaÁ„o</h3>
                         <form action="${pageContext.request.contextPath}/notificacao" method="post">
                             <input type="hidden" name="acao" value="enviar">
                             
                             <label for="tipo">Conteudo</label>
                             <select id="tipo" name="tipo" onchange="atualizarCampos()" required>
                                 <option value="OUTROS">Outros</option>
-                                <option value="OLIMPIADA_ABERTA">Olimp√≠ada Aberta</option>
-                                <option value="REUNIAO_AGENDADA">Reuni√£o Agendada</option>
-                                <option value="REUNIAO_CHEGANDO">Reuni√£o Chegando</option>
+                                <option value="OLIMPIADA_ABERTA">OlimpÌada Aberta</option>
+                                <option value="REUNIAO_AGENDADA">Reuni„o Agendada</option>
+                                <option value="REUNIAO_CHEGANDO">Reuni„o Chegando</option>
                                 <option value="DESAFIO_SEMANAL">Desafio Semanal</option>
-                                <option value="CORRECAO_DE_EXERCICIO">Corre√ß√£o de Exerc√≠cio</option>
+                                <option value="CORRECAO_DE_EXERCICIO">CorreÁ„o de ExercÌcio</option>
                             </select><br>
 
                             <label for="alcance">Alcance:</label>
@@ -65,11 +49,11 @@
                             </select><br>
 
                             <div id="campoDestinatario" style="display:none;">
-                                <label for="emailUsuario">Email Destinat√°rio:</label>
+                                <label for="emailUsuario">Email Destinat·rio:</label>
                                 <input type="email" id="emailUsuario" name="emailUsuario">
                             </div>
 
-                            <label for="titulo">T√≠tulo:</label>
+                            <label for="titulo">TÌtulo:</label>
                             <input type="text" id="titulo" name="titulo" required><br>
 
                             <label for="mensagem">Mensagem:</label>
@@ -117,7 +101,7 @@
                         </c:when>
                         <c:otherwise>
                              <div class="card" style="text-align: center; color: var(--muted);">
-                                 <p>Voc√™ n√£o possui nenhuma notifica√ß√£o.</p>
+                                 <p>VocÍ n„o possui nenhuma notificaÁ„o.</p>
                              </div>
                         </c:otherwise>
                     </c:choose>

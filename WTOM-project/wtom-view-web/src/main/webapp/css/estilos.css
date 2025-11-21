@@ -1,5 +1,4 @@
 :root{
-    --bg:#F6F4F2;
     --surface:#FFFFFF;
     --accent:#176B87;
     --muted:#6B7A81;
@@ -30,12 +29,14 @@ body{
 main.content{
     margin-left:var(--sidebar-width); 
     padding:28px;
-    width:100%;
+    width: calc(100% - var(--sidebar-width)); 
     min-height:100vh;
     transition: margin-left 0.2s; 
 }
+
 .sidebar.collapsed ~ main.content{
     margin-left: 80px;
+    width: calc(100% - 80px); 
 }
 
 .page{
@@ -279,3 +280,114 @@ nav.menu a.active {
     min-width: 100%;
 }
 
+.hero {
+    width: 100%;
+    height: 52vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 100px 0;
+    color: white;
+    border-radius: var(--radius);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.hero-content {
+    max-width: 45%;
+    padding: 100px;
+    animation: fadeInLeft 0.8s ease forwards;
+}
+
+.hero-content h1 {
+    font-size: 48px;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.hero-content h1 span {
+    color: #AEE0FF;
+}
+
+.hero-content p {
+    font-size: 18px;
+    opacity: 0.95;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.btn-primary {
+    background: white;
+    color: var(--accent);
+    padding: 12px 22px;
+    border-radius: 10px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: 0.2s;
+    box-shadow: 0 5px 15px rgba(255,255,255,0.25);
+}
+
+.btn-primary:hover {
+    background: #e7e7e7;
+}
+
+.btn-outline {
+    border: 2px solid white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    color: white;
+    text-decoration: none;
+    font-weight: 700;
+    transition: 0.2s;
+}
+
+.btn-outline:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+.hero-image {
+    width: 45%;
+    height: 85%;
+    margin-right: 2cm;
+    background-size: cover;
+    background-image: url('${pageContext.request.contextPath}/img/banner.png');
+    background-position: center;
+    border-radius: 20px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+    animation: fadeInRight 0.8s ease forwards;
+}
+
+@keyframes fadeInLeft {
+    from { opacity: 0; transform: translateX(-35px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInRight {
+    from { opacity: 0; transform: translateX(35px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@media (max-width: 980px) {
+
+    .hero-wrapper {
+        width: 100vw;
+        margin-left: calc(var(--sidebar-width) * -1);
+        padding-left: var(--sidebar-width);
+    }
+
+    .hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 40px;
+        height: auto;
+    }
+
+    .hero-content {
+        max-width: 100%;
+    }
+
+}
