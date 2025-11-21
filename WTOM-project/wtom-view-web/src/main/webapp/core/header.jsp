@@ -28,6 +28,6 @@
                 <a href="${pageContext.request.contextPath}/core/duvidas/listar.jsp"> <span>Dúvidas</span></a>
                 <a href="${pageContext.request.contextPath}/notificacao"> <span>Notificações</span></a>
                 <a href="${pageContext.request.contextPath}/reuniao?acao=listar">Reuniões Online</a>
-                <a href="${usuarios/perfil}"> <span>Perfil</span></a>
+                <a href="${pageContext.request.contextPath}/usuarios/perfil.jsp"> <span>Perfil</span></a>
             </nav>
         </aside>
