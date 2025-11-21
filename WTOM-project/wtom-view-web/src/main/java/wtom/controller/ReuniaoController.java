@@ -1,8 +1,11 @@
 package wtom.controller;
 
-import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.ServletException;
+import wtom.model.service.GoogleMeetService;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -17,6 +20,8 @@ import wtom.model.domain.Usuario;
 import wtom.model.domain.util.UsuarioTipo;
 import wtom.model.service.ReuniaoService;
 import wtom.model.service.exception.ReuniaoException;
+import com.google.api.client.auth.oauth2.Credential;
+
 
 @WebServlet("/reuniao")
 public class ReuniaoController extends HttpServlet {
@@ -30,7 +35,7 @@ public class ReuniaoController extends HttpServlet {
 
         if (acao == null || acao.equals("listar")) {
             listar(req, resp);
-        } else if (acao.equals("novo")) {
+        } else if (acao.equals("novo") || acao.equals("form")) {
             novoForm(req, resp);
         } else if (acao.equals("editar")) {
             editarForm(req, resp);
@@ -157,7 +162,23 @@ public class ReuniaoController extends HttpServlet {
                 r.setDataHora(LocalDateTime.parse(dataHoraStr, dtf));
             }
 
-            r.setLink(req.getParameter("link"));
+             Credential cred = (Credential) req.getSession().getAttribute("googleCredential");
+
+             if (cred != null) {
+                 try {
+                     String meetLink = GoogleMeetService.criarMeetLink(
+                             cred,
+                             r.getTitulo(),
+                             r.getDataHora()
+                     );
+                     r.setLink(meetLink);
+                 } catch (Exception e) {
+                     r.setLink(req.getParameter("link")); 
+                 }
+             } else {
+                 r.setLink(req.getParameter("link")); 
+             }
+
             r.setCriadoPor(usuario);
 
             service.criarReuniao(r, usuario);

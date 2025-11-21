@@ -17,8 +17,10 @@
 
     <header class="page-header">
         <h2>Reuniões Online</h2>
+
         <% if (professor || admin) { %>
-            <a class="btn" style="width:auto;" href="${pageContext.request.contextPath}/reuniao?acao=novo">
+            <a class="btn" 
+               href="${pageContext.request.contextPath}/reuniao?acao=form">
                 + Nova Reunião
             </a>
         <% } %>
@@ -38,12 +40,12 @@
         <% for (Reuniao r : reunioes) { %>
 
             <%
-                boolean dono = r.getCriadoPor() != null
-                        && usuario != null
-                        && r.getCriadoPor().getId().equals(usuario.getId());
+                boolean dono = usuario != null &&
+                        r.getCriadoPor() != null &&
+                        r.getCriadoPor().getId().equals(usuario.getId());
             %>
 
-            <div class="card" style="padding:20px; border-left:5px solid var(--accent);">
+            <div class="card" style="padding:20px; border-left:5px solid var(--accent); margin-bottom:15px;">
 
                 <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                     
@@ -52,9 +54,11 @@
                             <%= r.getTitulo() %>
                         </h3>
 
-                        <p style="margin:6px 0; color:var(--muted);">
+                        <p style="margin:6px 0; color:var(--muted); font-size:0.9rem;">
                             <i class="fa-solid fa-clock"></i>
-                            <%= r.getDataHora() != null ? r.getDataHora().toString().replace('T',' ') : "" %>
+                            <%= r.getDataHora() != null 
+                                ? r.getDataHora().toString().replace("T", " ")
+                                : "" %>
                         </p>
                     </div>
 
@@ -84,14 +88,16 @@
 
                 </div>
 
-                <p style="margin-top:15px; color:#333;">
-                    <%= r.getDescricao() %>
-                </p>
+                <% if (r.getDescricao() != null && !r.getDescricao().isBlank()) { %>
+                    <p style="margin-top:15px; color:#333;">
+                        <%= r.getDescricao() %>
+                    </p>
+                <% } %>
 
                 <div style="margin-top:12px; font-size:0.9rem; color:var(--muted);">
                     Criado por 
                     <strong>
-                        <%= r.getCriadoPor() != null ? r.getCriadoPor().getLogin() : "?" %>
+                        <%= r.getCriadoPor() != null ? r.getCriadoPor().getLogin() : "Sistema" %>
                     </strong>
                 </div>
 
