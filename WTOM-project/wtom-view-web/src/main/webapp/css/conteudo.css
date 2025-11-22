@@ -1,0 +1,216 @@
+input:not([type="file"]), textarea {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: inherit;
+
+}
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.file-input-wrapper {
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  background-color: #fcfcfc;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+  margin-top: 5px;
+}
+
+.file-input-wrapper:hover {
+  border-color: var(--accent);
+  background-color: #f6f9fb;
+}
+
+.file-input-wrapper input[type="file"] {
+  display: none; 
+}
+
+.file-label {
+  display: block;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+
+.btn-danger {
+    background: var(--danger);
+    box-shadow: 0 4px 12px rgba(216, 87, 74, 0.2);
+}
+.btn-danger:hover {
+    background: var(--danger-hover);
+}
+
+.back-button-fixed {
+    position: absolute;
+    top: 28px;
+    left: 28px;
+    padding: 0;
+    width: 36px;
+    height: 36px;
+    background: var(--surface);
+    color: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(15,76,92,0.05);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: 1px solid rgba(15,76,92,0.1);
+    z-index: 10;
+}
+.back-button-fixed:hover {
+    background: var(--bg);
+    transform: scale(1.05);
+}
+
+.top-actions-bar {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 12px 0;
+    min-width: 120px; 
+}
+
+.content-layout {
+    display: grid;
+    gap: 24px; 
+    align-items: start; 
+    width: 100%;
+    box-sizing: border-box;
+    
+    grid-template-columns: 3fr 1fr;
+    grid-template-areas: 
+        "viewer metadata"  
+        "description description"; 
+}
+
+.content-viewer { 
+    width: 100%;
+    height: 350px; 
+    background-color: #333; 
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    box-shadow: var(--shadow);
+    min-width: 0; 
+    margin-bottom: 20px;
+}
+
+.metadata-card {
+    grid-area: metadata;
+    padding: 20px;
+}
+.metadata-item {
+    padding: 8px 0;
+    border-bottom: 1px dashed #eee;
+}
+.metadata-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+.metadata-item h4 {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 500;
+    margin-bottom: 4px;
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.metadata-item p {
+    font-size: 0.95rem;
+    color: #102226; 
+    font-weight: 600;
+    margin: 0;
+    padding-left: 2px;
+}
+
+.description-card {
+    grid-area: description;
+    margin-top: 20px;
+}
+.description-card h4 {
+    font-size: 1.1rem;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 8px;
+    margin-top: 0;
+    border-bottom: 2px solid rgba(15,76,92,0.1);
+    padding-bottom: 5px;
+}
+.description-box {
+    font-size: 1rem;
+    color: #444;
+    white-space: pre-wrap; 
+}
+
+.professor-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end; 
+    width: 100%; 
+    margin-bottom: 15px;
+}
+
+.professor-actions .btn {
+    padding: 8px 14px; 
+    font-size: 0.9rem; 
+    box-shadow: none; 
+    width: auto; 
+    display: inline-flex; 
+    align-items: center;
+    flex-shrink: 0; 
+}
+
+.download-action {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 24px;
+    width: auto;
+}
+
+.btn-add{
+    display:flex;
+    justify-content: flex-end;
+    gap:8px;
+    width: auto;
+}
+
+.content-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px; 
+    align-items: center; 
+}
+.content-list-item {
+    box-shadow: none;
+    border: 1px solid #f2f3f4;
+    margin-bottom: 8px;
+    padding: 16px; 
+    border-radius: 10px; 
+    background: var(--surface); 
+}
+.content-item-layout{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

@@ -1,0 +1,60 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib uri="jakarta.tags.core" prefix="c" %>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WTOM - Painel do Administrador</title>
+
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/menu.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/home.css">
+</head>
+
+<body style="background-color:#0e3c4b">
+
+    <%@include file="/core/menu.jsp"%>
+
+    <main class="content">
+
+        <div class="page" 
+             style="background-image: url('${pageContext.request.contextPath}/img/menu.webp');
+                    background-size: cover;
+                    background-repeat: no-repeat;">
+
+            <section class="hero">
+                
+                <div class="hero-content">
+                    <h1>Painel do <span>Administrador</span></h1>
+                    <p>Gerencie usuários, olimpíadas, publicações e todo o sistema a partir deste painel.</p>
+
+                    <div class="hero-actions">
+
+                        <a href="${pageContext.request.contextPath}/usuario?acao=listar" 
+                           class="btn-primary">Gerenciar Usuários</a>
+
+                        <a href="${pageContext.request.contextPath}/olimpiada" 
+                           class="btn-outline">Olimpíadas</a>
+                        
+                            <a href="${pageContext.request.contextPath}/sistema/config" 
+                           class="btn-primary" 
+                           style="background:#ffe28a; color:#0e3c4b;">Configurações</a>
+
+                    </div>
+                </div>
+
+                <div class="hero-image"
+                     style="background-image:url('${pageContext.request.contextPath}/img/admin-banner.png');
+                            background-size: cover;
+                            background-position:center;">
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</body>
+</html>
