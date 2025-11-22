@@ -22,7 +22,6 @@ public class GestaoConteudoDidatico {
         if(!erros.isEmpty())
             throw new NegocioException(erros);
         
-        
         conteudoDAO.inserir(conteudo);
         return conteudo.getId();
         
