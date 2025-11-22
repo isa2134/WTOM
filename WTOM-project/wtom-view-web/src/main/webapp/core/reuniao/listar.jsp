@@ -11,7 +11,6 @@
 
     boolean admin = usuario != null && usuario.getTipo() == UsuarioTipo.ADMINISTRADOR;
     boolean professor = usuario != null && usuario.getTipo() == UsuarioTipo.PROFESSOR;
-    boolean aluno = usuario != null && usuario.getTipo() == UsuarioTipo.ALUNO;
 %>
 
 <style>
@@ -38,6 +37,31 @@
         background: #8e8e93;
         color:white;
     }
+    
+    .btn-light {
+        display: inline-block;
+        padding: 8px 12px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: bold;
+        text-align: center;
+        transition: background-color 0.2s;
+        border: 1px solid #ccc;
+        color: #333;
+        background-color: #f8f9fa;
+    }
+    .btn-danger {
+        display: inline-block;
+        padding: 8px 12px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: bold;
+        text-align: center;
+        transition: background-color 0.2s;
+        border: 1px solid transparent; 
+        color: white;
+        background-color: #dc3545;
+    }
 </style>
 
 <main class="content">
@@ -62,40 +86,24 @@
         </div>
 
         <%
-        } else {
-            for (Reuniao r : reunioes) {
+            } else {
+                for (Reuniao r : reunioes) {
 
-                boolean podeVer = false;
+                    boolean dono = usuario != null
+                            && r.getCriadoPor() != null
+                            && usuario.getId().equals(r.getCriadoPor().getId());
 
-                if (r.getAlcance() == AlcanceNotificacao.GERAL) {
-                    podeVer = true;
-                } else if (r.getAlcance() == AlcanceNotificacao.ALUNOS) {
-                    podeVer = aluno || admin;
-                } else if (r.getAlcance() == AlcanceNotificacao.PROFESSORES) {
-                    podeVer = professor || admin;
-                } else if (r.getAlcance() == AlcanceNotificacao.INDIVIDUAL) {
-                    podeVer = usuario != null && usuario.getId().equals(r.getCriadoPor().getId());
-                }
-
-                if (!podeVer) {
-                    continue;
-                }
-
-                boolean dono = usuario != null
-                        && r.getCriadoPor() != null
-                        && usuario.getId().equals(r.getCriadoPor().getId());
-
-                String status = (r.getStatus() != null) ? r.getStatus() : "indefinido";
-                String badgeClass
-                        = status.equals("aovivo") ? "badge-ao-vivo"
-                        : status.equals("embreve") ? "badge-em-breve"
-                        : status.equals("agendada") ? "badge-agendada"
-                        : "badge-encerrada";
+                    String status = (r.getStatus() != null) ? r.getStatus() : "indefinido";
+                    String badgeClass
+                            = status.equals("aovivo") ? "badge-ao-vivo"
+                            : status.equals("embreve") ? "badge-em-breve"
+                            : status.equals("agendada") ? "badge-agendada"
+                            : "badge-encerrada";
         %>
 
         <div class="card" style="padding:20px; border-left:5px solid var(--accent); margin-bottom:15px;">
 
-            <div style="display:flex; justify-content:space-between;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
 
                 <div style="max-width:70%;">
                     <h3 style="margin:0;"><%= r.getTitulo()%></h3>
@@ -120,25 +128,30 @@
                 <div style="display:flex; gap:8px;">
 
                     <% if (!status.equals("encerrada")) {%>
-                    <a class="btn-light" href="<%= r.getLink()%>" target="_blank">Entrar</a>
+                    <a class="btn-primary" 
+                       href="<%= r.getLink()%>" 
+                       target="_blank" 
+                       style="padding: 8px 12px; border-radius: 4px; text-decoration: none; color: white; background-color: #007bff; font-weight: bold;">
+                       Entrar
+                    </a>
                     <% } %>
 
                     <% if (admin || dono) {%>
                     <a class="btn-light"
-                       href="${pageContext.request.contextPath}/reuniao?acao=editar&id=<%= r.getId()%>">
+                        href="${pageContext.request.contextPath}/reuniao?acao=editar&id=<%= r.getId()%>">
                         Editar
                     </a>
 
                     <a class="btn-danger"
-                       href="${pageContext.request.contextPath}/reuniao?acao=excluir&id=<%= r.getId()%>"
-                       onclick="return confirm('Excluir reunião?');">
+                        href="${pageContext.request.contextPath}/reuniao?acao=excluir&id=<%= r.getId()%>"
+                        onclick="return confirm('Excluir reunião?');">
                         Excluir
                     </a>
 
                     <% if (!status.equals("encerrada")) {%>
                     <a class="btn-danger" style="background:#555;"
-                       href="${pageContext.request.contextPath}/reuniao?acao=encerrar&id=<%= r.getId()%>"
-                       onclick="return confirm('Encerrar agora?');">
+                        href="${pageContext.request.contextPath}/reuniao?acao=encerrar&id=<%= r.getId()%>"
+                        onclick="return confirm('Encerrar agora?');">
                         Encerrar
                     </a>
                     <% } %>
