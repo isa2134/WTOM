@@ -1,27 +1,22 @@
 package wtom.controller;
 
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.ServletException;
+
 import wtom.model.service.GoogleMeetService;
+import wtom.model.service.GestaoNotificacao;
+import wtom.model.service.ReuniaoService;
+
+import wtom.model.domain.*;
+import wtom.model.domain.util.UsuarioTipo;
+
+import com.google.api.client.auth.oauth2.Credential;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
-import wtom.model.domain.Notificacao;
-import wtom.model.domain.TipoNotificacao;
-import wtom.model.domain.AlcanceNotificacao;
-import wtom.model.service.GestaoNotificacao;
-import wtom.model.domain.Reuniao;
-import wtom.model.domain.Usuario;
-import wtom.model.domain.util.UsuarioTipo;
-import wtom.model.service.ReuniaoService;
-import wtom.model.service.exception.ReuniaoException;
-import com.google.api.client.auth.oauth2.Credential;
-
 
 @WebServlet("/reuniao")
 public class ReuniaoController extends HttpServlet {
@@ -31,23 +26,29 @@ public class ReuniaoController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
         String acao = req.getParameter("acao");
 
-        if (acao == null || acao.equals("listar")) {
-            listar(req, resp);
-        } else if (acao.equals("novo") || acao.equals("form")) {
-            novoForm(req, resp);
-        } else if (acao.equals("editar")) {
-            editarForm(req, resp);
-        } else if (acao.equals("excluir")) {
-            excluir(req, resp);
-        } else {
-            listar(req, resp);
+        switch (acao == null ? "listar" : acao) {
+            case "listar" ->
+                listar(req, resp);
+            case "form", "novo" ->
+                novoForm(req, resp);
+            case "editar" ->
+                editarForm(req, resp);
+            case "excluir" ->
+                excluir(req, resp);
+            case "encerrar" ->
+                encerrar(req, resp);
+            default ->
+                listar(req, resp);
         }
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
         String acao = req.getParameter("acao");
 
         if ("salvar".equals(acao)) {
@@ -60,22 +61,59 @@ public class ReuniaoController extends HttpServlet {
     }
 
     private void listar(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try {
-            List<Reuniao> lista = service.listarTodas();
-            LocalDateTime agora = LocalDateTime.now();
 
-            lista.removeIf(r ->
-                r.getDataHora() != null &&
-                r.getDataHora().plusHours(3).isBefore(agora)
-            );
+        List<Reuniao> lista = service.listarTodas();
+        LocalDateTime agora = LocalDateTime.now();
 
-            req.setAttribute("reunioes", lista);
-            req.getRequestDispatcher("/core/reuniao/listar.jsp").forward(req, resp);
+        Usuario usuario = (Usuario) req.getSession().getAttribute("usuario");
+        UsuarioTipo tipoUsuarioLogado = usuario.getTipo();
 
-        } catch (ReuniaoException e) {
-            req.setAttribute("erro", e.getMessage());
-            req.getRequestDispatcher("/core/erro.jsp").forward(req, resp);
+        lista.removeIf(r -> {
+            if (r.getAlcance() == null) {
+                return false; 
+            }
+            
+            if (tipoUsuarioLogado == UsuarioTipo.ADMINISTRADOR) {
+                return false; 
+            }
+
+            return switch (r.getAlcance()) {
+                case GERAL ->
+                    false; 
+
+                case ALUNOS ->
+                    tipoUsuarioLogado != UsuarioTipo.ALUNO && tipoUsuarioLogado != UsuarioTipo.PROFESSOR; 
+
+                case PROFESSORES ->
+                    tipoUsuarioLogado != UsuarioTipo.PROFESSOR;
+
+                case ADMINISTRADOR ->
+                    true; 
+
+                case INDIVIDUAL -> {
+                    if (r.getCriadoPor() == null) {
+                        yield true; 
+                    }
+                    yield !usuario.getId().equals(r.getCriadoPor().getId());
+                }
+            };
+        });
+        
+        lista.removeIf(r -> {
+            LocalDateTime base = r.isEncerradaManualmente()
+                            ? r.getEncerradaEm()
+                            : r.getDataHora().plusHours(3);
+
+            return base.plusHours(6).isBefore(agora);
+        });
+
+        for (Reuniao r : lista) {
+            r.setStatus(service.calcularStatus(r));
+            r.setTempoRestante(service.calcularTempoRestante(r));
         }
+
+        req.setAttribute("reunioes", lista);
+        req.getRequestDispatcher("/core/reuniao/listar.jsp").forward(req, resp);
     }
 
     private void novoForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -84,204 +122,126 @@ public class ReuniaoController extends HttpServlet {
     }
 
     private void editarForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try {
-            Long id = Long.parseLong(req.getParameter("id"));
-            Reuniao r = service.buscarPorId(id);
-            Usuario usuario = (Usuario) req.getSession().getAttribute("usuario");
 
-            if (r == null) {
-                req.setAttribute("erro", "Reunião não encontrada.");
-                listar(req, resp);
-                return;
-            }
+        Long id = Long.parseLong(req.getParameter("id"));
+        Reuniao r = service.buscarPorId(id);
+        Usuario u = (Usuario) req.getSession().getAttribute("usuario");
 
-            boolean podeEditar =
-                usuario.getTipo() == UsuarioTipo.ADMINISTRADOR ||
-                (usuario.getTipo() == UsuarioTipo.PROFESSOR &&
-                 r.getCriadoPor() != null &&
-                 usuario.getId().equals(r.getCriadoPor().getId()));
-
-            if (!podeEditar) {
-                req.setAttribute("erro", "Você não tem permissão para editar esta reunião.");
-                listar(req, resp);
-                return;
-            }
-
-            req.setAttribute("reuniao", r);
-            req.getRequestDispatcher("/core/reuniao/form.jsp").forward(req, resp);
-
-        } catch (Exception e) {
-            req.setAttribute("erro", "ID inválido.");
+        if (r == null) {
             listar(req, resp);
+            return;
         }
+
+        boolean pode
+                = u.getTipo() == UsuarioTipo.ADMINISTRADOR
+                || (u.getTipo() == UsuarioTipo.PROFESSOR
+                && r.getCriadoPor().getId().equals(u.getId()));
+
+        if (!pode) {
+            listar(req, resp);
+            return;
+        }
+
+        req.setAttribute("reuniao", r);
+        req.getRequestDispatcher("/core/reuniao/form.jsp").forward(req, resp);
     }
 
-    private void excluir(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try {
-            Long id = Long.parseLong(req.getParameter("id"));
-            Usuario usuario = (Usuario) req.getSession().getAttribute("usuario");
-            Reuniao r = service.buscarPorId(id);
+    private void excluir(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
 
-            if (r == null) {
-                req.setAttribute("erro", "Reunião não encontrada.");
-                listar(req, resp);
-                return;
-            }
+        Long id = Long.parseLong(req.getParameter("id"));
+        Usuario u = (Usuario) req.getSession().getAttribute("usuario");
 
-            boolean podeExcluir =
-                usuario.getTipo() == UsuarioTipo.ADMINISTRADOR ||
-                (usuario.getTipo() == UsuarioTipo.PROFESSOR &&
-                 r.getCriadoPor() != null &&
-                 usuario.getId().equals(r.getCriadoPor().getId()));
+        service.excluirReuniao(id, u);
 
-            if (!podeExcluir) {
-                req.setAttribute("erro", "Você não tem permissão para excluir esta reunião.");
-                listar(req, resp);
-                return;
-            }
-
-            service.excluirReuniao(id, usuario);
-            resp.sendRedirect(req.getContextPath() + "/reuniao?acao=listar");
-
-        } catch (Exception e) {
-            req.setAttribute("erro", e.getMessage());
-            listar(req, resp);
-        }
+        resp.sendRedirect(req.getContextPath() + "/reuniao?acao=listar");
     }
 
-    private void salvar(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    private void encerrar(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+
+        Long id = Long.parseLong(req.getParameter("id"));
+        Usuario usuario = (Usuario) req.getSession().getAttribute("usuario");
+
+        service.encerrarReuniao(id, usuario);
+
+        resp.sendRedirect(req.getContextPath() + "/reuniao?acao=listar");
+    }
+
+    private void salvar(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
         try {
             Usuario usuario = (Usuario) req.getSession().getAttribute("usuario");
 
             Reuniao r = new Reuniao();
+
             r.setTitulo(req.getParameter("titulo"));
             r.setDescricao(req.getParameter("descricao"));
-
-            String dataHoraStr = req.getParameter("dataHora");
-            if (dataHoraStr != null && !dataHoraStr.isEmpty()) {
-                r.setDataHora(LocalDateTime.parse(dataHoraStr, dtf));
-            }
-
-             Credential cred = (Credential) req.getSession().getAttribute("googleCredential");
-
-             if (cred != null) {
-                 try {
-                     String meetLink = GoogleMeetService.criarMeetLink(
-                             cred,
-                             r.getTitulo(),
-                             r.getDataHora()
-                     );
-                     r.setLink(meetLink);
-                 } catch (Exception e) {
-                     r.setLink(req.getParameter("link")); 
-                 }
-             } else {
-                 r.setLink(req.getParameter("link")); 
-             }
-
+            r.setDataHora(LocalDateTime.parse(req.getParameter("dataHora"), dtf));
             r.setCriadoPor(usuario);
+
+            AlcanceNotificacao alc;
+            try {
+                alc = AlcanceNotificacao.valueOf(req.getParameter("alcance"));
+            } catch (Exception ex) {
+                alc = AlcanceNotificacao.GERAL;
+            }
+            r.setAlcance(alc);
+
+            String provided = req.getParameter("link");
+            Credential cred = (Credential) req.getSession().getAttribute("googleCredential");
+
+            if (cred != null) {
+                try {
+                    String link = GoogleMeetService.criarMeetLink(cred, r.getTitulo(), r.getDataHora());
+                    r.setLink(link != null ? link : provided);
+                } catch (Exception e) {
+                    r.setLink(provided);
+                }
+            } else {
+                r.setLink(provided);
+            }
 
             service.criarReuniao(r, usuario);
 
-            GestaoNotificacao gestaoNotificacao = new GestaoNotificacao();
-            Notificacao notif = new Notificacao();
+            Notificacao n = new Notificacao();
+            n.setTipo(TipoNotificacao.REUNIAO_AGENDADA);
+            n.setMensagem("Nova reunião: " + r.getTitulo() + "\nData: " + r.getDataHora());
 
-            notif.setTipo(TipoNotificacao.REUNIAO_AGENDADA);
-            notif.setMensagem(
-                "Nova reunião agendada: \"" + r.getTitulo() + "\"\n" +
-                "Data: " + r.getDataHora() +
-                (r.getLink() != null ? "\nLink: " + r.getLink() : "")
-            );
-
-            AlcanceNotificacao alcance;
-            try {
-                String alcanceStr = req.getParameter("alcance");
-                alcance = (alcanceStr != null)
-                        ? AlcanceNotificacao.valueOf(alcanceStr)
-                        : AlcanceNotificacao.GERAL;
-            } catch (Exception e) {
-                alcance = AlcanceNotificacao.GERAL;
-            }
-
-            notif.setAlcance(alcance);
-            gestaoNotificacao.selecionaAlcance(notif, alcance);
+            GestaoNotificacao g = new GestaoNotificacao();
+            g.selecionaAlcance(n, alc);
 
             resp.sendRedirect(req.getContextPath() + "/reuniao?acao=listar");
 
-        } catch (ReuniaoException e) {
-            req.setAttribute("erro", e.getMessage());
-            req.setAttribute("reuniao", reqToReuniao(req));
-            req.getRequestDispatcher("/core/reuniao/form.jsp").forward(req, resp);
-
         } catch (Exception e) {
-            e.printStackTrace();
-            req.setAttribute("erro", "Erro interno.");
-            req.getRequestDispatcher("/core/erro.jsp").forward(req, resp);
+            req.setAttribute("erro", e.getMessage());
+            req.getRequestDispatcher("/core/reuniao/form.jsp").forward(req, resp);
         }
     }
 
-    private void atualizar(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    private void atualizar(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException, ServletException {
+
         try {
             Usuario usuario = (Usuario) req.getSession().getAttribute("usuario");
 
             Long id = Long.parseLong(req.getParameter("id"));
             Reuniao r = service.buscarPorId(id);
 
-            if (r == null) {
-                req.setAttribute("erro", "Reunião não encontrada.");
-                listar(req, resp);
-                return;
-            }
-
-            boolean podeEditar =
-                usuario.getTipo() == UsuarioTipo.ADMINISTRADOR ||
-                (usuario.getTipo() == UsuarioTipo.PROFESSOR &&
-                 r.getCriadoPor() != null &&
-                 usuario.getId().equals(r.getCriadoPor().getId()));
-
-            if (!podeEditar) {
-                req.setAttribute("erro", "Você não tem permissão para atualizar esta reunião.");
-                listar(req, resp);
-                return;
-            }
-
             r.setTitulo(req.getParameter("titulo"));
             r.setDescricao(req.getParameter("descricao"));
-
-            String dataHoraStr = req.getParameter("dataHora");
-            if (dataHoraStr != null && !dataHoraStr.isEmpty()) {
-                r.setDataHora(LocalDateTime.parse(dataHoraStr, dtf));
-            }
-
+            r.setDataHora(LocalDateTime.parse(req.getParameter("dataHora"), dtf));
             r.setLink(req.getParameter("link"));
+
+            AlcanceNotificacao alc = AlcanceNotificacao.valueOf(req.getParameter("alcance"));
+            r.setAlcance(alc);
 
             service.atualizarReuniao(r, usuario);
 
             resp.sendRedirect(req.getContextPath() + "/reuniao?acao=listar");
 
-        } catch (ReuniaoException e) {
-            req.setAttribute("erro", e.getMessage());
-            req.setAttribute("reuniao", reqToReuniao(req));
-            req.getRequestDispatcher("/core/reuniao/form.jsp").forward(req, resp);
-
         } catch (Exception e) {
-            e.printStackTrace();
-            req.setAttribute("erro", "Erro interno.");
-            req.getRequestDispatcher("/core/erro.jsp").forward(req, resp);
+            req.setAttribute("erro", e.getMessage());
+            req.getRequestDispatcher("/core/reuniao/form.jsp").forward(req, resp);
         }
-    }
-
-    private Reuniao reqToReuniao(HttpServletRequest req) {
-        Reuniao r = new Reuniao();
-        r.setTitulo(req.getParameter("titulo"));
-        r.setDescricao(req.getParameter("descricao"));
-
-        String dataHoraStr = req.getParameter("dataHora");
-        if (dataHoraStr != null && !dataHoraStr.isEmpty()) {
-            r.setDataHora(LocalDateTime.parse(dataHoraStr, dtf));
-        }
-
-        r.setLink(req.getParameter("link"));
-        return r;
     }
 }

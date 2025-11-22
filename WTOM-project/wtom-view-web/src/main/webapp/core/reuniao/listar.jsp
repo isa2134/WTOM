@@ -2,6 +2,7 @@
 <%@ page import="wtom.model.domain.Reuniao" %>
 <%@ page import="wtom.model.domain.Usuario" %>
 <%@ page import="wtom.model.domain.util.UsuarioTipo" %>
+<%@ page import="wtom.model.domain.AlcanceNotificacao" %>
 
 <%@ include file="/core/menu.jsp" %>
 
@@ -10,102 +11,157 @@
 
     boolean admin = usuario != null && usuario.getTipo() == UsuarioTipo.ADMINISTRADOR;
     boolean professor = usuario != null && usuario.getTipo() == UsuarioTipo.PROFESSOR;
+    boolean aluno = usuario != null && usuario.getTipo() == UsuarioTipo.ALUNO;
 %>
 
+<style>
+    .badge {
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .badge-ao-vivo {
+        background: #ff3b30;
+        color:white;
+    }
+    .badge-em-breve {
+        background: #ff9f0a;
+        color:white;
+    }
+    .badge-agendada {
+        background: #007aff;
+        color:white;
+    }
+    .badge-encerrada {
+        background: #8e8e93;
+        color:white;
+    }
+</style>
+
 <main class="content">
-<section class="page">
+    <section class="page">
 
-    <header class="page-header">
-        <h2>Reuniões Online</h2>
+        <header class="page-header">
+            <h2>Reuniões Online</h2>
 
-        <% if (professor || admin) { %>
-            <a class="btn" 
-               href="${pageContext.request.contextPath}/reuniao?acao=form">
+            <% if (professor || admin) { %>
+            <a class="btn" href="${pageContext.request.contextPath}/reuniao?acao=form">
                 + Nova Reunião
             </a>
-        <% } %>
-    </header>
+            <% } %>
+        </header>
 
-    <% if (reunioes == null || reunioes.isEmpty()) { %>
+        <%
+            if (reunioes == null || reunioes.isEmpty()) {
+        %>
 
         <div class="card" style="text-align:center; padding:30px;">
-            <h3 style="margin:0; color:var(--muted);">Nenhuma reunião encontrada</h3>
-            <p style="margin-top:6px; color:#8da2ab;">
-                Assim que reuniões forem criadas, aparecerão aqui.
-            </p>
+            <h3 style="margin:0;">Nenhuma reunião encontrada</h3>
         </div>
 
-    <% } else { %>
+        <%
+        } else {
+            for (Reuniao r : reunioes) {
 
-        <% for (Reuniao r : reunioes) { %>
+                boolean podeVer = false;
 
-            <%
-                boolean dono = usuario != null &&
-                        r.getCriadoPor() != null &&
-                        r.getCriadoPor().getId().equals(usuario.getId());
-            %>
+                if (r.getAlcance() == AlcanceNotificacao.GERAL) {
+                    podeVer = true;
+                } else if (r.getAlcance() == AlcanceNotificacao.ALUNOS) {
+                    podeVer = aluno || admin;
+                } else if (r.getAlcance() == AlcanceNotificacao.PROFESSORES) {
+                    podeVer = professor || admin;
+                } else if (r.getAlcance() == AlcanceNotificacao.INDIVIDUAL) {
+                    podeVer = usuario != null && usuario.getId().equals(r.getCriadoPor().getId());
+                }
 
-            <div class="card" style="padding:20px; border-left:5px solid var(--accent); margin-bottom:15px;">
+                if (!podeVer) {
+                    continue;
+                }
 
-                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                    
-                    <div style="max-width:70%;">
-                        <h3 style="margin:0; color:var(--accent);">
-                            <%= r.getTitulo() %>
-                        </h3>
+                boolean dono = usuario != null
+                        && r.getCriadoPor() != null
+                        && usuario.getId().equals(r.getCriadoPor().getId());
 
-                        <p style="margin:6px 0; color:var(--muted); font-size:0.9rem;">
-                            <i class="fa-solid fa-clock"></i>
-                            <%= r.getDataHora() != null 
-                                ? r.getDataHora().toString().replace("T", " ")
-                                : "" %>
-                        </p>
+                String status = (r.getStatus() != null) ? r.getStatus() : "indefinido";
+                String badgeClass
+                        = status.equals("aovivo") ? "badge-ao-vivo"
+                        : status.equals("embreve") ? "badge-em-breve"
+                        : status.equals("agendada") ? "badge-agendada"
+                        : "badge-encerrada";
+        %>
+
+        <div class="card" style="padding:20px; border-left:5px solid var(--accent); margin-bottom:15px;">
+
+            <div style="display:flex; justify-content:space-between;">
+
+                <div style="max-width:70%;">
+                    <h3 style="margin:0;"><%= r.getTitulo()%></h3>
+
+                    <div style="margin:6px 0;">
+                        <span class="badge <%= badgeClass%>">
+                            <%= status.toUpperCase()%>
+                        </span>
+
+                        <% if (r.getTempoRestante() != null) {%>
+                        <span style="font-size:0.8rem; margin-left:10px;">
+                            <%= r.getTempoRestante()%>
+                        </span>
+                        <% }%>
                     </div>
 
-                    <div style="display:flex; gap:8px;">
-
-                        <a href="<%= r.getLink() %>" target="_blank" class="btn-light" style="white-space:nowrap;">
-                            Entrar
-                        </a>
-
-                        <% if (admin || dono) { %>
-
-                            <a class="btn-light"
-                               href="${pageContext.request.contextPath}/reuniao?acao=editar&id=<%= r.getId() %>">
-                                Editar
-                            </a>
-
-                            <a class="btn-danger"
-                               style="padding:8px 12px; font-size:0.85rem;"
-                               href="${pageContext.request.contextPath}/reuniao?acao=excluir&id=<%= r.getId() %>"
-                               onclick="return confirm('Excluir reunião?');">
-                                Excluir
-                            </a>
-
-                        <% } %>
-
-                    </div>
-
-                </div>
-
-                <% if (r.getDescricao() != null && !r.getDescricao().isBlank()) { %>
-                    <p style="margin-top:15px; color:#333;">
-                        <%= r.getDescricao() %>
+                    <p style="margin:6px 0;">
+                        <%= r.getDataHora().toString().replace("T", " ")%>
                     </p>
-                <% } %>
-
-                <div style="margin-top:12px; font-size:0.9rem; color:var(--muted);">
-                    Criado por 
-                    <strong>
-                        <%= r.getCriadoPor() != null ? r.getCriadoPor().getLogin() : "Sistema" %>
-                    </strong>
                 </div>
 
+                <div style="display:flex; gap:8px;">
+
+                    <% if (!status.equals("encerrada")) {%>
+                    <a class="btn-light" href="<%= r.getLink()%>" target="_blank">Entrar</a>
+                    <% } %>
+
+                    <% if (admin || dono) {%>
+                    <a class="btn-light"
+                       href="${pageContext.request.contextPath}/reuniao?acao=editar&id=<%= r.getId()%>">
+                        Editar
+                    </a>
+
+                    <a class="btn-danger"
+                       href="${pageContext.request.contextPath}/reuniao?acao=excluir&id=<%= r.getId()%>"
+                       onclick="return confirm('Excluir reunião?');">
+                        Excluir
+                    </a>
+
+                    <% if (!status.equals("encerrada")) {%>
+                    <a class="btn-danger" style="background:#555;"
+                       href="${pageContext.request.contextPath}/reuniao?acao=encerrar&id=<%= r.getId()%>"
+                       onclick="return confirm('Encerrar agora?');">
+                        Encerrar
+                    </a>
+                    <% } %>
+
+                    <% } %>
+
+                </div>
             </div>
 
-        <% } %>
+            <% if (r.getDescricao() != null && !r.getDescricao().isBlank()) {%>
+            <p style="margin-top:15px;"><%= r.getDescricao()%></p>
+            <% }%>
 
-    <% } %>
+            <div style="margin-top:12px;">
+                Criado por <strong><%= r.getCriadoPor().getLogin()%></strong>
+            </div>
 
-</section>
+        </div>
+
+        <%
+                }
+            }
+        %>
+
+    </section>
 </main>

@@ -10,14 +10,16 @@
     Usuario usuario = (Usuario) session.getAttribute("usuario");
 
     boolean podeGerir = usuario != null &&
-                (usuario.getTipo() == UsuarioTipo.PROFESSOR ||
-                usuario.getTipo() == UsuarioTipo.ADMINISTRADOR);
+            (usuario.getTipo() == UsuarioTipo.PROFESSOR ||
+             usuario.getTipo() == UsuarioTipo.ADMINISTRADOR);
 
     boolean googleConectado = (session.getAttribute("googleCredential") != null);
 
     String dataHoraFormatada = "";
     if (r.getDataHora() != null) {
-        dataHoraFormatada = r.getDataHora().toString().replace(" ", "T");
+        dataHoraFormatada = r.getDataHora().format(
+            java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
+        );
     }
 %>
 
@@ -32,15 +34,22 @@
 
 <body class="no-sidebar" style="background-color:#c2cbd3">
 <main class="content">
-    
+
     <div class="form-reuniao-container">
         <section class="page">
-            
+
             <header class="page-header">
                 <h2><%= (r.getId() == null ? "Nova Reunião" : "Editar Reunião") %></h2>
             </header>
 
             <div class="card">
+
+                <% if (request.getAttribute("erro") != null) { %>
+                    <div style="background:#ffdddd; padding:10px; border:1px solid #bb0000;
+                                color:#990000; margin-bottom:15px; border-radius:4px;">
+                        <strong>Erro:</strong> <%= request.getAttribute("erro") %>
+                    </div>
+                <% } %>
 
                 <% if (podeGerir) { %>
                     <div class="google-connect-area">
@@ -60,7 +69,7 @@
                 <form action="${pageContext.request.contextPath}/reuniao" method="post" class="form-grid">
 
                     <input type="hidden" name="acao"
-                               value="<%= (r.getId() == null ? "salvar" : "atualizar") %>">
+                           value="<%= (r.getId() == null ? "salvar" : "atualizar") %>">
 
                     <% if (r.getId() != null) { %>
                         <input type="hidden" name="id" value="<%= r.getId() %>">
@@ -94,7 +103,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="alcance">Alcance da Notificação</label>
+                        <label for="alcance">Alcance</label>
                         <select id="alcance" name="alcance">
                             <option value="GERAL">Todos</option>
                             <option value="ALUNOS">Somente Alunos</option>
