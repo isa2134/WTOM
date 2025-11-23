@@ -14,13 +14,13 @@
             </div>
 
             <nav class="menu">
-                <a href=""> <span>Início</span></a>
-                <a href=""> <span>Olimpíadas</span></a>
-                <a href=""> <span>Ranking</span></a>
-                <a href=""> <span>Materiais</span></a>
-                <a href=""> <span>Dúvidas</span></a>
-                <a href="notificacoes.jsp"> <span>Notificações</span></a>
-                <a href=""> <span>Perfil</span></a>
+<a href="${pageContext.request.contextPath}/"> <span>Início</span></a>
+                <a href="${pageContext.request.contextPath}/olimpiada"> <span>Olimpíadas</span></a>
+                <a href="${pageContext.request.contextPath}/ranking"> <span>Ranking</span></a>
+                <a href="${pageContext.request.contextPath}/ConteudoController?acao=listarTodos"><span>Materiais</span></a>
+                <a href="${pageContext.request.contextPath}/DuvidaController?acao=listar"><span>Dúvidas</span></a>
+                <a href="${pageContext.request.contextPath}/Notificacao"> <span>Notificações</span></a>
+                <a href="${usuarios/perfil}"> <span>Perfil</span></a>
             </nav>
         </aside>
         <script src="../js/cssControl.js"></script>

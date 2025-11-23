@@ -24,29 +24,36 @@
 
             <h4>Respostas:</h4>
             <c:forEach var="resposta" items="${respostas}">
-                <b><small>Enviada por ${resposta.nomeAutor} em 
-                        <c:if test="${not empty resposta.dataFormatada}">
-                            <fmt:formatDate value="${resposta.dataFormatada}" pattern="dd/MM/yyyy HH:mm"/>
-                        </c:if>
-                    </small></b>
+                <b><small>Enviada por ${resposta.nomeAutor}
+                    <c:if test="${not empty resposta.dataFormatada}">
+                        em <fmt:formatDate value="${resposta.dataFormatada}" pattern="dd/MM/yyyy HH:mm"/>
+                    </c:if>
+                </small></b>
+
                 <div style="border:1px solid #ccc; padding:10px; margin-bottom:5px;">
                     <p><small>${resposta.conteudo}</small></p>
                 </div>
-                        <br>
+                <br>
             </c:forEach>
 
-            
-            <c:if test="${usuario.tipo.name() != 'ALUNO'}">
-                <h4>Nova resposta:</h4>
-                <form action="${pageContext.request.contextPath}/DuvidaController" method="post">
-                    <input type="hidden" name="acao" value="salvarResposta">
-                    <input type="hidden" name="idDuvida" value="${duvida.id}">
-                    <textarea name="conteudo" required></textarea><br>
-                    <button type="submit" class="btn">Enviar</button>
-                </form>
+            <c:if test="${usuario.id == duvida.idAluno}">
+                <p style="color:red;"><strong>Você não pode responder a própria dúvida.</strong></p>
             </c:if>
-            <c:if test="${usuario.tipo.name() == 'ALUNO'}">
-                <p><em>Alunos não podem responder dúvidas.</em></p>
+
+            <c:if test="${usuario.id != duvida.idAluno}">
+                <c:if test="${usuario.tipo.name() != 'ALUNO'}">
+                    <h4>Nova resposta:</h4>
+                    <form action="${pageContext.request.contextPath}/DuvidaController" method="post">
+                        <input type="hidden" name="acao" value="salvarResposta">
+                        <input type="hidden" name="idDuvida" value="${duvida.id}">
+                        <textarea name="conteudo" required></textarea><br>
+                        <button type="submit" class="btn">Enviar</button>
+                    </form>
+                </c:if>
+
+                <c:if test="${usuario.tipo.name() == 'ALUNO'}">
+                    <p><em>Alunos não podem responder dúvidas.</em></p>
+                </c:if>
             </c:if>
         </div>
     </div>

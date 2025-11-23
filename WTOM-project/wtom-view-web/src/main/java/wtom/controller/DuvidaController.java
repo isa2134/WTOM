@@ -39,7 +39,7 @@ public class DuvidaController extends HttpServlet {
             else listarDuvidas(request, response);
         } catch (PersistenciaException e) {
             request.setAttribute("erro", e.getMessage());
-            request.getRequestDispatcher("/erro.jsp").forward(request, response);
+            request.getRequestDispatcher("/core/erro.jsp").forward(request, response);
         }
     }
 
@@ -53,7 +53,7 @@ public class DuvidaController extends HttpServlet {
             else listarDuvidas(request, response);
         } catch (PersistenciaException e) {
             request.setAttribute("erro", e.getMessage());
-            request.getRequestDispatcher("/erro.jsp").forward(request, response);
+            request.getRequestDispatcher("/core/erro.jsp").forward(request, response);
         }
     }
 
