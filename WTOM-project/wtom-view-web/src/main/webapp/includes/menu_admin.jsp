@@ -1,8 +1,8 @@
 <aside id="sidebar" class="sidebar">
     <div class="brand">
-        <div class="logo">TOM</div>
+        <div class="logo">WT</div>
         <div>
-            <h1>TOM</h1>
+            <h1>WTOM</h1>
             <p>Gestão de Usuários</p>
         </div>
     </div>

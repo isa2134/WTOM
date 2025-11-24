@@ -1,5 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<jsp:include page="/core/header.jsp">
+<jsp:include page="/includes/header.jsp">
     <jsp:param name="pageTitle" value="Gestão de Usuários" />
 </jsp:include>
 

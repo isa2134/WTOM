@@ -1,10 +1,6 @@
-const sidebarToggleEl = document.getElementById('sidebar-toggle');
-if (sidebarToggleEl) {
-    sidebarToggleEl.addEventListener('click', () => {
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar) sidebar.classList.toggle('collapsed');
-    });
-}
+document.getElementById('sidebar-toggle').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('collapsed');
+});
 
 const toggleModal = (show) => {
     const modal = document.getElementById('role-select-modal');
@@ -37,15 +33,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (btnSelectAluno) {
         btnSelectAluno.addEventListener('click', () => {
-            const base = typeof APP_CONTEXT_PATH !== 'undefined' ? APP_CONTEXT_PATH : '';
-            window.location.href = base + '/CadastroUsuarioController?tipo=ALUNO';
+            window.location.href = 'usuarios/cadastro.jsp?tipo=ALUNO';
         });
     }
 
     if (btnSelectProfessor) {
         btnSelectProfessor.addEventListener('click', () => {
-            const base = typeof APP_CONTEXT_PATH !== 'undefined' ? APP_CONTEXT_PATH : '';
-            window.location.href = base + '/CadastroUsuarioController?tipo=PROFESSOR';
+            window.location.href = 'usuarios/cadastro.jsp?tipo=PROFESSOR';
         });
     }
 });

@@ -10,4 +10,5 @@
     <script defer src="${pageContext.request.contextPath}/js/cssControl.js"></script>
 </head>
 <body>
+<jsp:include page="/includes/menu_admin.jsp" />
 <main class="content">

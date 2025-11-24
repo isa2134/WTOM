@@ -1,5 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<jsp:include page="/core/header.jsp">
+<jsp:include page="/includes/header.jsp">
     <jsp:param name="pageTitle" value="Editar Usuário" />
 </jsp:include>
 
@@ -62,35 +62,10 @@
 
                     <% if (usuario.getTipo() != null && usuario.getTipo().name().equals("ALUNO")) { %>
                         <label>Curso</label>
-                        <select name="curso" required>
-                            <option value="">Selecione um curso</option>
-
-                            <%
-                                String cursoSel = (aluno != null ? aluno.getCurso() : "");
-                                String[] cursos = {
-                                    "Edificações", "Eletrônica", "Eletrotécnica", "Equipamentos Biomédicos",
-                                    "Estradas", "Hospedagem", "Informática", "Mecânica", "Mecatrônica",
-                                    "Meio Ambiente", "Química", "Trânsito", "Redes de Computadores"
-                                };
-                                for (String c : cursos) {
-                            %>
-                                <option value="<%= c %>" <%= c.equals(cursoSel) ? "selected" : "" %>><%= c %></option>
-                            <% } %>
-                        </select>
+                        <input type="text" name="curso" value="<%= aluno != null ? aluno.getCurso() : "" %>">
 
                         <label>Série</label>
-                        <select name="serie" required>
-                            <option value="">Selecione a série</option>
-
-                            <%
-                                String serieSel = (aluno != null ? aluno.getSerie() : "");
-                                String[] series = {"1º Ano", "2º Ano", "3º Ano"};
-                                for (String s : series) {
-                            %>
-                                <option value="<%= s %>" <%= s.equals(serieSel) ? "selected" : "" %>><%= s %></option>
-                            <% } %>
-                        </select>
-
+                        <input type="text" name="serie" value="<%= aluno != null ? aluno.getSerie() : "" %>">
                     <% } else if (usuario.getTipo() != null && usuario.getTipo().name().equals("PROFESSOR")) { %>
                         <label>Área</label>
                         <input type="text" name="area" value="<%= professor != null ? professor.getArea() : "" %>">
@@ -105,63 +80,5 @@
         </div>
     </div>
 </div>
-
-<div id="edit-confirm-modal" 
-     class="modal hidden" 
-     aria-modal="true" 
-     role="dialog" 
-     aria-labelledby="edit-modal-title">
-
-    <div class="modal-backdrop" aria-hidden="true"></div>
-
-    <div class="modal-content">
-        <div class="card" style="padding: 30px;">
-            <button class="close-btn" id="edit-btn-close-modal" aria-label="Fechar janela">×</button>
-
-            <h3 id="edit-modal-title" style="margin-top: 0; color: var(--accent);">
-                Confirmar Alterações
-            </h3>
-
-            <p style="color: var(--muted); margin-bottom: 25px;">
-                Deseja realmente salvar as alterações realizadas?
-            </p>
-
-            <div class="role-selection-actions">
-                <button id="edit-btn-confirm" class="btn">Confirmar</button>
-                <button id="edit-btn-cancel" class="btn secondary">Cancelar</button>
-            </div>
-        </div>
-    </div>
-</div>
-        
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const form = document.querySelector("form");
-        const submitBtn = document.querySelector("button[type='submit']");
-
-        const modal = document.getElementById("edit-confirm-modal");
-        const backdrop = modal.querySelector(".modal-backdrop");
-
-        const btnClose = document.getElementById("edit-btn-close-modal");
-        const btnConfirm = document.getElementById("edit-btn-confirm");
-        const btnCancel = document.getElementById("edit-btn-cancel");
-
-        const openModal = () => modal.classList.remove("hidden");
-        const closeModal = () => modal.classList.add("hidden");
-
-        submitBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            openModal();
-        });
-
-        btnClose.addEventListener("click", closeModal);
-        btnCancel.addEventListener("click", closeModal);
-        backdrop.addEventListener("click", closeModal);
-
-        btnConfirm.addEventListener("click", () => {
-            form.submit();
-        });
-    });
-</script>
 
 <jsp:include page="/includes/footer.jsp" />

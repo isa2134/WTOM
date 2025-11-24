@@ -21,7 +21,7 @@ public class AutorizacaoFiltro implements Filter {
             caminho.contains("/js/") ||
             caminho.contains("/images/") ||
             caminho.contains("/logincontroller") ||
-            caminho.contains("/cadastrousuariocontroller") ||
+            caminho.contains("/cadastrocontroller") ||
             caminho.contains("/recuperarsenha") ||
             caminho.contains("/favicon")
         ) {
@@ -38,4 +38,5 @@ public class AutorizacaoFiltro implements Filter {
 
         chain.doFilter(request, response);
     }
+
 }

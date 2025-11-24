@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class Usuario {
 
-    private Long id;
+    private long id;
     private String cpf;
     private String nome;
     private String telefone;

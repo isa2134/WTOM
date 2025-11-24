@@ -1,5 +1,6 @@
 package wtom.controller.usuario;
 
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -24,16 +25,10 @@ public class CadastroUsuarioController extends HttpServlet {
     private final AlunoService alunoService = new AlunoService();
     private final ProfessorService professorService = new ProfessorService();
 
-    private static final String VIEW_CADASTRO = "/usuarios/cadastro.jsp";
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
-        String tipo = req.getParameter("tipo");
-        req.setAttribute("tipo", tipo);
-
-        req.getRequestDispatcher(VIEW_CADASTRO).forward(req, resp);
+        req.getRequestDispatcher("/usuarios/cadastro.jsp").forward(req, resp);
     }
 
     @Override
@@ -51,7 +46,7 @@ public class CadastroUsuarioController extends HttpServlet {
             String tipoStr = req.getParameter("tipo");
 
             if (cpf == null || !ValidadorUtil.validarCPF(cpf))
-                throw new NegocioException("CPF inválido.");
+                throw new NegocioException("CPF inválido. Use um CPF válido (ex: 111.444.777-35).");
 
             if (email == null || !ValidadorUtil.validarEmail(email))
                 throw new NegocioException("E-mail inválido.");
@@ -75,54 +70,45 @@ public class CadastroUsuarioController extends HttpServlet {
             UsuarioTipo tipo = UsuarioTipo.valueOf(tipoStr);
 
             Usuario usuario = new Usuario(null, cpf, nome, telefone, email, data, senha, login, tipo, null);
-
+            Usuario criado = usuarioService.cadastrarUsuarioERetornar(usuario); // retorna com ID gerado
 
             if (tipo == UsuarioTipo.ALUNO) {
-
                 String curso = req.getParameter("curso");
                 String serie = req.getParameter("serie");
-
                 if (curso == null || curso.isBlank())
                     throw new NegocioException("Curso é obrigatório para alunos.");
-
                 if (serie == null || serie.isBlank())
                     throw new NegocioException("Série é obrigatória para alunos.");
 
-                Aluno aluno = new Aluno(usuario, curso, serie);
-                alunoService.cadastrarAlunoComUsuario(aluno);
-
-                usuario = aluno.getUsuario(); 
+                Aluno a = new Aluno(criado, curso, serie);
+                alunoService.cadastrarAluno(a);
 
             } else if (tipo == UsuarioTipo.PROFESSOR) {
-
                 String area = req.getParameter("area");
-
                 if (area == null || area.isBlank())
                     throw new NegocioException("Área é obrigatória para professores.");
 
-                Professor professor = new Professor(usuario, area);
-                professorService.cadastrarProfessor(professor);
-
-                usuario = professor.getUsuario(); 
+                Professor p = new Professor(criado, area);
+                professorService.cadastrarProfessor(p);
             }
 
             HttpSession session = req.getSession();
-            session.setAttribute("usuarioLogado", usuario);
+            session.setAttribute("usuarioLogado", criado);
             session.setAttribute("sucesso", "Usuário cadastrado com sucesso!");
 
-            resp.sendRedirect(req.getContextPath() + "/menu.jsp");
+            resp.sendRedirect(req.getContextPath() + "/core/menu.jsp");
 
         } catch (NegocioException e) {
             req.setAttribute("erro", e.getMessage());
-            req.getRequestDispatcher(VIEW_CADASTRO).forward(req, resp);
+            req.getRequestDispatcher("/usuarios/cadastro.jsp").forward(req, resp);
 
         } catch (DateTimeParseException e) {
             req.setAttribute("erro", "Formato de data inválido. Use AAAA-MM-DD.");
-            req.getRequestDispatcher(VIEW_CADASTRO).forward(req, resp);
+            req.getRequestDispatcher("/usuarios/cadastro.jsp").forward(req, resp);
 
         } catch (Exception e) {
             req.setAttribute("erro", "Erro inesperado: " + e.getMessage());
-            req.getRequestDispatcher(VIEW_CADASTRO).forward(req, resp);
+            req.getRequestDispatcher("/usuarios/cadastro.jsp").forward(req, resp);
         }
     }
 }

@@ -236,22 +236,21 @@ public class UsuarioDAO {
     }
 
     private Usuario mapResultSet(ResultSet rs) throws SQLException {
-
-        Usuario u = new Usuario(
-            rs.getLong("id"),
-            rs.getString("cpf"),
-            rs.getString("nome"),
-            rs.getString("telefone"),
-            rs.getString("email"),
-            rs.getDate("data_nascimento") != null 
-                ? rs.getDate("data_nascimento").toLocalDate() 
-                : null,
-            rs.getString("senha"),
-            rs.getString("login"),
-            UsuarioTipo.valueOf(rs.getString("tipo")),
-            null
-        );
+        Usuario u = new Usuario(rs.getString("login"), rs.getString("cpf"));
+        u.setId(rs.getLong("id"));
+        u.setNome(rs.getString("nome"));
+        u.setTelefone(rs.getString("telefone"));
+        u.setEmail(rs.getString("email"));
+        
+        java.sql.Date dataSql = rs.getDate("data_nascimento");
+        if (dataSql != null) {
+            u.setDataDeNascimento(dataSql.toLocalDate());
+        } else {
+            u.setDataDeNascimento(null); 
+        }
+        
+        u.setSenha(rs.getString("senha"));
+        u.setTipo(UsuarioTipo.valueOf(rs.getString("tipo")));
         return u;
     }
-
 }
