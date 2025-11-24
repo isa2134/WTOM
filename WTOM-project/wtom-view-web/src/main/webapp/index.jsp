@@ -26,8 +26,8 @@
                   <p style="color: var(--muted); margin-bottom: 25px;">Para continuar, você se cadastrará como:</p>
 
                   <div class="role-selection-actions">
-                    <button class="btn" id="btn-select-aluno" data-role="aluno">Aluno</button>
-                    <button class="btn secondary" id="btn-select-professor" data-role="professor">Professor</button>
+                    <a class="btn" href="${pageContext.request.contextPath}/CadastroUsuarioController?tipo=ALUNO" id="btn-select-aluno" data-role="aluno">Aluno</a>
+                    <a class="btn secondary" href="${pageContext.request.contextPath}/CadastroUsuarioController?tipo=PROFESSOR" id="btn-select-professor" data-role="professor">Professor</a>
                   </div>
                 </div>
               </div>
@@ -57,6 +57,9 @@
           </main>
 
         </div>
+        <script>
+            const APP_CONTEXT_PATH = '${pageContext.request.contextPath}';
+        </script>
         <script src="js/cssControl.js"></script>
     </body>
 </html>

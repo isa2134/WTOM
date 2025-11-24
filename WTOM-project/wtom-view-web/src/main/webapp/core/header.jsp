@@ -2,7 +2,7 @@
 <%@page import="wtom.model.domain.Usuario" %>
 
 <%
-    Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+    Usuario usuario = (Usuario) request.getSession().getAttribute("usuarioLogado");
 %>
 
 <!DOCTYPE html>
@@ -27,6 +27,7 @@
                 <a href="${pageContext.request.contextPath}/ConteudoController?acao=listarTodos"><span>Materiais</span></a>
                 <a href="${pageContext.request.contextPath}/duvidas"> <span>Dúvidas</span></a>
                 <a href="${pageContext.request.contextPath}/notificacao"> <span>Notificações</span></a>
-                <a href="${usuarios/perfil}"> <span>Perfil</span></a>
+                <a href="${pageContext.request.contextPath}/PerfilUsuarioController"> <span>Perfil</span></a>
+
             </nav>
         </aside>
