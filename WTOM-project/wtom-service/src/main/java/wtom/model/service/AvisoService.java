@@ -3,9 +3,12 @@ package wtom.model.service;
 import java.time.LocalDateTime;
 import wtom.model.dao.AvisoDAO;
 import wtom.model.domain.Aviso;
-import wtom.dao.exception.PersistenciaException;
 import java.time.Duration;
 import java.util.List;
+import wtom.model.domain.Usuario;
+import wtom.model.domain.util.UsuarioTipo;
+import wtom.model.service.exception.AvisoException;
+import wtom.dao.exception.PersistenciaException;
 
 public class AvisoService {
 
@@ -14,8 +17,33 @@ public class AvisoService {
     public AvisoService() {
         this.avisoDAO = AvisoDAO.getInstance();
     }
+    public void validarAviso(Aviso r, Usuario usuarioLogado){
+        if (usuarioLogado == null) {
+            throw new AvisoException("Usuário não autenticado.");
+        }
 
-    public void inserir(Aviso aviso) throws PersistenciaException {
+        if (usuarioLogado.getTipo() == null
+                || !(usuarioLogado.getTipo() == UsuarioTipo.PROFESSOR
+                || usuarioLogado.getTipo() == UsuarioTipo.ADMINISTRADOR)) {
+            throw new AvisoException("Você não tem permissão para criar ou editar avisos.");
+        }
+
+        if (r.getTitulo() == null || r.getTitulo().isBlank()) {
+            throw new AvisoException("Título é obrigatório.");
+        }
+
+        if (r.getDataExpiracao().isBefore(LocalDateTime.now())) {
+            throw new AvisoException("A data do aviso deve ser futura.");
+        }
+
+
+        if (r.getLinkAcao() == null || r.getLinkAcao().isBlank()) {
+            throw new AvisoException("Link do aviso é obrigatório.");
+        }
+    }
+    
+    public void inserir(Aviso aviso, Usuario usuarioLogado) throws PersistenciaException {
+        validarAviso(aviso, usuarioLogado);
         avisoDAO.inserir(aviso);
     }
 
