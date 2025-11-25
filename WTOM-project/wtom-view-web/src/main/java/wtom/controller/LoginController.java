@@ -33,7 +33,7 @@ public class LoginController extends HttpServlet {
             if(usuario != null){
                 HttpSession sessao = request.getSession();
                 sessao.setAttribute("usuario", usuario);
-                response.sendRedirect(request.getContextPath() + "/core/menu.jsp");
+                response.sendRedirect(request.getContextPath() + "/core/home.jsp");
             }
             else{
                 request.getSession().setAttribute("erroLogin", "Login ou senha incorretos");

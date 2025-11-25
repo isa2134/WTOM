@@ -120,7 +120,7 @@ public class InitDB {
                 data_do_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 tipo ENUM('OLIMPIADA_ABERTA', 'REUNIAO_AGENDADA', 'REUNIAO_CHEGANDO',
                           'DESAFIO_SEMANAL', 'CORRECAO_DE_EXERCICIO', 'OUTROS') NOT NULL,
-                alcance ENUM('GERAL', 'INDIVIDUAL', 'ALUNOS', 'PROFESSORES') NOT NULL,
+                alcance ENUM('GERAL', 'INDIVIDUAL', 'ALUNOS', 'PROFESSORES','ADMINISTRADOR') NOT NULL,
                 lida BOOLEAN DEFAULT FALSE,
                 destinatario_id BIGINT,
                 FOREIGN KEY (destinatario_id) REFERENCES usuario(id)
@@ -162,8 +162,29 @@ public class InitDB {
         }
     }
 
+    public void initReunioes() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS reuniao (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                titulo VARCHAR(255) NOT NULL,
+                descricao TEXT,
+                data_hora DATETIME NOT NULL,
+                link VARCHAR(255),
+                criado_por BIGINT NOT NULL,
+                alcance ENUM('GERAL','INDIVIDUAL','ALUNOS','PROFESSORES','ADMINISTRADOR') DEFAULT 'GERAL',
+                encerrada_manualmente BOOLEAN DEFAULT FALSE,
+                encerrada_em DATETIME NULL,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FOREIGN KEY (criado_por) REFERENCES usuario(id)
+                    ON DELETE CASCADE ON UPDATE CASCADE
+            );
+        """;
 
-
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
 
     public void initTodos() throws PersistenciaException {
         try {
@@ -174,6 +195,7 @@ public class InitDB {
             initNotificacoes();  
             initOlimpiadas();
             initUsuariosPadrao();
+            initReunioes();
             initAviso();
         } catch (SQLException e) {
             throw new PersistenciaException("erro ao inicializar tabelas: " + e.getMessage());

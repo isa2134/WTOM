@@ -32,3 +32,8 @@ replay_pid*
 /WTOM-project/wtom-service/target/
 /WTOM-project/wtom-view-web/target/
 /WTOM-project/wtom-dao-sql/target/
+
+# Ignorar o client_secret.json
+wtom-view-web/src/main/resources/client_secret.json
+
+WTOM-project/wtom-view-web/src/main/resources/client_secret.json
