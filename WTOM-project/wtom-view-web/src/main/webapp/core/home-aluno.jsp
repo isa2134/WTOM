@@ -47,7 +47,7 @@
                            
         <div class="aviso-separado">
              <div class="page-content-padding" style="padding: 0 40px; color: white;"> 
-                 <jsp:include page="/core/aviso.jsp" /> 
+                 <jsp:include page="/core/aviso/aviso.jsp" />
              </div>
         </div>                
     </main>

@@ -1,7 +1,6 @@
 package wtom.controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -29,27 +28,25 @@ public class LoginController extends HttpServlet {
             
             UsuarioService manterUsuario = new UsuarioService();
             Usuario usuario = manterUsuario.buscarPorLoginSenha(login, senha);
-            
+
             if(usuario != null){
                 HttpSession sessao = request.getSession();
+                
                 sessao.setAttribute("usuario", usuario);
-                response.sendRedirect(request.getContextPath() + "/core/home.jsp");
+                sessao.setAttribute("usuarioLogado", usuario); 
+                sessao.setAttribute("usuarioTipo", usuario.getTipo());
+                
+                System.out.println("LOGIN OK → " + usuario.getEmail());
+                
+                System.out.println("Redirecionando para: " + request.getContextPath() + "/home");
+                response.sendRedirect(request.getContextPath() + "/home"); 
             }
+// ...
             else{
                 request.getSession().setAttribute("erroLogin", "Login ou senha incorretos");
                 response.sendRedirect(request.getContextPath() + "/index.jsp");
-
             }
 
-            HttpSession sessao = request.getSession(true);
-            sessao.setAttribute("usuario", usuario); 
-            sessao.setAttribute("usuarioLogado", usuario); 
-            sessao.setAttribute("usuarioTipo", usuario.getTipo()); 
-
-            System.out.println("LOGIN OK → " + usuario.getEmail());
-            System.out.println("Redirecionando para: " + request.getContextPath() + "/core/menu.jsp");
-
-            response.sendRedirect(request.getContextPath() + "/core/menu.jsp");
         }
         catch (wtom.model.service.exception.UsuarioInvalidoException ex) {
             System.out.println("Exceção de login: " + ex.getMessage());
@@ -61,5 +58,4 @@ public class LoginController extends HttpServlet {
             e.printStackTrace();
         }
     }
-
 }
