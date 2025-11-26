@@ -2,6 +2,7 @@ package wtom.model.domain;
 
 import wtom.model.domain.util.UsuarioTipo;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 public class Usuario {
@@ -15,7 +16,7 @@ public class Usuario {
     private String senha;
     private String login;
     private UsuarioTipo tipo;
-    private Map<String, String> premiacoes;
+    private List<Premiacao> premiacoes;
 
     public Usuario(String login, String cpf) {
         this.login = login;
@@ -31,7 +32,7 @@ public class Usuario {
 
     public Usuario(Long id, String cpf, String nome, String telefone, String email,
                    LocalDate dataDeNascimento, String senha, String login,
-                   UsuarioTipo tipo, Map<String, String> premiacoes) {
+                   UsuarioTipo tipo, List<Premiacao> premiacoes) {
         this.id = id;
         this.cpf = cpf;
         this.nome = nome;
@@ -71,8 +72,8 @@ public class Usuario {
     public UsuarioTipo getTipo() { return tipo; }
     public void setTipo(UsuarioTipo tipo) { this.tipo = tipo; }
 
-    public Map<String, String> getPremiacoes() { return premiacoes; }
-    public void setPremiacoes(Map<String, String> premiacoes) { this.premiacoes = premiacoes; }
+    public List<Premiacao> getPremiacoes() { return premiacoes; }
+    public void setPremiacoes(List<Premiacao> premiacoes) { this.premiacoes = premiacoes; }
 
     @Override
     public String toString() {
