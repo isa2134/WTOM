@@ -35,6 +35,26 @@ public class InitDB {
             st.executeUpdate(sql);
         }
     }
+    public void initAviso() throws SQLException {
+    String sql = """
+        CREATE TABLE IF NOT EXISTS aviso (
+            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            titulo VARCHAR(200) NOT NULL,
+            descricao TEXT NOT NULL,
+            link_acao VARCHAR(500),
+            data_criacao DATETIME NOT NULL,
+            data_expiracao DATETIME,
+            ativo TINYINT(1) DEFAULT 1,
+
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        );
+    """;
+
+    try (Statement st = con.createStatement()) {
+        st.executeUpdate(sql);
+    }
+}
 
     public void initProfessor() throws SQLException {
         String sql = """
@@ -195,6 +215,7 @@ public class InitDB {
             initOlimpiadas();
             initUsuariosPadrao();
             initReunioes();
+            initAviso();
             initInscricoes();
         } catch (SQLException e) {
             throw new PersistenciaException("erro ao inicializar tabelas: " + e.getMessage());
