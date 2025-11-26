@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.SQLException;
 import wtom.dao.exception.PersistenciaException;
+import wtom.model.domain.Inscricao;
 
 public class InitDB {
 
@@ -148,6 +149,24 @@ public class InitDB {
         }
     }
     
+    public void initInscricoes() throws SQLException{
+        String sql = "CREATE TABLE IF NOT EXISTS inscricoes("
+                +"nome VARCHAR(100) NOT NULL, "  
+                +"cpf VARCHAR(14) NOT NULL, "
+                +"id_olimpiada INT NOT NULL, "
+                +"id_usuario BIGINT NOT NULL, "
+                +"FOREIGN KEY(id_usuario) REFERENCES usuario(id), "
+                +"FOREIGN KEY(id_olimpiada) REFERENCES olimpiadas(id))";
+        
+        /*InscricaoDAO i = InscricaoDAO.getInstance();
+        Inscricao insc = new Inscricao("Caio Fillipe Souza da Silva", "171.809.086-22", 1);
+        i.cadastrarInscricao(insc);*/
+        
+        try(Statement st = con.createStatement()){
+            st.executeUpdate(sql);
+        }
+    }
+    
     public void initUsuariosPadrao() throws SQLException {
         String sql = """
             INSERT IGNORE INTO usuario (cpf, nome, telefone, email, data_nascimento, senha, login, tipo)
@@ -197,6 +216,7 @@ public class InitDB {
             initUsuariosPadrao();
             initReunioes();
             initAviso();
+            initInscricoes();
         } catch (SQLException e) {
             throw new PersistenciaException("erro ao inicializar tabelas: " + e.getMessage());
         }

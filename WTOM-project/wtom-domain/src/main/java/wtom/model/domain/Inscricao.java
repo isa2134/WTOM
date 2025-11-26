@@ -1,17 +1,17 @@
 package wtom.model.domain;
 
-import java.time.LocalDate;
 
 public class Inscricao {
     private String cpf;
     private String nome;
-    private LocalDate dataDeNascimento;
     protected int idOlimpiada;
+    private long idUsuario;
 
-    public Inscricao(String cpf, String nome, LocalDate dataDeNascimento) {
-        this.cpf = cpf;
+    public Inscricao(String nome, String cpf, int idOlimpiada, Long idUsuario) {
         this.nome = nome;
-        this.dataDeNascimento = dataDeNascimento;
+        this.cpf = cpf;
+        this.idOlimpiada = idOlimpiada;
+        this.idUsuario = idUsuario;
     }
     
 
@@ -30,13 +30,21 @@ public class Inscricao {
     public void setNome(String nome) {
         this.nome = nome;
     }
-
-    public LocalDate getDataDeNascimento() {
-        return dataDeNascimento;
+    
+    public int getIdOlimpiada(){
+        return idOlimpiada;
+    }
+    
+    public void setIdOlimpiada(int id){
+        this.idOlimpiada = id;
     }
 
-    public void setDataDeNascimento(LocalDate dataDeNascimento) {
-        this.dataDeNascimento = dataDeNascimento;
+    public Long getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(Long idUsuario) {
+        this.idUsuario = idUsuario;
     }
     
     
