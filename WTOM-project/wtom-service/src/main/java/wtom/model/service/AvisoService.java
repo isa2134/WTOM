@@ -14,11 +14,10 @@ import java.util.List;
 public class AvisoService {
 
     private final AvisoDAO avisoDAO;
-
+    
     public AvisoService() {
         this.avisoDAO = AvisoDAO.getInstance();
     }
-
 
     private void validarPermissao(Usuario usuario) {
         if (usuario == null) {
@@ -32,7 +31,7 @@ public class AvisoService {
             throw new AvisoException("Você não tem permissão para criar ou editar avisos.");
         }
     }
-
+    
     private void validarAviso(Aviso aviso) {
 
         if (aviso.getTitulo() == null || aviso.getTitulo().isBlank()) {

@@ -1,132 +1,124 @@
-<%@ page contentType="text/html; charset=UTF-8" language="java" %>
-<%@ page import="wtom.model.domain.Reuniao" %>
-<%@ page import="wtom.model.domain.Usuario" %>
-<%@ page import="wtom.model.domain.util.UsuarioTipo" %>
-
-<%
-    Reuniao r = (Reuniao) request.getAttribute("reuniao");
-    if (r == null) r = new Reuniao();
-
-    Usuario usuario = (Usuario) session.getAttribute("usuario");
-
-    boolean podeGerir = usuario != null &&
-            (usuario.getTipo() == UsuarioTipo.PROFESSOR ||
-             usuario.getTipo() == UsuarioTipo.ADMINISTRADOR);
-
-    boolean googleConectado = (session.getAttribute("googleCredential") != null);
-
-    String dataHoraFormatada = "";
-    if (r.getDataHora() != null) {
-        dataHoraFormatada = r.getDataHora().format(
-            java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
-        );
-    }
-%>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8"/>
-    <title><%= (r.getId() == null ? "Nova ReuniÃ£o" : "Editar ReuniÃ£o") %></title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>${isNovoAviso || aviso.id == null || aviso.id < 1 ? 'Criar Novo Aviso' : 'Editar Aviso'} - TOM</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/menu.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        .checkbox-container {
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        .checkbox-container input[type="checkbox"] {
+            width: 18px; 
+            height: 18px;
+        }
+    </style>
+
+    <script>
+        function toggleLinkField() {
+            const check = document.getElementById("temLink");
+            const div = document.getElementById("campoLink");
+
+            if (check.checked) {
+                div.style.display = "block";
+            } else {
+                div.style.display = "none";
+                document.getElementById("linkAcao").value = "";
+            }
+        }
+
+        window.onload = function() {
+            toggleLinkField();
+        };
+    </script>
 </head>
 
-<body class="no-sidebar" style="background-color:#c2cbd3">
+<body>
+
+<%@ include file="/core/menu.jsp" %>
+
 <main class="content">
+    <div class="page">
 
-    <div class="form-reuniao-container">
-        <section class="page">
+        <header class="page-header" style="margin-bottom: 20px;">
+            <c:choose>
+                <c:when test="${isNovoAviso || aviso.id == null || aviso.id < 1}">
+                    <h2>Criar Novo Aviso</h2>
+                </c:when>
+                <c:otherwise>
+                    <h2>Editar Aviso</h2>
+                </c:otherwise>
+            </c:choose>
+        </header>
 
-            <header class="page-header">
-                <h2><%= (r.getId() == null ? "Nova ReuniÃ£o" : "Editar ReuniÃ£o") %></h2>
-            </header>
+        <div class="card" style="
+            padding: 25px; 
+            background-color: rgba(255,255,255,0.05); 
+            border: 1px solid rgba(255,255,255,0.2); 
+            border-radius: 10px;
+            color: white;
+        ">
+            <form action="${pageContext.request.contextPath}/aviso" method="post">
 
-            <div class="card">
+                <input type="hidden" name="acao" value="salvar">
 
-                <% if (request.getAttribute("erro") != null) { %>
-                    <div style="background:#ffdddd; padding:10px; border:1px solid #bb0000;
-                                color:#990000; margin-bottom:15px; border-radius:4px;">
-                        <strong>Erro:</strong> <%= request.getAttribute("erro") %>
-                    </div>
-                <% } %>
+                <c:if test="${aviso.id != null && aviso.id >= 1}">
+                    <input type="hidden" name="id" value="${aviso.id}">
+                </c:if>
 
-                <% if (podeGerir) { %>
-                    <div class="google-connect-area">
-                        <a href="${pageContext.request.contextPath}/googleLogin"
-                           class="btn google-btn">
-                            <i class="fab fa-google"></i> Conectar ao Google para gerar Meet automaticamente
-                        </a>
+                <label for="titulo">Título</label>
+                <input type="text" id="titulo" name="titulo" required
+                        value="${aviso.titulo}"
+                        style="width: 100%; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
 
-                        <% if (googleConectado) { %>
-                            <p class="google-connected">
-                                <i class="fas fa-check-circle"></i> Google conectado â€” o link serÃ¡ gerado automaticamente
-                            </p>
-                        <% } %>
-                    </div>
-                <% } %>
+                <label for="descricao">Descrição</label>
+                <textarea id="descricao" name="descricao" required
+                            style="width: 100%; height: 120px; padding: 10px; border-radius: 8px; margin-bottom: 15px;">${aviso.descricao}</textarea>
 
-                <form action="${pageContext.request.contextPath}/reuniao" method="post" class="form-grid">
+                <label for="dataExpiracao">Data de Expiração</label>
+                <input type="datetime-local" id="dataExpiracao" name="dataExpiracao" required
+                        value="${aviso.dataExpiracaoFormatada}"
+                        style="width: 250px; padding: 8px; border-radius: 8px; margin-bottom: 20px;"><br>
 
-                    <input type="hidden" name="acao"
-                           value="<%= (r.getId() == null ? "salvar" : "atualizar") %>">
+                <label for="temLink" class="checkbox-container">
+                    <input type="checkbox" id="temLink" onclick="toggleLinkField()"
+                        <c:if test="${not empty aviso.linkAcao}">checked</c:if>>
+                    Possui link de ação?
+                </label>
 
-                    <% if (r.getId() != null) { %>
-                        <input type="hidden" name="id" value="<%= r.getId() %>">
-                    <% } %>
+                <div id="campoLink" style="display:none; margin-bottom: 20px;">
+                    <label for="linkAcao">Link (URL)</label>
+                    <input type="url" id="linkAcao" name="linkAcao"
+                            value="${aviso.linkAcao}"
+                            style="width: 100%; padding: 10px; border-radius: 8px;">
+                </div>
 
-                    <div class="form-group form-span-2">
-                        <label for="titulo">TÃ­tulo</label>
-                        <input type="text" id="titulo" name="titulo"
-                               value="<%= r.getTitulo() != null ? r.getTitulo() : "" %>"
-                               required>
-                    </div>
+                <div style="margin-top: 25px; display: flex; gap: 15px;">
+                    <button type="submit" class="btn" style="width: auto;">
+                        <i class="fa-solid fa-save"></i>
+                        ${isNovoAviso || aviso.id == null || aviso.id < 1 ? "Salvar Aviso" : "Atualizar Aviso"}
+                    </button>
 
-                    <div class="form-group form-span-2">
-                        <label for="descricao">DescriÃ§Ã£o</label>
-                        <textarea id="descricao" name="descricao" rows="4"><%= r.getDescricao() != null ? r.getDescricao() : "" %></textarea>
-                    </div>
+                    <a href="${pageContext.request.contextPath}/aviso"
+                        class="btn ghost" style="width: auto;">
+                        Cancelar
+                    </a>
+                </div>
 
-                    <div class="form-group">
-                        <label for="dataHora">Data e Hora</label>
-                        <input type="datetime-local" id="dataHora" name="dataHora"
-                               value="<%= dataHoraFormatada %>"
-                               required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="link">Link da reuniÃ£o</label>
-                        <input type="url" id="link" name="link"
-                               value="<%= r.getLink() != null ? r.getLink() : "" %>"
-                               <%= googleConectado ? "readonly" : "" %>
-                               placeholder="<%= googleConectado ? "SerÃ¡ gerado automaticamente" : "URL do Meet, Zoom, etc." %>">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="alcance">Alcance</label>
-                        <select id="alcance" name="alcance">
-                            <option value="GERAL">Todos</option>
-                            <option value="ALUNOS">Somente Alunos</option>
-                            <option value="PROFESSORES">Somente Professores</option>
-                            <option value="INDIVIDUAL">Individual</option>
-                        </select>
-                    </div>
-
-                    <div class="form-actions form-span-2">
-                        <button class="btn" type="submit">
-                            <i class="fas fa-save"></i> <%= (r.getId() == null ? "Salvar ReuniÃ£o" : "Atualizar") %>
-                        </button>
-
-                        <a class="btn ghost"
-                           href="${pageContext.request.contextPath}/reuniao?acao=listar">
-                            <i class="fas fa-times"></i> Cancelar
-                        </a>
-                    </div>
-
-                </form>
-            </div>
-        </section>
+            </form>
+        </div>
     </div>
 </main>
+
+<script src="${pageContext.request.contextPath}/js/cssControl.js"></script>
 </body>
 </html>
