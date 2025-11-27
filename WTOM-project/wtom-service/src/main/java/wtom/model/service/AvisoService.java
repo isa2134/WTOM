@@ -42,10 +42,6 @@ public class AvisoService {
             throw new AvisoException("A descrição é obrigatória.");
         }
 
-        if (aviso.getDataExpiracao() == null ||
-                aviso.getDataExpiracao().isBefore(LocalDateTime.now())) {
-            throw new AvisoException("A data de expiração deve ser futura.");
-        }
     }
 
 

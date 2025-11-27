@@ -123,46 +123,66 @@ public class AvisoController extends HttpServlet {
     }
 
     private void salvar(HttpServletRequest req, HttpServletResponse resp)
-            throws IOException {
+        throws IOException, ServletException {
 
-        Usuario usuario = (Usuario) req.getSession().getAttribute("usuarioLogado");
+    Usuario usuario = (Usuario) req.getSession().getAttribute("usuarioLogado");
 
-        String idStr = req.getParameter("id");
-        String titulo = req.getParameter("titulo");
-        String descricao = req.getParameter("descricao");
-        String linkAcao = req.getParameter("linkAcao");
-        String dataExpStr = req.getParameter("dataExpiracao");
+    String idStr = req.getParameter("id");
+    String titulo = req.getParameter("titulo");
+    String descricao = req.getParameter("descricao");
+    String linkAcao = req.getParameter("linkAcao");
+    String dataExpStr = req.getParameter("dataExpiracao");
 
-        LocalDateTime dataExp = null;
-        if (dataExpStr != null && !dataExpStr.isEmpty()) {
-            dataExp = LocalDateTime.parse(dataExpStr);
-        }
+    LocalDateTime dataExp = null;
+    if (dataExpStr != null && !dataExpStr.isEmpty()) {
+        dataExp = LocalDateTime.parse(dataExpStr);
+    }
+
+    if (dataExp == null || dataExp.isBefore(LocalDateTime.now())) {
+
+        req.setAttribute("erro", "A data de expiração deve ser futura.");
+
+        Aviso aviso = new Aviso();
+        aviso.setTitulo(titulo);
+        aviso.setDescricao(descricao);
+        aviso.setLinkAcao(linkAcao == null || linkAcao.isEmpty() ? null : linkAcao);
+        aviso.setDataExpiracao(dataExp);
 
         if (idStr != null && !idStr.isEmpty()) {
-
-            Long id = Long.parseLong(idStr);
-            Aviso aviso = avisoService.buscarPorId(id);
-
-            aviso.setTitulo(titulo);
-            aviso.setDescricao(descricao);
-            aviso.setLinkAcao(linkAcao == null || linkAcao.isEmpty() ? null : linkAcao);
-            aviso.setDataExpiracao(dataExp);
-
-            avisoService.atualizar(aviso, usuario);
-
-        } else {
-            Aviso novo = new Aviso();
-            novo.setTitulo(titulo);
-            novo.setDescricao(descricao);
-            novo.setLinkAcao(linkAcao == null || linkAcao.isEmpty() ? null : linkAcao);
-            novo.setDataExpiracao(dataExp);
-            novo.setDataCriacao(LocalDateTime.now());
-            novo.setAtivo(true);
-
-            avisoService.inserir(novo, usuario);
+            aviso.setId(Long.parseLong(idStr));
         }
 
-        resp.sendRedirect(req.getContextPath() + "/aviso?acao=listar");
+        req.setAttribute("aviso", aviso);
+        req.getRequestDispatcher("/core/aviso/aviso-form.jsp").forward(req, resp);
+        return; 
     }
+
+    if (idStr != null && !idStr.isEmpty()) {
+
+        Long id = Long.parseLong(idStr);
+        Aviso aviso = avisoService.buscarPorId(id);
+
+        aviso.setTitulo(titulo);
+        aviso.setDescricao(descricao);
+        aviso.setLinkAcao(linkAcao == null || linkAcao.isEmpty() ? null : linkAcao);
+        aviso.setDataExpiracao(dataExp);
+
+        avisoService.atualizar(aviso, usuario);
+
+    } else {
+
+        Aviso novo = new Aviso();
+        novo.setTitulo(titulo);
+        novo.setDescricao(descricao);
+        novo.setLinkAcao(linkAcao == null || linkAcao.isEmpty() ? null : linkAcao);
+        novo.setDataExpiracao(dataExp);
+        novo.setDataCriacao(LocalDateTime.now());
+        novo.setAtivo(true);
+
+        avisoService.inserir(novo, usuario);
+    }
+
+    resp.sendRedirect(req.getContextPath() + "/aviso?acao=listar");
+}
 
 }

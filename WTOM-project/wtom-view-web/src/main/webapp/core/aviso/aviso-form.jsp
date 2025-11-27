@@ -77,6 +77,16 @@
         </header>
 
         <div class="form-card">
+            <c:if test="${not empty erroData}">
+                <div style="
+                    background:#ff4d4d; 
+                    padding:10px; 
+                    border-radius:8px; 
+                    margin-bottom:12px;
+                    font-weight: bold;">
+                    ${erroData}
+                </div>
+            </c:if>
 
             <form action="${pageContext.request.contextPath}/aviso" method="post">
 
