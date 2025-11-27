@@ -142,6 +142,29 @@ public class InitDB {
         }
     }
 
+    public void initPremiacoes() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS premiacao (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                usuario_id BIGINT NOT NULL,
+                olimpiada_id INT,
+                olimpiada_nome VARCHAR(120),
+                olimpiada_peso DOUBLE,
+                tipo_premio ENUM('OURO', 'PRATA', 'BRONZE', 'MENCAO_HONROSA') NOT NULL,
+                nivel VARCHAR(50),
+                ano INT,
+                peso_final DOUBLE NOT NULL,
+
+                FOREIGN KEY (usuario_id) REFERENCES usuario(id)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE
+            );
+        """;
+
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
 
 
 
@@ -154,6 +177,7 @@ public class InitDB {
             initNotificacoes();  
             initOlimpiadas();
             initUsuariosPadrao();
+            initPremiacoes();
         } catch (SQLException e) {
             throw new PersistenciaException("erro ao inicializar tabelas: " + e.getMessage());
         }

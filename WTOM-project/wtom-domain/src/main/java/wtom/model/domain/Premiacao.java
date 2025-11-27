@@ -62,6 +62,10 @@ public class Premiacao {
 
     public double getPesoFinal() { return pesoFinal; }
 
+    public void setPesoFinalForDao(double peso) {
+        this.pesoFinal = peso;
+    }
+
     @Override
     public String toString() {
         return olimpiada.getNome() + " - " + tipoPremio + " (" + ano + ")";
