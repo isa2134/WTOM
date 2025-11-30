@@ -122,7 +122,7 @@ public class ResolucaoDesafioDAO {
     }
     
     public void deletar(Long idResolucao) throws PersistenciaException{
-        String sql = "DELETE FROM resolucoes_conteudo WHERE id=?";
+        String sql = "DELETE FROM resolucoes_desafio WHERE id=?";
         
         try(Connection con = ConexaoDB.getConnection();
             PreparedStatement ps = con.prepareStatement(sql)){

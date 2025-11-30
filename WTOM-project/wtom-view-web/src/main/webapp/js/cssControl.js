@@ -44,8 +44,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-    const fileInput = document.getElementById('arquivo');
+/*document.addEventListener('DOMContentLoaded', () => {
+    const fileInput = document.getElementById('arquivo') || document.getElementById('imagem');
     const fileWrapper = document.getElementById('file-upload-box');
     const fileNameDisplay = document.getElementById('file-name-display');
 
@@ -67,4 +67,30 @@ document.addEventListener('DOMContentLoaded', () => {
             fileNameDisplay.style.color = 'var(--muted)';
         }
     });
+});*/
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    function setupFileInput(wrapperId, inputId, displayId) {
+        const wrapper = document.getElementById(wrapperId);
+        const input = document.getElementById(inputId);
+        const display = document.getElementById(displayId);
+
+        if (!wrapper || !input || !display) return;
+
+        wrapper.addEventListener('click', () => input.click());
+
+        input.addEventListener('change', () => {
+            let fileName = input.files?.[0]?.name;
+            if (fileName) {
+                if (fileName.length > 35) fileName = fileName.substring(0, 32) + '...';
+                display.textContent = "Arquivo selecionado: " + fileName;
+                display.style.color = 'var(--accent)';
+            }
+        });
+    }
+
+    setupFileInput('file-upload-box', 'arquivo', 'file-name-display');
+    setupFileInput('imagem-upload-box', 'imagem', 'imagem-name-display');
+    setupFileInput('resolucao-upload-box', 'resolucaoArquivo', 'file-resolucao-display');
 });

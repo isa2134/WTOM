@@ -43,7 +43,7 @@ public class AlternativaDesafioDAO {
     }
     
     public void alterar(AlternativaDesafio alt) throws PersistenciaException{
-        String sql = "UPDATE alternativas_desafio SET id_desafio=?, letra=?, texto=?, WHERE id=?";
+        String sql = "UPDATE alternativas_desafio SET id_desafio=?, letra=?, texto=? WHERE id=?";
         
         try(Connection con = ConexaoDB.getConnection();
             PreparedStatement ps = con.prepareStatement(sql)){
@@ -63,20 +63,23 @@ public class AlternativaDesafioDAO {
     
     public List<AlternativaDesafio> listarPorIdDesafio(Long idDesafio) throws PersistenciaException{
         List<AlternativaDesafio> alternativas = new ArrayList<>();
-        String sql = "SELECT * FROM alternativas_desafio";
+        String sql = "SELECT * FROM alternativas_desafio WHERE id_desafio=?";
         
         try(Connection con = ConexaoDB.getConnection();
-            PreparedStatement ps = con.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery()){
+            PreparedStatement ps = con.prepareStatement(sql)){
             
-            while(rs.next()){
-                AlternativaDesafio alt = new AlternativaDesafio();
-                alt.setId(rs.getLong("id"));
-                alt.setIdDesafio(rs.getLong("id_desafio"));
-                alt.setLetra(rs.getString("letra").charAt(0));
-                alt.setTexto(rs.getString("texto"));
-                alternativas.add(alt);
+            ps.setLong(1, idDesafio);
+            try(ResultSet rs = ps.executeQuery()){
+                while(rs.next()){
+                    AlternativaDesafio alt = new AlternativaDesafio();
+                    alt.setId(rs.getLong("id"));
+                    alt.setIdDesafio(rs.getLong("id_desafio"));
+                    alt.setLetra(rs.getString("letra").charAt(0));
+                    alt.setTexto(rs.getString("texto"));
+                    alternativas.add(alt);
+                }     
             }
+
             return alternativas;
             
         }

@@ -11,6 +11,10 @@ public class ResolucaoTexto extends ResolucaoDesafio {
         this.texto = texto;
     }
     
+    public void setTexto(String texto){
+        this.texto = texto;
+    }
+    
     public String getTexto(){
         return texto;
     }

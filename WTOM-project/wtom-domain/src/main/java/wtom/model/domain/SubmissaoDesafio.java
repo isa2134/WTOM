@@ -9,6 +9,9 @@ public class SubmissaoDesafio {
     private Long idDesafio;
     private Long idAlternativaEscolhida;
     private String data;
+    private String alunoNome;
+    private String desafioTitulo;
+    private Long idAlternativaCorreta;
     
     public SubmissaoDesafio(){
         
@@ -64,5 +67,25 @@ public class SubmissaoDesafio {
     public String getData(){
         return data;
     }
-    
+    public String getAlunoNome() { 
+        return alunoNome; 
+    }
+    public void setAlunoNome(String alunoNome) {
+        this.alunoNome = alunoNome; 
+    }
+
+    public String getDesafioTitulo() { 
+        return desafioTitulo; 
+    }
+    public void setDesafioTitulo(String desafioTitulo) { 
+        this.desafioTitulo = desafioTitulo; 
+    }
+
+    public Long getIdAlternativaCorreta() { 
+        return idAlternativaCorreta; 
+    }
+    public void setIdAlternativaCorreta(Long idAlternativaCorreta) {
+        this.idAlternativaCorreta = idAlternativaCorreta; 
+    }
+
 }

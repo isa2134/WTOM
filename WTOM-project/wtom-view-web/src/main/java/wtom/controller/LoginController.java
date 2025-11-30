@@ -30,26 +30,24 @@ public class LoginController extends HttpServlet {
             UsuarioService manterUsuario = new UsuarioService();
             Usuario usuario = manterUsuario.buscarPorLoginSenha(login, senha);
             
-            if(usuario != null){
-                HttpSession sessao = request.getSession();
+            if (usuario != null) {
+
+                HttpSession sessao = request.getSession(true);
                 sessao.setAttribute("usuario", usuario);
+                sessao.setAttribute("usuarioLogado", usuario);
+                sessao.setAttribute("usuarioTipo", usuario.getTipo());
+
+                System.out.println("LOGIN OK → " + usuario.getEmail());
+                System.out.println("Redirecionando para: " + request.getContextPath() + "/core/menu.jsp");
+
                 response.sendRedirect(request.getContextPath() + "/core/menu.jsp");
+                return;
             }
-            else{
+            else {
                 request.getSession().setAttribute("erroLogin", "Login ou senha incorretos");
                 response.sendRedirect(request.getContextPath() + "/index.jsp");
-
+                return;
             }
-
-            HttpSession sessao = request.getSession(true);
-            sessao.setAttribute("usuario", usuario); 
-            sessao.setAttribute("usuarioLogado", usuario); 
-            sessao.setAttribute("usuarioTipo", usuario.getTipo()); 
-
-            System.out.println("LOGIN OK → " + usuario.getEmail());
-            System.out.println("Redirecionando para: " + request.getContextPath() + "/core/menu.jsp");
-
-            response.sendRedirect(request.getContextPath() + "/core/menu.jsp");
         }
         catch (wtom.model.service.exception.UsuarioInvalidoException ex) {
             System.out.println("Exceção de login: " + ex.getMessage());

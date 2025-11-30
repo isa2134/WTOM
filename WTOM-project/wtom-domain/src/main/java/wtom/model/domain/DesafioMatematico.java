@@ -75,9 +75,8 @@ public class DesafioMatematico {
         return imagem;
     }
     
-    public void setAlternativa(AlternativaDesafio alt){
-        alt.setIdDesafio(this.id);
-        alternativas.add(alt);
+    public void setAlternativas(List<AlternativaDesafio> alternativas){
+        this.alternativas = alternativas;
     }
     
     public List<AlternativaDesafio> getAlternativas(){
@@ -92,12 +91,8 @@ public class DesafioMatematico {
         return idAlternativaCorreta;
     }
     
-    public void setResolucaoTexto(String texto){
-        resolucao = new ResolucaoTexto(texto);
-    }
-    
-    public void setResolucaoArquivo(String arquivo){
-        resolucao = new ResolucaoArquivo(arquivo);
+    public void setResolucao(ResolucaoDesafio resolucao){
+        this.resolucao = resolucao;
     }
     
     public ResolucaoDesafio getResolucao(){

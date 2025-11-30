@@ -61,7 +61,7 @@ public class DesafioMatematicoDAO {
     }
     
     public void alterar(DesafioMatematico desafio) throws PersistenciaException{
-        String sql = "UPDATE desafios SET titulo=?, enunciado=?, imagem=?, id_alternativa_correta=?, data=?, WHERE id=?";
+        String sql = "UPDATE desafios SET titulo=?, enunciado=?, imagem=?, id_alternativa_correta=?, data=? WHERE id=?";
         
         try(Connection con = ConexaoDB.getConnection();
             PreparedStatement ps = con.prepareStatement(sql)){
@@ -82,7 +82,7 @@ public class DesafioMatematicoDAO {
     }
     
     public DesafioMatematico pesquisarPorId(Long idDesafio) throws PersistenciaException{
-        String sql = "SELECT * FROM desafios_matematicos WHERE id=?";
+        String sql = "SELECT * FROM desafios WHERE id=?";
         DesafioMatematico desafio = null;
         
         try(Connection con = ConexaoDB.getConnection();
@@ -111,7 +111,7 @@ public class DesafioMatematicoDAO {
     
     public List<DesafioMatematico> listarTodos() throws PersistenciaException{
         List<DesafioMatematico> desafios = new ArrayList<>();
-        String sql = "SELECT * FROM desafios_matematicos";
+        String sql = "SELECT * FROM desafios";
         
         try(Connection con = ConexaoDB.getConnection();
             PreparedStatement ps = con.prepareStatement(sql);
@@ -137,7 +137,7 @@ public class DesafioMatematicoDAO {
     }
     
     public void deletar(Long idDesafio) throws PersistenciaException{
-        String sql = "DELETE FROM desafios_matematicos WHERE id=?";
+        String sql = "DELETE FROM desafios WHERE id=?";
         
         try(Connection con = ConexaoDB.getConnection();
             PreparedStatement ps = con.prepareStatement(sql)){
@@ -146,7 +146,7 @@ public class DesafioMatematicoDAO {
             ps.executeUpdate();
         }
         catch(SQLException e){
-            throw new PersistenciaException("erro ao inserir desafio matematico. " + e.getMessage());  
+            throw new PersistenciaException("erro ao deletar desafio matematico. " + e.getMessage());  
         }   
     }
 }

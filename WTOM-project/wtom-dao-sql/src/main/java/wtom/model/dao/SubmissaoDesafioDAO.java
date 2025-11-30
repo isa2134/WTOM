@@ -43,7 +43,21 @@ public class SubmissaoDesafioDAO {
     
     public List<SubmissaoDesafio> listarPorIdDesafio(Long idDesafio) throws PersistenciaException{
         List<SubmissaoDesafio> submissoes = new ArrayList<>();
-        String sql = "SELECT * FROM submissoes_desafio WHERE id_desafio=?";
+        String sql = """
+            SELECT s.id, 
+                    s.id_aluno,
+                    u.nome AS aluno_nome,
+                    s.id_desafio, 
+                    d.titulo AS desafio_titulo,
+                    s.id_alternativa_escolhida,
+                    d.id_alternativa_correta,
+                    s.data
+            FROM submissoes_desafio s
+            JOIN usuario u ON u.id = s.id_aluno
+            JOIN desafios d ON d.id = s.id_desafio
+            WHERE s.id_desafio = ?
+            ORDER BY s.data DESC
+            """;
         
         try(Connection con = ConexaoDB.getConnection();
             PreparedStatement ps = con.prepareStatement(sql)){
@@ -55,8 +69,11 @@ public class SubmissaoDesafioDAO {
                 SubmissaoDesafio s = new SubmissaoDesafio();
                 s.setId(rs.getLong("id"));
                 s.setIdAluno(rs.getLong("id_aluno"));
+                s.setAlunoNome(rs.getString("aluno_nome"));
                 s.setIdDesafio(rs.getLong("id_desafio"));
+                s.setDesafioTitulo(rs.getString("desafio_titulo"));
                 s.setIdAlternativaEscolhida(rs.getLong("id_alternativa_escolhida"));
+                s.setIdAlternativaCorreta(rs.getLong("id_alternativa_correta"));
                 s.setData(rs.getString("data"));
                 submissoes.add(s);
             }
@@ -69,7 +86,21 @@ public class SubmissaoDesafioDAO {
     
     public List<SubmissaoDesafio> listarPorIdAluno(Long idAluno) throws PersistenciaException{
         List<SubmissaoDesafio> submissoes = new ArrayList<>();
-        String sql = "SELECT * FROM submissoes_desafio WHERE id_aluno=?";
+        String sql = """
+            SELECT s.id, 
+                    s.id_aluno,
+                    u.nome AS aluno_nome,
+                    s.id_desafio, 
+                    d.titulo AS desafio_titulo,
+                    s.id_alternativa_escolhida,
+                    d.id_alternativa_correta,
+                    s.data
+            FROM submissoes_desafio s
+            JOIN usuario u ON u.id = s.id_aluno
+            JOIN desafios d ON d.id = s.id_desafio
+            WHERE s.id_aluno = ?
+            ORDER BY s.data DESC
+            """;
         
         try(Connection con = ConexaoDB.getConnection();
             PreparedStatement ps = con.prepareStatement(sql)){
@@ -81,8 +112,11 @@ public class SubmissaoDesafioDAO {
                 SubmissaoDesafio s = new SubmissaoDesafio();
                 s.setId(rs.getLong("id"));
                 s.setIdAluno(rs.getLong("id_aluno"));
+                s.setAlunoNome(rs.getString("aluno_nome"));
                 s.setIdDesafio(rs.getLong("id_desafio"));
+                s.setDesafioTitulo(rs.getString("desafio_titulo"));
                 s.setIdAlternativaEscolhida(rs.getLong("id_alternativa_escolhida"));
+                s.setIdAlternativaCorreta(rs.getLong("id_alternativa_correta"));
                 s.setData(rs.getString("data"));
                 submissoes.add(s);
             }
@@ -96,7 +130,20 @@ public class SubmissaoDesafioDAO {
     
     public List<SubmissaoDesafio> listarTodos() throws PersistenciaException{
         List<SubmissaoDesafio> submissoes = new ArrayList<>();
-        String sql = "SELECT * FROM submissoes_desafio";
+        String sql = """
+            SELECT s.id,
+                   s.id_aluno,
+                   u.nome AS aluno_nome,
+                   s.id_desafio,
+                   d.titulo AS desafio_titulo,
+                   s.id_alternativa_escolhida,
+                   d.id_alternativa_correta,
+                   s.data
+            FROM submissoes_desafio s
+            JOIN usuario u ON u.id = s.id_aluno
+            JOIN desafios d ON d.id = s.id_desafio
+            ORDER BY s.data DESC
+            """;
         
         try(Connection con = ConexaoDB.getConnection();
             PreparedStatement ps = con.prepareStatement(sql);
@@ -106,8 +153,11 @@ public class SubmissaoDesafioDAO {
                 SubmissaoDesafio s = new SubmissaoDesafio();
                 s.setId(rs.getLong("id"));
                 s.setIdAluno(rs.getLong("id_aluno"));
+                s.setAlunoNome(rs.getString("aluno_nome"));
                 s.setIdDesafio(rs.getLong("id_desafio"));
+                s.setDesafioTitulo(rs.getString("desafio_titulo"));
                 s.setIdAlternativaEscolhida(rs.getLong("id_alternativa_escolhida"));
+                s.setIdAlternativaCorreta(rs.getLong("id_alternativa_correta"));
                 s.setData(rs.getString("data"));
                 submissoes.add(s);
             }
@@ -130,6 +180,7 @@ public class SubmissaoDesafioDAO {
             
             try(ResultSet rs = ps.executeQuery()){
                 if(rs.next()){
+                    submissao = new SubmissaoDesafio();
                     submissao.setId(rs.getLong("id"));
                     submissao.setIdAluno(rs.getLong("id_aluno"));
                     submissao.setIdDesafio(rs.getLong("id_desafio"));
