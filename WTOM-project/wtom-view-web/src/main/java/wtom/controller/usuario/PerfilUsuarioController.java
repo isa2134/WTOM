@@ -23,6 +23,7 @@ public class PerfilUsuarioController extends HttpServlet {
             session.removeAttribute("sucesso");
         }
 
+        
         req.getRequestDispatcher("/usuarios/perfil.jsp").forward(req, resp);
     }
 }

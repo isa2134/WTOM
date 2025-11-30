@@ -1,5 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<jsp:include page="/includes/header.jsp">
+<jsp:include page="/core/header.jsp">
     <jsp:param name="pageTitle" value="Perfil do Usuário" />
 </jsp:include>
 
@@ -56,7 +56,7 @@
             <% } %>
 
             <div class="login-actions">
-                <a href="editar.jsp?id=<%= usuario.getId() %>" class="btn">Editar Dados</a>
+                <a href="${pageContext.request.contextPath}/EditarUsuarioController?id=<%= usuario.getId() %>" class="btn"> Editar Usuário</a>
             </div>
         <% } %>
     </div>
