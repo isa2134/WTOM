@@ -25,7 +25,7 @@
                 <a href="${pageContext.request.contextPath}/olimpiada"> <span>Olimpíadas</span></a>
                 <a href="${pageContext.request.contextPath}/core/ranking/listar.jsp"> <span>Ranking</span></a>
                 <a href="${pageContext.request.contextPath}/ConteudoController?acao=listarTodos"><span>Materiais</span></a>
-                <a href="${pageContext.request.contextPath}/core/duvidas/listar.jsp"> <span>Dúvidas</span></a>
+                <a href="${pageContext.request.contextPath}/DuvidaController?acao=listar"><span>Dúvidas</span></a>
                 <a href="${pageContext.request.contextPath}/notificacao"> <span>Notificações</span></a>
                 <a href="${pageContext.request.contextPath}/reuniao?acao=listar">Reuniões Online</a>
                 <a href="${pageContext.request.contextPath}/usuarios/perfil.jsp"> <span>Perfil</span></a>
