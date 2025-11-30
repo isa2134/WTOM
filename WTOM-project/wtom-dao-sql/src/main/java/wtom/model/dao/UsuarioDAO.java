@@ -22,7 +22,6 @@ public class UsuarioDAO {
         return instance;
     }
 
-
     public Usuario inserirERetornar(Usuario u) throws PersistenciaException {
         String sql = """
             INSERT INTO usuario (cpf, nome, telefone, email, data_nascimento, senha, login, tipo)
@@ -58,7 +57,6 @@ public class UsuarioDAO {
         }
     }
 
-   
     public Usuario buscarPorCpfOuEmail(String cpf, String email) throws PersistenciaException {
         String sql = "SELECT * FROM usuario WHERE cpf = ? OR email = ? LIMIT 1";
 
@@ -97,24 +95,25 @@ public class UsuarioDAO {
             throw new PersistenciaException("Erro ao buscar usuário por ID: " + e.getMessage());
         }
     }
+
     public Usuario buscarPorLoginESenha(String login, String senha) throws PersistenciaException {
-    String sql = "SELECT * FROM usuario WHERE login = ? AND senha = ?";
-    try (Connection con = ConexaoDB.getConnection();
-         PreparedStatement ps = con.prepareStatement(sql)) {
+        String sql = "SELECT * FROM usuario WHERE login = ? AND senha = ?";
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-        ps.setString(1, login);
-        ps.setString(2, senha);
+            ps.setString(1, login);
+            ps.setString(2, senha);
 
-        try (ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                return mapResultSet(rs);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSet(rs);
+                }
             }
+        } catch (SQLException e) {
+            throw new PersistenciaException("Erro ao buscar usuário por login e senha: " + e.getMessage());
         }
-    } catch (SQLException e) {
-        throw new PersistenciaException("Erro ao buscar usuário por login e senha: " + e.getMessage());
+        return null;
     }
-    return null; 
-}
 
     public Usuario buscarPorLogin(String login) throws PersistenciaException {
         String sql = "SELECT * FROM usuario WHERE login = ?";
@@ -130,7 +129,7 @@ public class UsuarioDAO {
         } catch (SQLException e) {
             throw new PersistenciaException("Erro ao buscar usuário por login: " + e.getMessage());
         }
-        return null; 
+        return null;
     }
 
     public List<Usuario> listarTodos() throws PersistenciaException {
@@ -197,6 +196,11 @@ public class UsuarioDAO {
 
     public List<Usuario> listarProfessores() throws PersistenciaException {
         return listarPorTipo("PROFESSOR");
+    }
+
+    /** ➕ AGORA ADMINISTRADOR TAMBÉM PODE RECEBER ALCANCE */
+    public List<Usuario> listarAdministradores() throws PersistenciaException {
+        return listarPorTipo("ADMINISTRADOR");
     }
 
     private List<Usuario> listarPorTipo(String tipo) throws PersistenciaException {
