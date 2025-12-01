@@ -71,4 +71,13 @@ public class ProfessorService {
             throw new NegocioException("Erro ao excluir professor: " + e.getMessage());
         }
     }
+    
+    public List<Professor> listarTodos() throws NegocioException {
+        try {
+            return professorDAO.listarTodos();
+        } catch (PersistenciaException e) {
+            throw new NegocioException("Erro ao listar professores: " + e.getMessage());
+        }
+    }
+
 }
