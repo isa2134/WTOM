@@ -91,16 +91,6 @@ public class OlimpiadaServlet extends HttpServlet {
                     request.setAttribute("inscricoes", inscricoes);
                     jsp = "/core/olimpiada/inscricoes/listar.jsp";
                     break;
-                    
-                case "alterarInscricaoForm":
-                    int idOlimpiada = Integer.parseInt(request.getParameter("idOlimpiada"));
-                    Long idUsuario = Long.parseLong(request.getParameter("idAluno"));
-                    request.setAttribute("inscricao", gestaoInscricao.pesquisarInscricaoUsuarioID(idUsuario, idOlimpiada));
-                    jsp = "/core/olimpiada/inscricoes/alterar.jsp";
-                    
-                case "alterarInscricao":
-                    jsp = OlimpiadaController.alteraInscricao(request);
-                    break;
                 
                 case "cancelarInscricao":
                     jsp = OlimpiadaController.excluirInscricao(request);

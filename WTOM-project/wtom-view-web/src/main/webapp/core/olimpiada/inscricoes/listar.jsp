@@ -387,15 +387,6 @@
         display: none;
     }
     
-    btn-editar {
-        background-color: var(--accent);
-        color: white;
-    }
-
-    .btn-editar:hover {
-        background-color: #0c3c48;
-     }
-
   </style>
 </head>
 
@@ -431,12 +422,6 @@
                     onclick="abrirModalCancelar(${i.getIdOlimpiada()}, '${i.getNome()}', ${i.getIdUsuario()})">
               Cancelar
             </button>
-            <form action="${pageContext.request.contextPath}" method="post" style="display:inline;">
-                <input type="hidden" name="acao" value="alterarInscricaoForm">
-                <input type="hidden" name="idOlimpiada" value="${i.getIdOlimpiada()}"> 
-                <input type="hidden" name="idAluno" value="${i.getIdUsuario()}">
-                <button type="submit" class="btn btn-editar">Alterar</button>
-            </form>
           </div>
 
         </c:forEach>
