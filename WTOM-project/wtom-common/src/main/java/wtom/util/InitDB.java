@@ -94,7 +94,7 @@ public class InitDB {
     public void initConteudos() throws SQLException {
         String sql = """
             CREATE TABLE IF NOT EXISTS conteudos (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
                 id_professor BIGINT NOT NULL,
                 titulo VARCHAR(100) NOT NULL,
                 descricao VARCHAR(100) NOT NULL,
@@ -144,6 +144,81 @@ public class InitDB {
                 +")";
 
         try(Statement st = con.createStatement()){
+            st.executeUpdate(sql);
+        }
+    }
+   
+    public void initDesafios() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS desafios (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                id_professor BIGINT NOT NULL,
+                titulo VARCHAR(100) NOT NULL,
+                enunciado TEXT NOT NULL,
+                imagem VARCHAR(100) NULL,
+                id_alternativa_correta BIGINT NULL,
+                data VARCHAR(100) NOT NULL,
+                FOREIGN KEY (id_professor) REFERENCES usuario(id)
+            );
+        """;
+
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
+    
+    public void initAlternativas() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS alternativas_desafio (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                id_desafio BIGINT NOT NULL,
+                letra CHAR(1) NOT NULL,
+                texto VARCHAR(500) NOT NULL,
+                FOREIGN KEY (id_desafio) REFERENCES desafios(id)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE
+            );
+        """;
+
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
+    
+    public void initResolucoes() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS resolucoes_desafio (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                id_desafio BIGINT NOT NULL,
+                tipo ENUM('TEXTO', 'ARQUIVO') NOT NULL,
+                texto TEXT NULL,
+                arquivo VARCHAR(255) NULL,
+                FOREIGN KEY (id_desafio) REFERENCES desafios(id)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE
+            );
+        """;
+
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
+    
+    public void initSubmissoes() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS submissoes_desafio (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                id_aluno BIGINT NOT NULL,
+                id_desafio BIGINT NOT NULL,
+                id_alternativa_escolhida BIGINT NOT NULL,
+                data VARCHAR(100) NOT NULL,
+                FOREIGN KEY (id_aluno) REFERENCES usuario(id),
+                FOREIGN KEY (id_desafio) REFERENCES desafios(id),
+                FOREIGN KEY (id_alternativa_escolhida) REFERENCES alternativas_desafio(id)        
+            );
+        """;
+
+        try (Statement st = con.createStatement()) {
             st.executeUpdate(sql);
         }
     }
@@ -257,6 +332,10 @@ public class InitDB {
             initConteudos();     
             initNotificacoes();  
             initOlimpiadas();
+            initDesafios();
+            initAlternativas();
+            initResolucoes();
+            initSubmissoes();
             initUsuariosPadrao();
             initReunioes();
             initAviso();

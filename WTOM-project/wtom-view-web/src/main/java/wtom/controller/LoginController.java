@@ -29,10 +29,10 @@ public class LoginController extends HttpServlet {
             System.out.println("Senha recebida: " + senha);
             UsuarioService manterUsuario = new UsuarioService();
             Usuario usuario = manterUsuario.buscarPorLoginSenha(login, senha);
-
+            
             if (usuario != null) {
-                HttpSession sessao = request.getSession();
 
+                HttpSession sessao = request.getSession(true);
                 sessao.setAttribute("usuario", usuario);
                 sessao.setAttribute("usuarioLogado", usuario);
                 sessao.setAttribute("usuarioTipo", usuario.getTipo());
@@ -47,8 +47,9 @@ public class LoginController extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/index.jsp");
                 return;
             }
-
-        } catch (wtom.model.service.exception.UsuarioInvalidoException ex) {
+        }
+        catch (wtom.model.service.exception.UsuarioInvalidoException ex) {
+            System.out.println("Exceção de login: " + ex.getMessage());
             request.setAttribute("erro", ex.getMessage());
             request.getRequestDispatcher("/index.jsp").forward(request, response);
 

@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="wtom.model.domain.Usuario" %>
 
 <%
@@ -23,9 +24,25 @@
             <nav class="menu">
                 <a href="${pageContext.request.contextPath}/home"> <span>Início</span></a>
                 <a href="${pageContext.request.contextPath}/olimpiada"> <span>Olimpíadas</span></a>
-                <a href="${pageContext.request.contextPath}/core/ranking/listar.jsp"> <span>Ranking</span></a>
-                <a href="${pageContext.request.contextPath}/ConteudoController?acao=listarTodos"><span>Materiais</span></a>
-                <a href="${pageContext.request.contextPath}/DuvidaController?acao=listar"><span>Dúvidas</span></a>
+                <a href="${pageContext.request.contextPath}/ranking"> <span>Ranking</span></a>
+                <a href="${pageContext.request.contextPath}/ConteudoController?acao=listarTodos"><span>Conteudos</span></a>
+                <a href="${pageContext.request.contextPath}/DesafioController?acao=listarTodos"><span>Desafios</span></a>
+                
+                <c:choose>
+                    <c:when test="${usuario.tipo == UsuarioTipo.PROFESSOR || usuario.tipo == UsuarioTipo.ADMINISTRADOR}">
+                        <a href="${pageContext.request.contextPath}/SubmissaoDesafioController?acao=listarTodos">
+                            <span>Submissões</span>
+                        </a>
+                    </c:when>
+
+                    <c:otherwise>
+                        <a href="${pageContext.request.contextPath}/SubmissaoDesafioController?acao=listarPorAluno">
+                            <span>Meus desafios</span>
+                        </a>
+                    </c:otherwise>
+                </c:choose>
+                
+                <a href="${pageContext.request.contextPath}/duvidas"> <span>Dúvidas</span></a>
                 <a href="${pageContext.request.contextPath}/notificacao"> <span>Notificações</span></a>
                 <a href="${pageContext.request.contextPath}/reuniao?acao=listar">Reuniões Online</a>
                 <a href="${pageContext.request.contextPath}/usuarios/perfil.jsp"> <span>Perfil</span></a>
