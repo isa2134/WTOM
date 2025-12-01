@@ -78,4 +78,13 @@ public class AlunoService {
             throw new NegocioException("Erro ao excluir aluno: " + e.getMessage());
         }
     }
+    
+    public List<Aluno> listarTodos() throws NegocioException {
+        try {
+            return alunoDAO.listarTodos();
+        } catch (PersistenciaException e) {
+            throw new NegocioException("Erro ao listar alunos: " + e.getMessage());
+        }
+    }
+
 }
