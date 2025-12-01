@@ -1,4 +1,4 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <div class="aviso-section-container" style="color: white;">
 
@@ -84,7 +84,11 @@
                                 <form action="${pageContext.request.contextPath}/aviso" method="post" style="display:inline;">
                                     <input type="hidden" name="acao" value="excluir">
                                     <input type="hidden" name="id" value="${a.id}">
-                                    <button type="submit" class="btn ghost"
+                                    
+                                    <!-- CONFIRM AQUI -->
+                                    <button type="submit" 
+                                            onclick="return confirmarExclusao();" 
+                                            class="btn ghost"
                                             style="width:auto; padding:8px 12px; font-size:14px; color:#ff8a8a; border-radius: 4px;">
                                         <i class="fa-solid fa-trash-can"></i> Excluir
                                     </button>
@@ -106,3 +110,8 @@
         </c:choose>
     </div>
 </div>
+<script>
+function confirmarExclusao() {
+    return confirm("Tem certeza que deseja excluir este aviso?");
+}
+</script>
