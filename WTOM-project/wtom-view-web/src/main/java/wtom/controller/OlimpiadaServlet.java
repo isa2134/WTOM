@@ -8,9 +8,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
+import wtom.model.domain.Inscricao;
+import wtom.model.domain.Olimpiada;
 import wtom.model.domain.Usuario;
 import wtom.model.domain.util.UsuarioTipo;
+import wtom.model.service.GestaoInscricao;
 import wtom.model.service.GestaoOlimpiada;
+import wtom.model.service.UsuarioService;
 
 @WebServlet(name = "Olimpiada", urlPatterns = {"/olimpiada"})
 public class OlimpiadaServlet extends HttpServlet {
@@ -32,17 +37,19 @@ public class OlimpiadaServlet extends HttpServlet {
         String jsp = "/core/olimpiada/listar.jsp";
 
         GestaoOlimpiada gestaoOlimpiada = new GestaoOlimpiada();
+        GestaoInscricao gestaoInscricao = new GestaoInscricao();
+        UsuarioService usuarioService = new UsuarioService();
 
         try {
             switch (acao == null ? "" : acao) {
 
                 case "cadastrarOlimpiada":
-                    OlimpiadaController.cadastrar(request);
+                    OlimpiadaController.cadastrarOlimpiada(request);
                     jsp = "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
                     break;
 
                 case "editarOlimpiada":
-                    jsp = OlimpiadaController.alterar(request);
+                    jsp = OlimpiadaController.alterarOlimpiada(request);
                     break;
 
                 case "editarOlimpiadaForm":
@@ -52,13 +59,12 @@ public class OlimpiadaServlet extends HttpServlet {
                     break;
 
                 case "excluirOlimpiada":
-                    OlimpiadaController.excluir(request);
+                    OlimpiadaController.excluirOlimpiada(request);
                     jsp = "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
-                    System.out.println("Entrou no servlet -> excluirOlimpiada");
                     break;
 
                 case "listarOlimpiadaAluno":
-                    request.setAttribute("olimpiadas", gestaoOlimpiada.pesquisarOlimpiadasAtivas());
+                    OlimpiadaController.prepararDadosInterfaceAluno(request);
                     jsp = "/core/olimpiada/listarAluno.jsp";
                     break;
 
@@ -66,13 +72,50 @@ public class OlimpiadaServlet extends HttpServlet {
                     request.setAttribute("olimpiadas", gestaoOlimpiada.pesquisarTodasOlimpiadas());
                     jsp = "/core/olimpiada/listar.jsp";
                     break;
-
+                    
+                case "inscreverOlimpiada":
+                    jsp = OlimpiadaController.cadastrarInscricao(request);
+                    break;
+                    
+                case "listarInscricoesAluno":
+                    List<Olimpiada> l = gestaoInscricao.pesquisarOlimpiadasInscritas(usuario.getId());
+                    request.setAttribute("olimpiadasInscritas", gestaoInscricao.pesquisarOlimpiadasInscritas(usuario.getId()));
+                    jsp = "/core/olimpiada/inscricoes/listarAluno.jsp";
+                    break;
+                
+                case "listarInscricoesAdminProf":
+                    int idOlimp = Integer.parseInt(request.getParameter("idOlimpiada"));
+                    Olimpiada ol = gestaoOlimpiada.pesquisarOlimpiada(idOlimp);
+                    List<Inscricao> inscricoes = gestaoInscricao.pesquisarInscricoesOlimpiada(idOlimp);
+                    request.setAttribute("nomeOlimpiada", ol.getNome());
+                    request.setAttribute("inscricoes", inscricoes);
+                    jsp = "/core/olimpiada/inscricoes/listar.jsp";
+                    break;
+                    
+                case "alterarInscricaoForm":
+                    int idOlimpiada = Integer.parseInt(request.getParameter("idOlimpiada"));
+                    Long idUsuario = Long.parseLong(request.getParameter("idAluno"));
+                    request.setAttribute("inscricao", gestaoInscricao.pesquisarInscricaoUsuarioID(idUsuario, idOlimpiada));
+                    jsp = "/core/olimpiada/inscricoes/alterar.jsp";
+                    
+                case "alterarInscricao":
+                    jsp = OlimpiadaController.alteraInscricao(request);
+                    break;
+                
+                case "cancelarInscricao":
+                    jsp = OlimpiadaController.excluirInscricao(request);
+                    break;
+                    
+                case "cancelarInscricaoAdminProf":
+                    System.out.println("Passou por cancelarInscricaoAdminProf");
+                    jsp = OlimpiadaController.excluirInscricao(request);
+                    break;
                 default:
                     if (usuario.getTipo() == UsuarioTipo.ADMINISTRADOR || usuario.getTipo() == UsuarioTipo.PROFESSOR) {
                         request.setAttribute("olimpiadas", gestaoOlimpiada.pesquisarTodasOlimpiadas());
                         jsp = "/core/olimpiada/listar.jsp";
                     } else if (usuario.getTipo() == UsuarioTipo.ALUNO) {
-                        request.setAttribute("olimpiadas", gestaoOlimpiada.pesquisarOlimpiadasAtivas());
+                        OlimpiadaController.prepararDadosInterfaceAluno(request);
                         jsp = "/core/olimpiada/listarAluno.jsp";
                     } else {
                         jsp = request.getContextPath() + "/index.jsp";
@@ -92,12 +135,15 @@ public class OlimpiadaServlet extends HttpServlet {
             e.printStackTrace();
             request.setAttribute("erro", "Erro interno: " + e.getMessage());
 
-            try {
+            if (usuario.getTipo() == UsuarioTipo.ALUNO) {
+                RequestDispatcher rd = request.getRequestDispatcher("/core/olimpiada/listarAluno.jsp");
+                rd.forward(request, response);
+            } else {
                 request.setAttribute("olimpiadas", gestaoOlimpiada.pesquisarTodasOlimpiadas());
-            } catch (Exception ignore) {}
-
-            RequestDispatcher rd = request.getRequestDispatcher("/core/olimpiada/listar.jsp");
-            rd.forward(request, response);
+                RequestDispatcher rd = request.getRequestDispatcher("/core/olimpiada/listar.jsp");
+                System.out.println("Deu ruim! Ativou excessão!");
+                rd.forward(request, response);
+            }
         }
     }
 }

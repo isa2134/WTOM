@@ -149,20 +149,27 @@ public class InitDB {
         }
     }
     
-    public void initInscricoes() throws SQLException{
-        String sql = "CREATE TABLE IF NOT EXISTS inscricoes("
-                +"nome VARCHAR(100) NOT NULL, "  
-                +"cpf VARCHAR(14) NOT NULL, "
-                +"id_olimpiada INT NOT NULL, "
-                +"id_usuario BIGINT NOT NULL, "
-                +"FOREIGN KEY(id_usuario) REFERENCES usuario(id), "
-                +"FOREIGN KEY(id_olimpiada) REFERENCES olimpiadas(id))";
-        
-        /*InscricaoDAO i = InscricaoDAO.getInstance();
-        Inscricao insc = new Inscricao("Caio Fillipe Souza da Silva", "171.809.086-22", 1);
-        i.cadastrarInscricao(insc);*/
-        
-        try(Statement st = con.createStatement()){
+    public void initInscricoes() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS inscricoes (
+                nome VARCHAR(100) NOT NULL,
+                cpf VARCHAR(14) NOT NULL,
+                id_olimpiada INT NOT NULL,
+                id_usuario BIGINT NOT NULL,
+
+                FOREIGN KEY (id_usuario) REFERENCES usuario(id)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE,
+
+                FOREIGN KEY (id_olimpiada) REFERENCES olimpiadas(id)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE,
+
+                PRIMARY KEY(id_usuario, id_olimpiada)
+            );
+        """;
+
+        try (Statement st = con.createStatement()) {
             st.executeUpdate(sql);
         }
     }
