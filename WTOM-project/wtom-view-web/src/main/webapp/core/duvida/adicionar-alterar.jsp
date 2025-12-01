@@ -2,9 +2,8 @@
 <%@ page import="wtom.model.domain.Duvida" %>
 <%@ page import="java.time.ZoneId" %>
 <%@ page import="java.util.Date" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%@include file="/core/header.jsp" %>
 
 <%    Duvida duvida = (Duvida) request.getAttribute("duvida");

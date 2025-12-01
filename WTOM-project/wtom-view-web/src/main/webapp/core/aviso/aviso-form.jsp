@@ -1,4 +1,4 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -103,8 +103,7 @@
                 <textarea id="descricao" name="descricao" required>${aviso.descricao}</textarea>
 
                 <label for="dataExpiracao">Data de Expiração</label>
-                <input type="datetime-local" id="dataExpiracao" name="dataExpiracao" required
-                       value="${aviso.dataExpiracaoFormatada}">
+                <input type="datetime-local" id="dataExpiracao" name="dataExpiracao" required value="${aviso.dataExpiracaoFormatada}">
 
                 <label class="checkbox-container" for="temLink">
                     <input type="checkbox" id="temLink" name="temLink" onclick="toggleLinkField()"
