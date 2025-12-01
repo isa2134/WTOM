@@ -356,7 +356,6 @@ public class DesafioController extends HttpServlet {
         
         try{
             Long idDesafio = Long.parseLong(request.getParameter("id"));
-
             DesafioMatematico desafio = gestaoDesafio.pesquisarPorId(idDesafio);
             
             if(desafio.getImagem() != null && !desafio.getImagem().isBlank()){

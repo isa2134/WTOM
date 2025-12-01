@@ -16,9 +16,10 @@ public class DesafioMatematico {
     private Long idAlternativaCorreta;
     private ResolucaoDesafio resolucao; // opcional 
     private String data;
+    private boolean ativo;
     
     public DesafioMatematico(){
-        
+        this.ativo = true;
     }
     
     
@@ -27,6 +28,7 @@ public class DesafioMatematico {
         this.titulo = titulo;
         this.enunciado = enunciado;
         alternativas = new ArrayList<>();
+        this.ativo = true;
         
         LocalDate date = LocalDate.now();
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -106,4 +108,12 @@ public class DesafioMatematico {
     public String getData(){
         return data;
     } 
+    
+    public boolean isAtivo() {
+        return ativo;
+    }
+    
+    public void setAtivo(boolean ativo){
+        this.ativo = ativo;
+    }
 }

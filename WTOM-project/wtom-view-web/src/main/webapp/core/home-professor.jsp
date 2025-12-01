@@ -32,7 +32,7 @@
 
                     <div class="hero-actions">
                         <a href="${pageContext.request.contextPath}/turma?acao=listar" class="btn-primary">Minhas Turmas</a>
-                        <a href="${pageContext.request.contextPath}/materiais?acao=listar" class="btn-outline">Materiais</a>
+                        <a href="${pageContext.request.contextPath}/ConteudoController?acao=listarTodos" class="btn-outline">Conteudos</a>
                         <a href="${pageContext.request.contextPath}/reuniao?acao=listar" class="btn-primary" style="background:#ffdca8; color:#0e3c4b;">Reuniões</a>
                     </div>
                 </div>

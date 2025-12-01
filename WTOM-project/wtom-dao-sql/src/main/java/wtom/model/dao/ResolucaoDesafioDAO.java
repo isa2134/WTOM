@@ -87,7 +87,7 @@ public class ResolucaoDesafioDAO {
     }
     
     public ResolucaoDesafio pesquisarPorIdDesafio(Long idDesafio) throws PersistenciaException{
-        String sql = "SELECT * FROM resolucoes_desafio WHERE id_desafio=?";
+        String sql = "SELECT * FROM resolucoes_desafio WHERE id_desafio=? AND ativo = TRUE";
         ResolucaoDesafio resolucao = null;
         
         try(Connection con = ConexaoDB.getConnection();
@@ -122,17 +122,16 @@ public class ResolucaoDesafioDAO {
     }
     
     public void deletar(Long idResolucao) throws PersistenciaException{
-        String sql = "DELETE FROM resolucoes_desafio WHERE id=?";
+        String sql = "UPDATE resolucoes_desafio SET ativo = FALSE WHERE id = ?";
         
         try(Connection con = ConexaoDB.getConnection();
-            PreparedStatement ps = con.prepareStatement(sql)){
+            PreparedStatement ps = con.prepareStatement(sql)) {
             
             ps.setLong(1, idResolucao);
             ps.executeUpdate();
             
-        }
-        catch(SQLException e){
-            throw new PersistenciaException("erro ao deletar resolucao. " + e.getMessage());
+        } catch(SQLException e) {
+            throw new PersistenciaException("Erro ao arquivar resolução. " + e.getMessage());
         }
     }
 }

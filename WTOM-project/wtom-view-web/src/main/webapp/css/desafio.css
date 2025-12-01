@@ -122,3 +122,11 @@
 .table-submissoes tbody tr:hover { 
     background:#fafafa;
 }
+
+.badge-inativo {
+    background-color: red;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.85em;
+}
