@@ -43,7 +43,6 @@ public class NotificacaoServlet extends HttpServlet {
         try {
             List<Notificacao> notificacoes = notificacaoService.listarPorUsuario(usuario.getId());
             req.setAttribute("notificacoes", notificacoes);
-            
             req.getRequestDispatcher("/core/Notificacao.jsp").forward(req, resp);
         } catch (PersistenciaException e) {
             req.setAttribute("erro", e.getMessage());
@@ -88,8 +87,7 @@ public class NotificacaoServlet extends HttpServlet {
         String titulo = req.getParameter("titulo");
         String mensagem = req.getParameter("mensagem");
         String alcanceStr = req.getParameter("alcance");
-        
-        String tipoStr = req.getParameter("tipo"); 
+        String tipoStr = req.getParameter("tipo");
         
         AlcanceNotificacao alcance = AlcanceNotificacao.valueOf(alcanceStr);
         TipoNotificacao tipo = TipoNotificacao.valueOf(tipoStr); 
@@ -114,13 +112,12 @@ public class NotificacaoServlet extends HttpServlet {
                 resp.sendRedirect("notificacao?erro=destinatario_inexistente");
                 return;
             }
-
+            
             n.setDestinatario(destinatario);
-        } else {
-            n.setDestinatario(remetente);
         }
 
         gestaoNotificacao.selecionaAlcance(n, alcance);
+
         resp.sendRedirect("notificacao?status=enviado");
     }
 
@@ -134,10 +131,10 @@ public class NotificacaoServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/index.jsp");
             return;
         }
-        
+
         String idNotificacaoStr = req.getParameter("id");
         long idNotificacao;
-        
+
         try {
             idNotificacao = Long.parseLong(idNotificacaoStr);
         } catch (NumberFormatException e) {
@@ -151,7 +148,7 @@ public class NotificacaoServlet extends HttpServlet {
 
     private void excluir(HttpServletRequest req, HttpServletResponse resp)
             throws PersistenciaException, IOException {
-        
+
         HttpSession sessao = req.getSession(false);
         Usuario usuario = (sessao != null) ? (Usuario) sessao.getAttribute("usuario") : null;
 
@@ -162,7 +159,7 @@ public class NotificacaoServlet extends HttpServlet {
 
         String idNotificacaoStr = req.getParameter("id");
         long idNotificacao;
-        
+
         try {
             idNotificacao = Long.parseLong(idNotificacaoStr);
         } catch (NumberFormatException e) {

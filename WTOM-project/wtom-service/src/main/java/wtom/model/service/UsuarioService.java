@@ -15,7 +15,6 @@ public class UsuarioService {
 
     private final UsuarioDAO usuarioDAO = UsuarioDAO.getInstance();
 
-   
     public Usuario cadastrarUsuario(Usuario u) throws NegocioException {
         try {
             if (u == null) throw new NegocioException("Usuário inválido.");
@@ -36,6 +35,11 @@ public class UsuarioService {
             Usuario existente = usuarioDAO.buscarPorCpfOuEmail(u.getCpf(), u.getEmail());
             if (existente != null) {
                 throw new NegocioException("Já existe um usuário com este CPF ou e-mail!");
+            }
+
+            Usuario porLogin = usuarioDAO.buscarPorLogin(u.getLogin());
+            if (porLogin != null) {
+                throw new NegocioException("Já existe um usuário com este login!");
             }
 
             Usuario inserido = usuarioDAO.inserirERetornar(u);
@@ -95,47 +99,26 @@ public class UsuarioService {
 
     public Usuario buscarPorLogin(String login) throws UsuarioInvalidoException {
         try {
-            List<Usuario> usuarios = usuarioDAO.listarTodos();
-            for (Usuario u : usuarios) {
-                if (u.getLogin().equalsIgnoreCase(login)) {
-                    return u;
-                }
-            }
-            throw new UsuarioInvalidoException("Usuário não encontrado para login: " + login);
+            Usuario u = usuarioDAO.buscarPorLogin(login);
+            if (u == null) throw new UsuarioInvalidoException("Usuário não encontrado para login: " + login);
+            return u;
         } catch (PersistenciaException e) {
             throw new UsuarioInvalidoException("Erro ao buscar usuário: " + e.getMessage());
         }
     }
-    
+
     public Usuario cadastrarUsuarioERetornar(Usuario u) throws NegocioException {
+        return cadastrarUsuario(u);
+    }
+
+    public Usuario buscarPorLoginSenha(String login, String senha) throws UsuarioInvalidoException {
         try {
-            if (u == null) throw new NegocioException("Usuário inválido.");
-
-            if (usuarioDAO.buscarPorCpfOuEmail(u.getCpf(), u.getEmail()) != null) {
-                throw new NegocioException("Já existe um usuário com este CPF ou e-mail!");
-            }
-
-            Usuario inserido = usuarioDAO.inserirERetornar(u);
-            return inserido;
-
+            Usuario u = usuarioDAO.buscarPorLoginESenha(login, senha);
+            if (u == null) throw new UsuarioInvalidoException("Usuário não encontrado para login/senha fornecidos.");
+            return u;
         } catch (PersistenciaException e) {
-            throw new NegocioException("Erro ao cadastrar usuário: " + e.getMessage());
+            return null;
         }
     }
 
-
-    public Usuario buscarPorLoginSenha(String login, String senha)throws UsuarioInvalidoException {
-        try {
-            List<Usuario> usuarios = usuarioDAO.listarTodos();
-            for (Usuario u : usuarios) {
-                if (u.getLogin().equalsIgnoreCase(login) && u.getSenha().equalsIgnoreCase(senha)) {
-                    return u;
-                }
-            }
-            throw new UsuarioInvalidoException("Usuário não encontrado para login: " + login);
-        } catch (PersistenciaException e) {
-            throw new UsuarioInvalidoException("Erro ao buscar usuário: " + e.getMessage());
-        }
-    }
-    
 }

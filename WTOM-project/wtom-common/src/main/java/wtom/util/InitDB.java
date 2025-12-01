@@ -34,6 +34,26 @@ public class InitDB {
             st.executeUpdate(sql);
         }
     }
+    public void initAviso() throws SQLException {
+    String sql = """
+        CREATE TABLE IF NOT EXISTS aviso (
+            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            titulo VARCHAR(200) NOT NULL,
+            descricao TEXT NOT NULL,
+            link_acao VARCHAR(500),
+            data_criacao DATETIME NOT NULL,
+            data_expiracao DATETIME,
+            ativo TINYINT(1) DEFAULT 1,
+
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        );
+    """;
+
+    try (Statement st = con.createStatement()) {
+        st.executeUpdate(sql);
+    }
+}
 
     public void initProfessor() throws SQLException {
         String sql = """
@@ -100,7 +120,7 @@ public class InitDB {
                 data_do_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 tipo ENUM('OLIMPIADA_ABERTA', 'REUNIAO_AGENDADA', 'REUNIAO_CHEGANDO',
                           'DESAFIO_SEMANAL', 'CORRECAO_DE_EXERCICIO', 'OUTROS') NOT NULL,
-                alcance ENUM('GERAL', 'INDIVIDUAL', 'ALUNOS', 'PROFESSORES') NOT NULL,
+                alcance ENUM('GERAL', 'INDIVIDUAL', 'ALUNOS', 'PROFESSORES','ADMINISTRADOR') NOT NULL,
                 lida BOOLEAN DEFAULT FALSE,
                 destinatario_id BIGINT,
                 FOREIGN KEY (destinatario_id) REFERENCES usuario(id)
@@ -216,7 +236,94 @@ public class InitDB {
             st.executeUpdate(sql);
         }
     }
+
+    public void initReunioes() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS reuniao (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                titulo VARCHAR(255) NOT NULL,
+                descricao TEXT,
+                data_hora DATETIME NOT NULL,
+                link VARCHAR(255),
+                criado_por BIGINT NOT NULL,
+                alcance ENUM('GERAL','INDIVIDUAL','ALUNOS','PROFESSORES','ADMINISTRADOR') DEFAULT 'GERAL',
+                encerrada_manualmente BOOLEAN DEFAULT FALSE,
+                encerrada_em DATETIME NULL,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FOREIGN KEY (criado_por) REFERENCES usuario(id)
+                    ON DELETE CASCADE ON UPDATE CASCADE
+            );
+        """;
+
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
     
+        public void initDuvidas() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS duvida (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                id_aluno BIGINT NOT NULL,
+                titulo VARCHAR(255) NOT NULL,
+                descricao TEXT NOT NULL,
+                data_criacao TIMESTAMP NOT NULL,
+                FOREIGN KEY (id_aluno) REFERENCES usuario(id)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE
+            );
+        """;
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
+
+    public void initRespostas() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS resposta (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                id_duvida BIGINT NOT NULL,
+                id_professor BIGINT NOT NULL,
+                conteudo TEXT NOT NULL,
+                data TIMESTAMP NOT NULL,
+                FOREIGN KEY (id_duvida) REFERENCES duvida(id)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE,
+                FOREIGN KEY (id_professor) REFERENCES usuario(id)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE
+            );
+        """;
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
+    
+        public void initDuvidasTeste() throws SQLException {
+        String sql = """
+            INSERT INTO duvida (id_aluno, titulo, descricao, data_criacao)
+            VALUES 
+                (3, 'Churrasco', 'Onde será o churrasco?', NOW()),
+                (3, 'Java', 'Quando será o fim do projeto?', NOW());
+        """;
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
+
+    public void initRespostasTeste() throws SQLException {
+        String sql = """
+            INSERT INTO resposta (id_duvida, id_professor, conteudo, data)
+            VALUES 
+                (1, 2, 'No jardim américa', NOW()),
+                (2, 2, 'Dia 22', NOW());
+        """;
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
+
     public void initTodos() throws PersistenciaException {
         try {
             initUsuario();   
@@ -230,6 +337,12 @@ public class InitDB {
             initResolucoes();
             initSubmissoes();
             initUsuariosPadrao();
+            initReunioes();
+            initAviso();
+            initDuvidas();
+            initRespostas();
+            initDuvidasTeste();
+            initRespostasTeste();
         } catch (SQLException e) {
             throw new PersistenciaException("erro ao inicializar tabelas: " + e.getMessage());
         }

@@ -22,7 +22,7 @@
             </div>
 
             <nav class="menu">
-                <a href="${pageContext.request.contextPath}/"> <span>Início</span></a>
+                <a href="${pageContext.request.contextPath}/home"> <span>Início</span></a>
                 <a href="${pageContext.request.contextPath}/olimpiada"> <span>Olimpíadas</span></a>
                 <a href="${pageContext.request.contextPath}/ranking"> <span>Ranking</span></a>
                 <a href="${pageContext.request.contextPath}/ConteudoController?acao=listarTodos"><span>Conteudos</span></a>
@@ -44,6 +44,7 @@
                 
                 <a href="${pageContext.request.contextPath}/duvidas"> <span>Dúvidas</span></a>
                 <a href="${pageContext.request.contextPath}/notificacao"> <span>Notificações</span></a>
-                <a href="${usuarios/perfil}"> <span>Perfil</span></a>
+                <a href="${pageContext.request.contextPath}/reuniao?acao=listar">Reuniões Online</a>
+                <a href="${pageContext.request.contextPath}/usuarios/perfil.jsp"> <span>Perfil</span></a>
             </nav>
         </aside>
