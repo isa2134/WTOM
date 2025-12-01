@@ -23,7 +23,12 @@ public class GestaoNotificacao {
 
     public void selecionaAlcance(Notificacao notificacao, AlcanceNotificacao alcance) throws PersistenciaException {
         selecionaNome(notificacao);
+        
+        notificacao.setAlcance(alcance);
+        
         switch (alcance) {
+            
+            
             
             case INDIVIDUAL -> {
                 if (notificacao.getDestinatario() == null)
@@ -39,6 +44,11 @@ public class GestaoNotificacao {
             case ALUNOS -> {
                 List<Usuario> alunos = usuarioDAO.listarAlunos();
                 enviarParaUsuarios(notificacao, alunos);
+            }
+            
+            case ADMINISTRADOR -> {
+            List<Usuario> admins = usuarioDAO.listarAdministradores();
+            enviarParaUsuarios(notificacao, admins);
             }
 
             case PROFESSORES -> {

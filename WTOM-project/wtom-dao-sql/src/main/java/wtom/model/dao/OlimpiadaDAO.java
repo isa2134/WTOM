@@ -109,8 +109,7 @@ public class OlimpiadaDAO {
                         rs.getDate("data_prova").toLocalDate(),
                         rs.getString("descricao"),
                         rs.getDouble("peso"),
-                        rs.getInt("id")
-                    );
+                        rs.getInt("id"));
                     listaOlimpiadas.add(ol);
                 }
                 return listaOlimpiadas;
@@ -140,7 +139,8 @@ public class OlimpiadaDAO {
                         rs.getDate("data_limite_inscricao").toLocalDate(),
                         rs.getDate("data_prova").toLocalDate(),
                         rs.getString("descricao"),
-                        rs.getDouble("peso"));
+                        rs.getDouble("peso"),
+                        rs.getInt("id"));
                     listaOlimpiadas.add(ol);
                 }
                 return listaOlimpiadas;
@@ -162,7 +162,7 @@ public class OlimpiadaDAO {
         try(Connection con = ConexaoDB.getConnection();
             PreparedStatement ps = con.prepareStatement(sql)){
             ps.setDate(1, Date.valueOf(dataEspecificada));
-            
+
             try(ResultSet rs = ps.executeQuery()){
                 while(rs.next()){
                     Olimpiada ol = new Olimpiada(rs.getString("nome"),
@@ -170,7 +170,8 @@ public class OlimpiadaDAO {
                         rs.getDate("data_limite_inscricao").toLocalDate(),
                         rs.getDate("data_prova").toLocalDate(),
                         rs.getString("descricao"),
-                        rs.getDouble("peso"));
+                        rs.getDouble("peso"),
+                        rs.getInt("id"));
                     listaOlimpiadas.add(ol);
                 }
                 return listaOlimpiadas;

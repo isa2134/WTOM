@@ -12,7 +12,6 @@
     <packaging>jar</packaging>
     <properties>
         <maven.compiler.release>17</maven.compiler.release>
-        <exec.mainClass>WtomCommon</exec.mainClass>
     </properties>
     <dependencies>
         <dependency>

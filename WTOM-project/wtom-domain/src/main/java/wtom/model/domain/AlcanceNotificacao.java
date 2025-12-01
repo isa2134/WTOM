@@ -4,5 +4,6 @@ public enum AlcanceNotificacao {
     GERAL,           
     ALUNOS,           
     PROFESSORES,       
-    INDIVIDUAL         
+    INDIVIDUAL,
+    ADMINISTRADOR,
 }

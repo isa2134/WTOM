@@ -15,11 +15,13 @@ import wtom.model.domain.Usuario;
 import wtom.model.domain.ConteudoDidatico;
 import wtom.model.service.GestaoConteudoDidatico;
 import java.util.List;
+import wtom.dao.exception.FileException;
 import wtom.dao.exception.PersistenciaException;
 import wtom.model.domain.AlcanceNotificacao;
 import wtom.model.domain.Notificacao;
 import wtom.model.domain.TipoNotificacao;
 import wtom.model.exception.NegocioException;
+import wtom.model.service.FileUploadService;
 import wtom.model.service.GestaoNotificacao;
 
 @MultipartConfig
@@ -66,28 +68,22 @@ public class ConteudoController extends HttpServlet {
     }
 
     private void cadastrar(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, PersistenciaException {
+            throws ServletException, IOException, PersistenciaException, FileException {
+        
         String titulo = request.getParameter("titulo");
         String descricao = request.getParameter("descricao");
         Part arquivo = request.getPart("arquivo");
-
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
         Long idProfessor = usuario.getId();
-
-        String nomeArquivo = Paths.get(arquivo.getSubmittedFileName()).getFileName().toString();
-        nomeArquivo = nomeArquivo.replaceAll("[\\\\/:*?\"<>|\\[\\]]", "_");
-
-        File pastaUploads = new File("C:/uploads-servidor/");
-        if (!pastaUploads.exists()) {
-            pastaUploads.mkdirs();
+        String nomeArquivo;
+        
+        try{
+            nomeArquivo = FileUploadService.salvarArquivo(arquivo);
+        }
+        catch(FileException e){
+            throw new FileException("erro ao salvar arquivo");
         }
 
-        String caminhoFisico = "C:/uploads-servidor/" + nomeArquivo;
-        arquivo.write(caminhoFisico);
-
-        String caminhoRelativo = "/uploads/" + nomeArquivo;
-        System.out.println("gravou o arquivo no servidor");
-        
         GestaoNotificacao gestaoNotificacao = new GestaoNotificacao();
         Notificacao notificacao = new Notificacao();
         notificacao.setMensagem(
@@ -107,7 +103,7 @@ public class ConteudoController extends HttpServlet {
         gestaoNotificacao.selecionaAlcance(notificacao, alcance);
 
         try {
-            ConteudoDidatico conteudo = new ConteudoDidatico(idProfessor, titulo, descricao, caminhoRelativo);
+            ConteudoDidatico conteudo = new ConteudoDidatico(idProfessor, titulo, descricao, nomeArquivo);
             GestaoConteudoDidatico salvarConteudo = new GestaoConteudoDidatico();
             salvarConteudo.cadastrar(conteudo);
 
@@ -186,7 +182,7 @@ public class ConteudoController extends HttpServlet {
     }
 
     private void atualizar(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, FileException {
 
         Long id = Long.parseLong(request.getParameter("id"));
         String titulo = request.getParameter("titulo");
@@ -206,11 +202,8 @@ public class ConteudoController extends HttpServlet {
             }
 
             if (arquivo != null && arquivo.getSize() > 0) {
-                String nomeArquivo = Paths.get(arquivo.getSubmittedFileName()).getFileName().toString();
-                nomeArquivo = nomeArquivo.replaceAll("[\\\\/:*?\"<>|\\[\\]]", "_");
-                String caminhoFisico = "C:/uploads-servidor/" + nomeArquivo;
-                arquivo.write(caminhoFisico);
-                conteudo.setArquivo("/uploads/" + nomeArquivo);
+                String nomeArquivo = FileUploadService.salvarArquivo(arquivo);
+                conteudo.setArquivo(nomeArquivo);
             }
 
             gestao.atualizar(conteudo);
@@ -226,19 +219,16 @@ public class ConteudoController extends HttpServlet {
     }
 
     private void excluir(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, FileException {
 
         Long id = Long.parseLong(request.getParameter("id"));
 
         try {
             GestaoConteudoDidatico gestao = new GestaoConteudoDidatico();
             ConteudoDidatico conteudo = gestao.pesquisarPorId(id);
+            
+            FileUploadService.excluirArquivo(conteudo.getArquivo());
 
-            String caminhoFisico = "C:/uploads-servidor/" + Paths.get(conteudo.getArquivo()).getFileName().toString();
-            File arquivo = new File(caminhoFisico);
-            if (arquivo.exists()) {
-                arquivo.delete();
-            }
             gestao.excluir(id);
             request.getSession().setAttribute("mensagemSucesso", "Conteúdo excluído com sucesso!");
             response.sendRedirect(request.getContextPath() + "/ConteudoController?acao=listarTodos");

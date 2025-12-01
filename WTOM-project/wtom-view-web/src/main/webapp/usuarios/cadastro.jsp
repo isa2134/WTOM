@@ -1,7 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<jsp:include page="/includes/header.jsp">
-    <jsp:param name="pageTitle" value="Cadastro de Usuário" />
-</jsp:include>
+<%@include file="/core/menu.jsp"%>
 
 <%
     String tipoParam = (String) request.getAttribute("tipo");
@@ -103,5 +101,3 @@
         });
     });
 </script>
-
-<jsp:include page="/includes/footer.jsp" />

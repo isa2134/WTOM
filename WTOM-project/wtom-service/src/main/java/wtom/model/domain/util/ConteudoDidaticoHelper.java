@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class ConteudoDidaticoHelper {
-    
     public static List<String> validarConteudo(ConteudoDidatico conteudo){
         List<String> erros = new ArrayList();
         
@@ -21,3 +20,5 @@ public class ConteudoDidaticoHelper {
         return erros;
     }
 }
+
+

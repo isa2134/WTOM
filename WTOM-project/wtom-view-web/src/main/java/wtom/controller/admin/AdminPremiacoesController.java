@@ -141,7 +141,6 @@ public class AdminPremiacoesController extends HttpServlet {
             if (aluno != null && aluno.getId() != null) {
                 resp.sendRedirect(req.getContextPath() + "/AdminPremiacoesController?idAluno=" + aluno.getId());
             } else {
-                // se não achou, volta para lista de alunos
                 resp.sendRedirect(req.getContextPath() + "/AdminAlunosController");
             }
 

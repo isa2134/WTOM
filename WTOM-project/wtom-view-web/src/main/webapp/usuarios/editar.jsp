@@ -1,12 +1,9 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<jsp:include page="/core/header.jsp">
-    <jsp:param name="pageTitle" value="Editar Usuário" />
-</jsp:include>
+<%@include file="/core/menu.jsp"%>
 
 <%
     String erro = (String) request.getAttribute("erro");
     String idParam = request.getParameter("id");
-    wtom.model.domain.Usuario usuario = null;
     wtom.model.domain.Aluno aluno = null;
     wtom.model.domain.Professor professor = null;
 
@@ -163,5 +160,3 @@
         });
     });
 </script>
-
-<jsp:include page="/includes/footer.jsp" />
