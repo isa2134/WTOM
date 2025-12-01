@@ -12,7 +12,8 @@ public class SubmissaoDesafio {
     private String alunoNome;
     private String desafioTitulo;
     private Long idAlternativaCorreta;
-    
+    private boolean desafioAtivo;
+
     public SubmissaoDesafio(){
         
     }
@@ -87,5 +88,11 @@ public class SubmissaoDesafio {
     public void setIdAlternativaCorreta(Long idAlternativaCorreta) {
         this.idAlternativaCorreta = idAlternativaCorreta; 
     }
-
+    public boolean isDesafioAtivo() { 
+        return desafioAtivo; 
+    }
+    
+    public void setDesafioAtivo(boolean ativo) { 
+        this.desafioAtivo = ativo; 
+    }
 }

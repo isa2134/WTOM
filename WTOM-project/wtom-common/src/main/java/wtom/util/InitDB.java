@@ -158,6 +158,7 @@ public class InitDB {
                 imagem VARCHAR(100) NULL,
                 id_alternativa_correta BIGINT NULL,
                 data VARCHAR(100) NOT NULL,
+                ativo BOOLEAN DEFAULT TRUE,
                 FOREIGN KEY (id_professor) REFERENCES usuario(id)
             );
         """;
@@ -174,6 +175,7 @@ public class InitDB {
                 id_desafio BIGINT NOT NULL,
                 letra CHAR(1) NOT NULL,
                 texto VARCHAR(500) NOT NULL,
+                ativo BOOLEAN DEFAULT TRUE,
                 FOREIGN KEY (id_desafio) REFERENCES desafios(id)
                     ON DELETE CASCADE
                     ON UPDATE CASCADE
@@ -193,6 +195,7 @@ public class InitDB {
                 tipo ENUM('TEXTO', 'ARQUIVO') NOT NULL,
                 texto TEXT NULL,
                 arquivo VARCHAR(255) NULL,
+                ativo BOOLEAN DEFAULT TRUE,
                 FOREIGN KEY (id_desafio) REFERENCES desafios(id)
                     ON DELETE CASCADE
                     ON UPDATE CASCADE

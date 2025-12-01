@@ -106,6 +106,13 @@ public class SubmissaoDesafioController extends HttpServlet {
         GestaoSubmissaoDesafio gestao = new GestaoSubmissaoDesafio();
         try{
             List<SubmissaoDesafio> lista = gestao.listarTodos();
+            for (SubmissaoDesafio s : lista) {
+                DesafioMatematico d = gestaoDesafio.pesquisarPorId(s.getIdDesafio());
+                if (d != null) {
+                    s.setDesafioTitulo(d.getTitulo());
+                    s.setDesafioAtivo(d.isAtivo());
+                }
+            }
             request.setAttribute("listaSubmissoes", lista);
 
             String mensagem = (String) request.getSession().getAttribute("mensagemSucesso");
@@ -127,9 +134,17 @@ public class SubmissaoDesafioController extends HttpServlet {
             throws ServletException, IOException {
         Long idDesafio = Long.parseLong(request.getParameter("id"));
         GestaoSubmissaoDesafio gestao = new GestaoSubmissaoDesafio();
+        GestaoDesafioMatematico gestaoDesafio = new GestaoDesafioMatematico();
         
         try{
             List<SubmissaoDesafio> lista = gestao.listarPorDesafio(idDesafio);
+            for (SubmissaoDesafio s : lista) {
+                DesafioMatematico d = gestaoDesafio.pesquisarPorId(s.getIdDesafio());
+                if (d != null) {
+                    s.setDesafioTitulo(d.getTitulo());
+                    s.setDesafioAtivo(d.isAtivo());
+                }
+            }
             request.setAttribute("listaSubmissoes", lista);
 
             String mensagem = (String) request.getSession().getAttribute("mensagemSucesso");
@@ -168,9 +183,18 @@ public class SubmissaoDesafioController extends HttpServlet {
             idAluno = usuarioLogado.getId();
         }
         
+        GestaoDesafioMatematico gestaoDesafio = new GestaoDesafioMatematico();
+        
         try{
             GestaoSubmissaoDesafio gestao = new GestaoSubmissaoDesafio();
             List<SubmissaoDesafio> lista = gestao.listarPorAluno(idAluno);
+            for (SubmissaoDesafio s : lista) {
+                DesafioMatematico d = gestaoDesafio.pesquisarPorId(s.getIdDesafio());
+                if (d != null) {
+                    s.setDesafioTitulo(d.getTitulo());
+                    s.setDesafioAtivo(d.isAtivo());
+                }
+            }
             request.setAttribute("listaSubmissoes", lista);
 
             String mensagem = (String) request.getSession().getAttribute("mensagemSucesso");
@@ -198,6 +222,13 @@ public class SubmissaoDesafioController extends HttpServlet {
         GestaoSubmissaoDesafio gestao = new GestaoSubmissaoDesafio();
         
         try{
+            DesafioMatematico desafio = new GestaoDesafioMatematico().pesquisarPorId(idDesafio);
+            if (desafio == null || !desafio.isAtivo()) {
+                request.getSession().setAttribute("erro", "Este desafio não está mais disponível.");
+                response.sendRedirect(request.getContextPath() + "/SubmissaoDesafioController?acao=listarPorAluno");
+                return; 
+            }
+            
             SubmissaoDesafio submissao = gestao.pesquisarPorAlunoEDesafio(idAluno, idDesafio);
             request.setAttribute("submissao", submissao);
 

@@ -7,6 +7,11 @@ public class ResolucaoDesafio {
     private Long id;
     private Long idDesafio;
     protected ResolucaoTipo tipo;
+    private boolean ativo;
+    
+    public ResolucaoDesafio(){
+        this.ativo = true;
+    }
     
     public ResolucaoTipo getTipo(){
         return tipo;
@@ -26,5 +31,12 @@ public class ResolucaoDesafio {
     
     public Long getIdDesafio(){
         return idDesafio;
+    }
+    
+    public boolean isAtivo() {
+        return ativo;
+    }
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 }

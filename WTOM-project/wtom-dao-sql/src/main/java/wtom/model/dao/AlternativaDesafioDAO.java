@@ -63,7 +63,7 @@ public class AlternativaDesafioDAO {
     
     public List<AlternativaDesafio> listarPorIdDesafio(Long idDesafio) throws PersistenciaException{
         List<AlternativaDesafio> alternativas = new ArrayList<>();
-        String sql = "SELECT * FROM alternativas_desafio WHERE id_desafio=?";
+        String sql = "SELECT * FROM alternativas_desafio WHERE id_desafio=? AND ativo = TRUE";
         
         try(Connection con = ConexaoDB.getConnection();
             PreparedStatement ps = con.prepareStatement(sql)){
@@ -90,16 +90,16 @@ public class AlternativaDesafioDAO {
     }
     
     public void deletar(Long idAlternativa) throws PersistenciaException{
-        String sql = "DELETE FROM alternativas_desafio WHERE id=?";
+        String sql = "UPDATE alternativas_desafio SET ativo = FALSE WHERE id = ?";
         
         try(Connection con = ConexaoDB.getConnection();
-            PreparedStatement ps = con.prepareStatement(sql)){
+            PreparedStatement ps = con.prepareStatement(sql)) {
             
             ps.setLong(1, idAlternativa);
             ps.executeUpdate();
+            
+        } catch(SQLException e) {
+            throw new PersistenciaException("Erro ao arquivar alternativa. " + e.getMessage());
         }
-        catch(SQLException e){
-            throw new PersistenciaException("erro ao inserir desafio matematico. " + e.getMessage());  
-        }   
     }
 }

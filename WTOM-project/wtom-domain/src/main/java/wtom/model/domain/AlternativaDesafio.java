@@ -5,15 +5,17 @@ public class AlternativaDesafio {
     private Long idDesafio;
     private char letra;
     private String texto;
+    private boolean ativo;
     
     public AlternativaDesafio(){
-        
+        this.ativo = true;
     }
     
-    public AlternativaDesafio(Long idDesafio, char letra, String texto, boolean correta){
+    public AlternativaDesafio(Long idDesafio, char letra, String texto){
         this.idDesafio = idDesafio;
         this.letra = letra;
         this.texto = texto;
+        this.ativo = true;
     }
     
     public void setId(Long id){
@@ -46,5 +48,12 @@ public class AlternativaDesafio {
     
     public String getTexto(){
         return texto;
+    }
+    
+    public boolean isAtivo() {
+        return ativo;
+    }
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 }
