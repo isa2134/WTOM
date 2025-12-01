@@ -31,7 +31,7 @@
 
                     <div class="hero-actions">
 
-                        <a href="${pageContext.request.contextPath}/usuario?acao=listar" 
+                        <a href="${pageContext.request.contextPath}/admin/alunos.jsp" 
                            class="btn-primary">Gerenciar Usuários</a>
 
                         <a href="${pageContext.request.contextPath}/olimpiada" 
