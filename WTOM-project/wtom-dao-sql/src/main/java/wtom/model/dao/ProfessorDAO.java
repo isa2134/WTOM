@@ -76,6 +76,7 @@ public class ProfessorDAO {
         return professores;
     }
 
+
     public void atualizar(Professor professor) throws PersistenciaException {
         String sql = "UPDATE professor SET area = ? WHERE id = ?";
         try (Connection con = ConexaoDB.getConnection();

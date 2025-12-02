@@ -117,7 +117,7 @@ public class UsuarioService {
             if (u == null) throw new UsuarioInvalidoException("Usuário não encontrado para login/senha fornecidos.");
             return u;
         } catch (PersistenciaException e) {
-            throw new UsuarioInvalidoException("Erro ao buscar usuário: " + e.getMessage());
+            return null;
         }
     }
 
