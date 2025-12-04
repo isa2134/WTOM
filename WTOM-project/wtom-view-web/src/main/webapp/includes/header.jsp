@@ -1,4 +1,4 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -10,5 +10,4 @@
     <script defer src="${pageContext.request.contextPath}/js/cssControl.js"></script>
 </head>
 <body>
-<jsp:include page="/includes/menu_admin.jsp" />
 <main class="content">

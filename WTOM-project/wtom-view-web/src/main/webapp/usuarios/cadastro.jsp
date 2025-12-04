@@ -1,10 +1,11 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<jsp:include page="/includes/header.jsp">
-    <jsp:param name="pageTitle" value="Cadastro de Usuário" />
-</jsp:include>
+<%@include file="/core/menu.jsp"%>
 
 <%
-    String tipoParam = request.getParameter("tipo");
+    String tipoParam = (String) request.getAttribute("tipo");
+    if (tipoParam == null) {
+        tipoParam = request.getParameter("tipo");
+    }
     String erro = (String) request.getAttribute("erro");
 %>
 
@@ -48,15 +49,37 @@
 
                 <div id="alunoFields" style="<%= "ALUNO".equals(tipoParam) ? "" : "display:none" %>">
                     <label>Curso</label>
-                    <input type="text" name="curso" value="<%= request.getParameter("curso") != null ? request.getParameter("curso") : "" %>">
+                    <select name="curso" required>
+                        <option value="">Selecione um curso</option>
+                        <option value="Edificações" <%= "Edificações".equals(request.getParameter("curso")) ? "selected" : "" %>>Edificações</option>
+                        <option value="Eletrônica" <%= "Eletrônica".equals(request.getParameter("curso")) ? "selected" : "" %>>Eletrônica</option>
+                        <option value="Eletrotécnica" <%= "Eletrotécnica".equals(request.getParameter("curso")) ? "selected" : "" %>>Eletrotécnica</option>
+                        <option value="Equipamentos Biomédicos" <%= "Equipamentos Biomédicos".equals(request.getParameter("curso")) ? "selected" : "" %>>Equipamentos Biomédicos</option>
+                        <option value="Estradas" <%= "Estradas".equals(request.getParameter("curso")) ? "selected" : "" %>>Estradas</option>
+                        <option value="Hospedagem" <%= "Hospedagem".equals(request.getParameter("curso")) ? "selected" : "" %>>Hospedagem</option>
+                        <option value="Informática" <%= "Informática".equals(request.getParameter("curso")) ? "selected" : "" %>>Informática</option>
+                        <option value="Mecânica" <%= "Mecânica".equals(request.getParameter("curso")) ? "selected" : "" %>>Mecânica</option>
+                        <option value="Mecatrônica" <%= "Mecatrônica".equals(request.getParameter("curso")) ? "selected" : "" %>>Mecatrônica</option>
+                        <option value="Meio Ambiente" <%= "Meio Ambiente".equals(request.getParameter("curso")) ? "selected" : "" %>>Meio Ambiente</option>                        
+                        <option value="Química" <%= "Química".equals(request.getParameter("curso")) ? "selected" : "" %>>Química</option>
+                        <option value="Trânsito" <%= "Trânsito".equals(request.getParameter("curso")) ? "selected" : "" %>>Trânsito</option>
+                        <option value="Redes de Computadores" <%= "Redes de Computadores".equals(request.getParameter("curso")) ? "selected" : "" %>>Redes de Computadores</option>
+                    </select>
+                   
                     <label>Série</label>
-                    <input type="text" name="serie" value="<%= request.getParameter("serie") != null ? request.getParameter("serie") : "" %>">
+                    <select name="serie" required>
+                        <option value="">Selecione a série</option>
+                        <option value="1º Ano" <%= "1º Ano".equals(request.getParameter("serie")) ? "selected" : "" %>>1º Ano</option>
+                        <option value="2º Ano" <%= "2º Ano".equals(request.getParameter("serie")) ? "selected" : "" %>>2º Ano</option>
+                        <option value="3º Ano" <%= "3º Ano".equals(request.getParameter("serie")) ? "selected" : "" %>>3º Ano</option>
+                    </select>
                 </div>
-
+   
                 <div id="professorFields" style="<%= "PROFESSOR".equals(tipoParam) ? "" : "display:none" %>">
                     <label>Área</label>
                     <input type="text" name="area" value="<%= request.getParameter("area") != null ? request.getParameter("area") : "" %>">
                 </div>
+
 
                 <div class="login-actions">
                     <button type="submit" class="btn">Cadastrar</button>
@@ -78,5 +101,3 @@
         });
     });
 </script>
-
-<jsp:include page="/includes/footer.jsp" />

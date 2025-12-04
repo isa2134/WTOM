@@ -1,5 +1,4 @@
-<footer class="footer">
-    <p>&copy; 2025 WTOM - Treinamento Olímpico Matemático</p>
-</footer>
-</body>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+        <script src="${pageContext.request.contextPath}/js/cssControl.js"></script>
+    </body>
 </html>

@@ -2,8 +2,8 @@ package wtom.model.domain;
 
 
 public class Inscricao {
-    private String cpf;
     private String nome;
+    private String cpf;
     protected int idOlimpiada;
     private long idUsuario;
 

@@ -1,6 +1,10 @@
-document.getElementById('sidebar-toggle').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.toggle('collapsed');
-});
+const sidebarToggleEl = document.getElementById('sidebar-toggle');
+if (sidebarToggleEl) {
+    sidebarToggleEl.addEventListener('click', () => {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) sidebar.classList.toggle('collapsed');
+    });
+}
 
 const toggleModal = (show) => {
     const modal = document.getElementById('role-select-modal');
@@ -33,19 +37,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (btnSelectAluno) {
         btnSelectAluno.addEventListener('click', () => {
-            window.location.href = 'usuarios/cadastro.jsp?tipo=ALUNO';
+            const base = typeof APP_CONTEXT_PATH !== 'undefined' ? APP_CONTEXT_PATH : '';
+            window.location.href = base + '/CadastroUsuarioController?tipo=ALUNO';
         });
     }
 
     if (btnSelectProfessor) {
         btnSelectProfessor.addEventListener('click', () => {
-            window.location.href = 'usuarios/cadastro.jsp?tipo=PROFESSOR';
+            const base = typeof APP_CONTEXT_PATH !== 'undefined' ? APP_CONTEXT_PATH : '';
+            window.location.href = base + '/CadastroUsuarioController?tipo=PROFESSOR';
         });
     }
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-    const fileInput = document.getElementById('arquivo');
+/*document.addEventListener('DOMContentLoaded', () => {
+    const fileInput = document.getElementById('arquivo') || document.getElementById('imagem');
     const fileWrapper = document.getElementById('file-upload-box');
     const fileNameDisplay = document.getElementById('file-name-display');
 
@@ -67,4 +73,30 @@ document.addEventListener('DOMContentLoaded', () => {
             fileNameDisplay.style.color = 'var(--muted)';
         }
     });
+});*/
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    function setupFileInput(wrapperId, inputId, displayId) {
+        const wrapper = document.getElementById(wrapperId);
+        const input = document.getElementById(inputId);
+        const display = document.getElementById(displayId);
+
+        if (!wrapper || !input || !display) return;
+
+        wrapper.addEventListener('click', () => input.click());
+
+        input.addEventListener('change', () => {
+            let fileName = input.files?.[0]?.name;
+            if (fileName) {
+                if (fileName.length > 35) fileName = fileName.substring(0, 32) + '...';
+                display.textContent = "Arquivo selecionado: " + fileName;
+                display.style.color = 'var(--accent)';
+            }
+        });
+    }
+
+    setupFileInput('file-upload-box', 'arquivo', 'file-name-display');
+    setupFileInput('imagem-upload-box', 'imagem', 'imagem-name-display');
+    setupFileInput('resolucao-upload-box', 'resolucaoArquivo', 'file-resolucao-display');
 });

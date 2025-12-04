@@ -1,10 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<jsp:include page="/includes/header.jsp">
-    <jsp:param name="pageTitle" value="Perfil do Usuário" />
-</jsp:include>
+<%@include file="/core/menu.jsp"%>
 
 <%
-    wtom.model.domain.Usuario usuario = (wtom.model.domain.Usuario) session.getAttribute("usuarioLogado");
     String erro = (String) request.getAttribute("erro");
     String sucesso = (String) session.getAttribute("sucesso");
     if (sucesso != null) session.removeAttribute("sucesso");
@@ -56,10 +53,8 @@
             <% } %>
 
             <div class="login-actions">
-                <a href="editar.jsp?id=<%= usuario.getId() %>" class="btn">Editar Dados</a>
+                <a href="${pageContext.request.contextPath}/EditarUsuarioController?id=<%= usuario.getId() %>" class="btn"> Editar Usuário</a>
             </div>
         <% } %>
     </div>
 </div>
-
-<jsp:include page="/includes/footer.jsp" />
