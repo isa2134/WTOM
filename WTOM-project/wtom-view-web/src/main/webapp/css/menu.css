@@ -1,112 +1,117 @@
-.sidebar{
-  position:fixed;
-  left:0;top:0;bottom:0;
-  width:var(--sidebar-width);
-  padding:28px 20px;
-  background:linear-gradient(180deg, rgba(15,76,92,0.98), rgba(12,60,74,0.95));
-  color:#fff;
-  display:flex;flex-direction:column;gap:18px;
-  box-shadow: 6px 0 24px rgba(0,0,0,0.06);
-  z-index:50;
-  overflow-y:auto;
-  transition: width 0.2s, padding 0.2s; 
+:root {
+    --sidebar-bg: #103037;
+    --sidebar-dark: #2c2c2c;
+    --accent-cyan: #00d2ff;
+    --text-white: #ffffff;
+    --sidebar-width: 280px;
 }
 
-.sidebar.collapsed{
-  width: 80px;
-  padding: 50px 10px 28px 10px; 
+.sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: var(--sidebar-width);
+    background: var(--sidebar-bg);
+    color: var(--text-white);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.15);
+    z-index: 50;
+    overflow-y: auto;
+    transition: width 0.2s;
+    padding: 0;
 }
 
-.sidebar.collapsed .role-select,
-.sidebar.collapsed .sidebar-footer,
-.sidebar.collapsed .menu span,
-.sidebar.collapsed .menu a[data-disabled="true"]{
-  display: none !important;
+.brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+    background: var(--sidebar-dark);
 }
 
-.sidebar.collapsed .logo{
-  width: 60px;
-  height: 60px;
-  margin: 0 auto;
+.logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent-cyan);
+    cursor: pointer;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
-.sidebar.collapsed .brand{
-  justify-content: center;
+
+.logo i {
+    font-size: 1.4rem;
 }
-.sidebar.collapsed .menu a{
-  justify-content: center;
-  padding: 12px 0;
-  gap: 0;
+
+nav.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
 }
-.brand{
-  display:flex;
-  gap:12px;
-  align-items:center; 
-  justify-content: center
+
+nav.menu a {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 16px 25px;
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-weight: 500;
+    border-left: 5px solid transparent;
+    transition: all 0.2s;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
 }
-.logo{
-  width:56px;
-  height:56px;
-  border-radius:12px;
-  background:linear-gradient(135deg,var(--gold),#F0D9A6);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:800;
-  color:var(--accent);
-  font-size:20px; 
-  cursor:pointer}
-.brand h1{
-  margin:0;
-  font-size:18px
+
+nav.menu a:hover {
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    padding-left: 30px;
 }
-.brand p{
-  margin:0;
-  font-size:12px;
-  color:rgba(255,255,255,0.9)
+
+.menu-section-dark {
+    background-color: var(--sidebar-dark);
+    padding-bottom: 10px;
 }
-.role-select{
-  background:transparent;
-  padding-top:8px
+
+nav.menu a.active {
+    background: rgba(0,0,0,0.2);
+    color: #fff;
+    border-left: 5px solid var(--accent-cyan);
+    font-weight: 700;
 }
-.role-buttons{
-  display:flex;
-  gap:8px
+
+nav.menu a i {
+    width: 25px;
+    text-align: center;
 }
-.role-buttons button{
-  flex:1;
-  padding:8px;
-  border-radius:10px;
-  border:0;
-  background:rgba(255,255,255,0.06);
-  color:#fff;
-  font-weight:600;
-  cursor:pointer
+
+.sidebar.collapsed { 
+    width: 80px; 
 }
-.role-buttons button.active{
-  background:var(--gold);color:var(--accent)
+
+.sidebar.collapsed .logo span { 
+    display: none; 
 }
-nav.menu{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  margin-top:6px
+
+.sidebar.collapsed .logo {
+    justify-content: center;
+    gap: 0;
 }
-nav.menu a{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px;
-  border-radius:10px;
-  color:rgba(255,255,255,0.95);
-  text-decoration:none;
-  font-weight:600
+
+.sidebar.collapsed .brand { 
+    justify-content: center;
 }
-nav.menu a:hover{
-  background:rgba(255,255,255,0.05);
-  transform:translateX(4px);
-  transition:all .12s
+
+.sidebar.collapsed nav.menu a span { 
+    display: none; 
 }
-nav.menu a[data-disabled="true"]{
-  opacity:0.45;
-  pointer-events:none
+
+.sidebar.collapsed nav.menu a { 
+    justify-content: center; 
+    padding: 16px 0; 
+} 
+
+.sidebar.collapsed nav.menu a:hover { 
+    padding-left: 0; 
 }

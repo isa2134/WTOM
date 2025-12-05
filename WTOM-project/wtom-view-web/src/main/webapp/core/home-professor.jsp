@@ -14,7 +14,7 @@
 
 <body style="background-color:#0e3c4b">  
 
-    <%@include file="/core/menu.jsp"%>
+    <%@include file="/core/header.jsp"%>
 
     <main class="content">  
         
@@ -54,6 +54,6 @@
         </div>
 
     </main>
-
+                 <%@include file="/core/footer.jsp"%>
 </body>
 </html>
