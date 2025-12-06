@@ -1,38 +1,69 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>WTOM - Login</title>
-        <link rel="stylesheet" href="css/estilos.css">
-        <link rel="stylesheet" href="css/menu.css">
-    </head>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>WTOM - Login</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
 <body class="login-page-body">
-    <section class="login-box-wrapper">
-        <header class="auth-header">
-            <h2 id="auth-title">Bem-vindo(a) ao WTOM</h2>
-        </header>
-        
-        <div class="card login-card-custom">
-            <h3>Login</h3>
-            <form action="${pageContext.request.contextPath}/LoginController" method="POST" id="login-form">
-                <label>Email</label>
-                <input type="email" name="login" id="login-email" placeholder="seu@exemplo.com" value="professor@gmail.com" required>
-                
-                <label>Senha</label>
-                <input type="password" name="senha" id="login-pass" placeholder="••••••" required>
-                
-                <p style="text-align: right; margin-top: 5px; margin-bottom: 25px;">
-                    <a href="#" style="color: var(--accent-cyan); font-size: 0.9rem; font-weight: 500;">Esqueceu a senha?</a>
-                </p>
 
-                <button class="btn btn-entrar" type="submit">Entrar</button>
+    <div id="role-select-modal" class="modal hidden" aria-modal="true" role="dialog" aria-labelledby="modal-title">
+        <div class="modal-backdrop" aria-hidden="true"></div>
+        <div class="modal-content">
+            <div class="card" style="padding: 30px; background: white; border-radius: 15px;"> <button class="close-btn" id="btn-close-modal" aria-label="Fechar janela de seleção de perfil" style="float: right; cursor: pointer; border: none; background: transparent; font-size: 1.5rem;">×</button>
+                <h3 id="modal-title" style="margin-top: 0; color: #176B87; text-align: center;">Selecione seu Perfil</h3>
+                <p style="color: #6B7A81; margin-bottom: 25px; text-align: center;">Para continuar, você se cadastrará como:</p>
+
+                <div class="role-selection-actions" style="display: flex; gap: 10px; justify-content: center;">
+                    <a class="btn" href="${pageContext.request.contextPath}/CadastroUsuarioController?tipo=ALUNO" id="btn-select-aluno" data-role="aluno" style="text-decoration: none; background: #176B87; color: white; padding: 10px 20px; border-radius: 8px;">Aluno</a>
+                    <a class="btn secondary" href="${pageContext.request.contextPath}/CadastroUsuarioController?tipo=PROFESSOR" id="btn-select-professor" data-role="professor" style="text-decoration: none; background: #E3B23C; color: #176B87; padding: 10px 20px; border-radius: 8px;">Professor</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="login-container">
+        <div class="card login-card-modern">
+            <h3 class="login-title">Login</h3>
+
+            <form action="${pageContext.request.contextPath}/LoginController" method="POST" id="login-form">
                 
-                <button class="btn btn-cadastrar" type="button" id="btn-show-recover" >Cadastrar</button>
+                <div class="input-group-modern">
+                    <label>Usuário</label>
+                    <div class="input-wrapper">
+                        <i class="fa-regular fa-user input-icon"></i>
+                        <input type="email" name="login" placeholder="Digite seu usuário" value="professor@gmail.com" required>
+                    </div>
+                </div>
+                
+                <div class="input-group-modern">
+                    <label>Senha</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <input type="password" name="senha" placeholder="Digite sua senha" required>
+                    </div>
+                </div>
+                
+                <div class="forgot-pass-wrapper">
+                    <a href="#" class="forgot-pass-link">Esqueceu a senha?</a>
+                </div>
+
+                <button class="btn-modern-login" type="submit">LOGIN</button>
+
+                <div class="signup-footer">
+                    <p>Não tem conta?</p>
+                    <a href="#" id="btn-show-recover" class="signup-link">CADASTRAR</a>
+                </div>
             </form>
         </div>
-    </section>
+    </div>
 
-    </body>
+    <script>
+        const APP_CONTEXT_PATH = '${pageContext.request.contextPath}';
+    </script>
+    <script src="js/cssControl.js"></script>
+
+</body>
 </html>

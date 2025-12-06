@@ -24,10 +24,10 @@
                     <h1>Olá, <span>${not empty sessionScope.usuario.nome ? sessionScope.usuario.nome : 'Professor(a)'}</span>!</h1>
                     <p>Sua plataforma de gestão de turmas. Publique materiais, organize reuniões e acompanhe o desempenho dos alunos.</p>
                     <div class="welcome-buttons">
-                        <a href="${pageContext.request.contextPath}/turma?acao=listar" class="btn-glow">
+                        <a href="${pageContext.request.contextPath}/usuarios/editar.jsp" class="btn-glow">
                             <i class="fa-solid fa-chalkboard-user"></i> Minhas Turmas
                         </a>
-                        <a href="${pageContext.request.contextPath}/core/ranking/geral.jsp" class="btn-transparent">
+                        <a href="${pageContext.request.contextPath}/core/ranking/listar.jsp" class="btn-transparent">
                             <i class="fa-solid fa-chart-line"></i> Acompanhar Progresso
                         </a>
                     </div>

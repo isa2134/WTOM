@@ -10,15 +10,15 @@
     Usuario usuario = (Usuario) session.getAttribute("usuario");
 
     boolean podeGerir = usuario != null &&
-            (usuario.getTipo() == UsuarioTipo.PROFESSOR ||
-             usuario.getTipo() == UsuarioTipo.ADMINISTRADOR);
+                (usuario.getTipo() == UsuarioTipo.PROFESSOR ||
+                usuario.getTipo() == UsuarioTipo.ADMINISTRADOR);
 
     boolean googleConectado = (session.getAttribute("googleCredential") != null);
 
     String dataHoraFormatada = "";
     if (r.getDataHora() != null) {
         dataHoraFormatada = r.getDataHora().format(
-            java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
+                java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
         );
     }
 %>
@@ -30,10 +30,10 @@
     <title><%= (r.getId() == null ? "Nova Reunião" : "Editar Reunião") %></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/menu.css">
 </head>
 
-<body class="no-sidebar" style="background-color:#c2cbd3">
-<main class="content">
+<body class="no-sidebar" style="background-color:#f1f4f7"> <main class="content">
 
     <div class="form-reuniao-container">
         <section class="page">
@@ -42,9 +42,7 @@
                 <h2><%= (r.getId() == null ? "Nova Reunião" : "Editar Reunião") %></h2>
             </header>
 
-            <div class="card">
-
-                <% if (request.getAttribute("erro") != null) { %>
+            <div class="card"> <% if (request.getAttribute("erro") != null) { %>
                     <div style="background:#ffdddd; padding:10px; border:1px solid #bb0000;
                                 color:#990000; margin-bottom:15px; border-radius:4px;">
                         <strong>Erro:</strong> <%= request.getAttribute("erro") %>
@@ -79,12 +77,13 @@
                         <label for="titulo">Título</label>
                         <input type="text" id="titulo" name="titulo"
                                value="<%= r.getTitulo() != null ? r.getTitulo() : "" %>"
-                               required>
+                               required
+                               placeholder="Título principal da reunião">
                     </div>
 
                     <div class="form-group form-span-2">
                         <label for="descricao">Descrição</label>
-                        <textarea id="descricao" name="descricao" rows="4"><%= r.getDescricao() != null ? r.getDescricao() : "" %></textarea>
+                        <textarea id="descricao" name="descricao" rows="4" placeholder="Detalhes e pauta da reunião"><%= r.getDescricao() != null ? r.getDescricao() : "" %></textarea>
                     </div>
 
                     <div class="form-group">
@@ -105,12 +104,16 @@
                     <div class="form-group">
                         <label for="alcance">Alcance</label>
                         <select id="alcance" name="alcance">
-                            <option value="GERAL">Todos</option>
-                            <option value="ALUNOS">Somente Alunos</option>
-                            <option value="PROFESSORES">Somente Professores</option>
-                            <option value="INDIVIDUAL">Individual</option>
+                            <option value="GERAL" <%= "GERAL".equals(r.getAlcance()) ? "selected" : "" %>>Todos</option>
+                            <option value="ALUNOS" <%= "ALUNOS".equals(r.getAlcance()) ? "selected" : "" %>>Somente Alunos</option>
+                            <option value="PROFESSORES" <%= "PROFESSORES".equals(r.getAlcance()) ? "selected" : "" %>>Somente Professores</option>
+                            <option value="INDIVIDUAL" <%= "INDIVIDUAL".equals(r.getAlcance()) ? "selected" : "" %>>Individual</option>
                         </select>
                     </div>
+                    
+                    <div class="form-group">
+                        </div>
+
 
                     <div class="form-actions form-span-2">
                         <button class="btn" type="submit">
