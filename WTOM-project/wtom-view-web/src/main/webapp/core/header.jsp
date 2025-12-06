@@ -17,8 +17,8 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/menu.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/conteudo.css"/>
-</head> 
-     <script>
+</head>  
+    <script>
     (function(){
       const tiles = document.querySelectorAll('.tile.has-submenu');
 
@@ -56,6 +56,16 @@
           });
         }
       });
+
+      // NOVO CÓDIGO PARA O TOGGLE DA SIDEBAR
+      const sidebarToggle = document.getElementById('sidebar-toggle');
+      const sidebar = document.getElementById('sidebar');
+
+      if (sidebarToggle && sidebar) {
+          sidebarToggle.addEventListener('click', () => {
+              sidebar.classList.toggle('collapsed');
+          });
+      }
     })();
   </script>
 
@@ -73,33 +83,33 @@
         <div class="menu-section-dark">
             
             <a href="${pageContext.request.contextPath}/home" 
-               class="${pageContext.request.servletPath.contains('home') ? 'active' : ''}">
+                class="${pageContext.request.servletPath.contains('home') ? 'active' : ''}">
                 <i class="fa-solid fa-user"></i> <span>Perfil / Início</span>
             </a>
 
             <a href="${pageContext.request.contextPath}/olimpiada"
-               class="${pageContext.request.servletPath.contains('olimpiada') ? 'active' : ''}">
+                class="${pageContext.request.servletPath.contains('olimpiada') ? 'active' : ''}">
                 <i class="fa-solid fa-trophy"></i> <span>Olimpíadas</span>
             </a>
 
             <a href="${pageContext.request.contextPath}/core/ranking/listar.jsp"
-               class="${pageContext.request.servletPath.contains('ranking') ? 'active' : ''}">
+                class="${pageContext.request.servletPath.contains('ranking') ? 'active' : ''}">
                 <i class="fa-solid fa-chart-line"></i> <span>Ranking</span>
             </a>
 
             <a href="${pageContext.request.contextPath}/notificacao"
-               class="${pageContext.request.servletPath.contains('notificacao') ? 'active' : ''}">
+                class="${pageContext.request.servletPath.contains('notificacao') ? 'active' : ''}">
                 <i class="fa-solid fa-envelope"></i> <span>Notificações</span>
             </a>
             
         </div>
         <a href="${pageContext.request.contextPath}/ConteudoController?acao=listarTodos"
-           class="${param.acao == 'listarTodos' && pageContext.request.servletPath.contains('Conteudo') ? 'active' : ''}">
+            class="${param.acao == 'listarTodos' && pageContext.request.servletPath.contains('Conteudo') ? 'active' : ''}">
             <i class="fa-solid fa-book-open"></i> <span>Conteúdos</span>
         </a>
         
         <a href="${pageContext.request.contextPath}/DesafioController?acao=listarTodos"
-           class="${pageContext.request.servletPath.contains('Desafio') ? 'active' : ''}">
+            class="${pageContext.request.servletPath.contains('Desafio') ? 'active' : ''}">
             <i class="fa-solid fa-puzzle-piece"></i> <span>Desafios</span>
         </a>
 
@@ -117,7 +127,7 @@
         </c:choose>
 
         <a href="${pageContext.request.contextPath}/DuvidaController?acao=listar">
-             <i class="fa-solid fa-question-circle"></i> <span>Dúvidas</span>
+               <i class="fa-solid fa-question-circle"></i> <span>Dúvidas</span>
         </a>
         
         <a href="${pageContext.request.contextPath}/reuniao?acao=listar">
