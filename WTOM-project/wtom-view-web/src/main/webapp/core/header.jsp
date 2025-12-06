@@ -57,7 +57,6 @@
         }
       });
 
-      // NOVO CÓDIGO PARA O TOGGLE DA SIDEBAR
       const sidebarToggle = document.getElementById('sidebar-toggle');
       const sidebar = document.getElementById('sidebar');
 
