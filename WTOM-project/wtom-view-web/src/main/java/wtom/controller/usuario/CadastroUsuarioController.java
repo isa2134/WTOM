@@ -11,6 +11,8 @@ import wtom.model.domain.Usuario;
 import wtom.model.domain.Aluno;
 import wtom.model.domain.Professor;
 import wtom.model.domain.util.UsuarioTipo;
+import wtom.model.dao.ConfiguracaoDAO; 
+import wtom.model.domain.Configuracao; 
 import wtom.model.service.UsuarioService;
 import wtom.model.service.AlunoService;
 import wtom.model.service.ProfessorService;
@@ -23,23 +25,46 @@ public class CadastroUsuarioController extends HttpServlet {
     private final UsuarioService usuarioService = new UsuarioService();
     private final AlunoService alunoService = new AlunoService();
     private final ProfessorService professorService = new ProfessorService();
+    private final ConfiguracaoDAO configuracaoDAO = new ConfiguracaoDAO(); 
 
     private static final String VIEW_CADASTRO = "/usuarios/cadastro.jsp";
+    private static final String VIEW_INICIO = "/index.jsp";
+
+    private void verificarPermissaoECadastro(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        
+        Configuracao config = configuracaoDAO.buscarConfiguracoes();
+        
+        if (config == null || !config.getPermitirCadastro()) {
+            req.setAttribute("erro", "O registro de novos usuários está temporariamente desabilitado pelo Administrador.");
+            req.getRequestDispatcher(VIEW_INICIO).forward(req, resp);
+            return;
+        }
+
+        if ("GET".equalsIgnoreCase(req.getMethod())) {
+            String tipo = req.getParameter("tipo");
+            req.setAttribute("tipo", tipo);
+            req.getRequestDispatcher(VIEW_CADASTRO).forward(req, resp);
+        } else if ("POST".equalsIgnoreCase(req.getMethod())) {
+            processarCadastro(req, resp);
+        }
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
-        String tipo = req.getParameter("tipo");
-        req.setAttribute("tipo", tipo);
-
-        req.getRequestDispatcher(VIEW_CADASTRO).forward(req, resp);
+        verificarPermissaoECadastro(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
+        verificarPermissaoECadastro(req, resp);
+    }
+    
+    private void processarCadastro(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        
         try {
             String cpf = req.getParameter("cpf");
             String nome = req.getParameter("nome");
@@ -65,6 +90,11 @@ public class CadastroUsuarioController extends HttpServlet {
 
             if (senha == null || senha.isBlank())
                 throw new NegocioException("Senha não pode estar vazia.");
+            
+            Configuracao config = configuracaoDAO.buscarConfiguracoes();
+            if (config != null && senha.length() < config.getMinTamanhoSenha()) {
+                throw new NegocioException("A senha deve ter no mínimo " + config.getMinTamanhoSenha() + " caracteres.");
+            }
 
             if (login == null || login.isBlank())
                 throw new NegocioException("Login não pode estar vazio.");
@@ -75,7 +105,6 @@ public class CadastroUsuarioController extends HttpServlet {
             UsuarioTipo tipo = UsuarioTipo.valueOf(tipoStr);
 
             Usuario usuario = new Usuario(null, cpf, nome, telefone, email, data, senha, login, tipo, null);
-
 
             if (tipo == UsuarioTipo.ALUNO) {
 

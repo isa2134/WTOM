@@ -17,20 +17,26 @@ public class UsuarioService {
 
     public Usuario cadastrarUsuario(Usuario u) throws NegocioException {
         try {
-            if (u == null) throw new NegocioException("Usuário inválido.");
+            if (u == null) {
+                throw new NegocioException("Usuário inválido.");
+            }
 
-            if (u.getCpf() == null || !ValidadorUtil.validarCPF(u.getCpf()))
+            if (u.getCpf() == null || !ValidadorUtil.validarCPF(u.getCpf())) {
                 throw new NegocioException("CPF inválido. Verifique e tente novamente.");
+            }
 
-            if (u.getEmail() == null || !ValidadorUtil.validarEmail(u.getEmail()))
+            if (u.getEmail() == null || !ValidadorUtil.validarEmail(u.getEmail())) {
                 throw new NegocioException("E-mail inválido. Verifique e tente novamente.");
+            }
 
             LocalDate data = u.getDataDeNascimento();
-            if (data == null || !ValidadorUtil.validarData(data))
+            if (data == null || !ValidadorUtil.validarData(data)) {
                 throw new NegocioException("Data de nascimento inválida.");
+            }
 
-            if (u.getSenha() == null || u.getSenha().isBlank())
+            if (u.getSenha() == null || u.getSenha().isBlank()) {
                 throw new NegocioException("Senha não pode estar vazia.");
+            }
 
             Usuario existente = usuarioDAO.buscarPorCpfOuEmail(u.getCpf(), u.getEmail());
             if (existente != null) {
@@ -58,14 +64,24 @@ public class UsuarioService {
         }
     }
 
+    public List<Usuario> buscarUsuariosBloqueados() throws NegocioException {
+        try {
+            return usuarioDAO.buscarUsuariosBloqueados();
+        } catch (PersistenciaException e) {
+            throw new NegocioException("Erro ao listar usuários bloqueados: " + e.getMessage());
+        }
+    }
+
     public Usuario buscarPorId(Long id) throws NegocioException {
-        if (id == null || id <= 0)
+        if (id == null || id <= 0) {
             throw new NegocioException("ID inválido para busca de usuário.");
+        }
 
         try {
             Usuario usuario = usuarioDAO.buscarPorId(id);
-            if (usuario == null)
+            if (usuario == null) {
                 throw new NegocioException("Usuário não encontrado para o ID informado.");
+            }
             return usuario;
         } catch (PersistenciaException e) {
             throw new NegocioException("Erro ao buscar usuário por ID: " + e.getMessage());
@@ -74,11 +90,13 @@ public class UsuarioService {
 
     public void atualizarUsuario(Usuario u) throws NegocioException {
         try {
-            if (u == null || u.getId() == null)
+            if (u == null || u.getId() == null) {
                 throw new NegocioException("Usuário inválido para atualização.");
+            }
 
-            if (u.getEmail() != null && !ValidadorUtil.validarEmail(u.getEmail()))
+            if (u.getEmail() != null && !ValidadorUtil.validarEmail(u.getEmail())) {
                 throw new NegocioException("E-mail inválido.");
+            }
 
             usuarioDAO.atualizar(u);
         } catch (PersistenciaException e) {
@@ -87,8 +105,9 @@ public class UsuarioService {
     }
 
     public void excluirUsuario(Long id, Usuario admin) throws NegocioException {
-        if (admin == null || admin.getTipo() != UsuarioTipo.ADMINISTRADOR)
+        if (admin == null || admin.getTipo() != UsuarioTipo.ADMINISTRADOR) {
             throw new NegocioException("Somente administradores podem excluir usuários!");
+        }
 
         try {
             usuarioDAO.remover(id);
@@ -97,10 +116,71 @@ public class UsuarioService {
         }
     }
 
+    public Usuario buscarPorLoginSeguro(String login) throws NegocioException {
+        try {
+            return usuarioDAO.buscarPorLoginSeguro(login);
+        } catch (PersistenciaException e) {
+            throw new NegocioException("Erro ao buscar usuário para autenticação: " + e.getMessage());
+        }
+    }
+
+    public void resetarTentativasLogin(Long id) throws NegocioException {
+        try {
+            if (id != null && id > 0) {
+                usuarioDAO.resetarTentativasLogin(id);
+            }
+        } catch (PersistenciaException e) {
+            throw new NegocioException("Erro ao resetar tentativas de login: " + e.getMessage());
+        }
+    }
+
+    public boolean registrarTentativaFalha(String login) throws NegocioException {
+        try {
+            return usuarioDAO.registrarTentativaFalha(login);
+        } catch (PersistenciaException e) {
+            throw new NegocioException("Erro ao registrar tentativa falha: " + e.getMessage());
+        }
+    }
+
+    public void bloquearUsuario(String login) throws NegocioException {
+        try {
+            if (login == null || login.trim().isEmpty()) {
+                throw new NegocioException("O login não pode ser vazio.");
+            }
+            Usuario u = usuarioDAO.buscarPorLoginSeguro(login); 
+            
+            if (u == null) {
+                throw new NegocioException("Usuário com login '" + login + "' não encontrado.");
+            }
+            if (u.isBloqueado()) {
+                throw new NegocioException("Usuário já está bloqueado.");
+            }
+
+            usuarioDAO.bloquearUsuarioManual(u.getId()); 
+
+        } catch (PersistenciaException e) {
+            throw new NegocioException("Erro de persistência ao bloquear usuário: " + e.getMessage());
+        }
+    }
+    
+    public void desbloquearUsuario(Long id) throws NegocioException {
+        if (id == null || id <= 0) {
+            throw new NegocioException("ID inválido para desbloqueio.");
+        }
+        
+        try {
+            usuarioDAO.desbloquearUsuario(id);  
+        } catch (PersistenciaException e) {
+            throw new NegocioException("Erro ao desbloquear usuário: " + e.getMessage());
+        }
+    }
+
     public Usuario buscarPorLogin(String login) throws UsuarioInvalidoException {
         try {
             Usuario u = usuarioDAO.buscarPorLogin(login);
-            if (u == null) throw new UsuarioInvalidoException("Usuário não encontrado para login: " + login);
+            if (u == null) {
+                throw new UsuarioInvalidoException("Usuário não encontrado para login: " + login);
+            }
             return u;
         } catch (PersistenciaException e) {
             throw new UsuarioInvalidoException("Erro ao buscar usuário: " + e.getMessage());
@@ -110,15 +190,4 @@ public class UsuarioService {
     public Usuario cadastrarUsuarioERetornar(Usuario u) throws NegocioException {
         return cadastrarUsuario(u);
     }
-
-    public Usuario buscarPorLoginSenha(String login, String senha) throws UsuarioInvalidoException {
-        try {
-            Usuario u = usuarioDAO.buscarPorLoginESenha(login, senha);
-            if (u == null) throw new UsuarioInvalidoException("Usuário não encontrado para login/senha fornecidos.");
-            return u;
-        } catch (PersistenciaException e) {
-            return null;
-        }
-    }
-
 }

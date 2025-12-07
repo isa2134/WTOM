@@ -24,8 +24,8 @@
                         <h1>Olá, <span>${not empty sessionScope.usuario.nome ? sessionScope.usuario.nome : 'Administrador(a)'}</span>!</h1>
                         <p>Painel de Controle Total. Gerencie usuários, olimpíadas, sistema e monitore a saúde da plataforma.</p>
                         <div class="welcome-buttons">
-                            <a href="${pageContext.request.contextPath}/usuarios/perfil.jsp" class="btn-glow">
-                                <i class="fa-solid fa-users-gear"></i> Gerenciar Usuários
+                            <a href="${pageContext.request.contextPath}/AdminAlunosController" class="btn-glow">
+                                <i class="fa-solid fa-users-gear"></i> Gerenciar Alunos
                             </a>
                             <a href="${pageContext.request.contextPath}/olimpiada?acao=listar" class="btn-transparent">
                                 <i class="fa-solid fa-trophy"></i> Administrar Olimpíadas
@@ -85,22 +85,22 @@
                         </div>
 
                         <div class="config-options">
-                            <a href="${pageContext.request.contextPath}/admin/alunos.jsp" class="btn-option">
+                            <a href="${pageContext.request.contextPath}/AdminAlunosController" class="btn-option">
                                 <i class="fa-solid fa-user-graduate"></i>
                                 <span>Gerenciar Alunos</span>
                             </a>
 
-                            <a href="${pageContext.request.contextPath}/admin/professores.jsp" class="btn-option">
+                            <a href="${pageContext.request.contextPath}/AdminProfessoresController" class="btn-option">
                                 <i class="fa-solid fa-chalkboard-user"></i>
                                 <span>Gerenciar Professores</span>
                             </a>
 
-                            <a href="${pageContext.request.contextPath}/admin/premiacoes.jsp" class="btn-option">
+                            <a href="${pageContext.request.contextPath}/AdminPremiacoesController" class="btn-option">
                                 <i class="fa-solid fa-medal"></i>
                                 <span>Gerenciar Premiações</span>
                             </a>
 
-                            <a href="${pageContext.request.contextPath}/usuarios/perfil.jsp" class="btn-option" style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.1)">
+                            <a href="${pageContext.request.contextPath}/ConfiguracaoController" class="btn-option" style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.1)">
                                 <i class="fa-solid fa-sliders"></i>
                                 <span>Configurações do Sistema</span>
                             </a>

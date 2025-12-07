@@ -74,7 +74,7 @@
                     <% } %>
 
                     <div class="form-group form-span-2">
-                        <label for="titulo">Título</label>
+                        <label for="titulo"style="color: var(--accent);">Título</label>
                         <input type="text" id="titulo" name="titulo"
                                value="<%= r.getTitulo() != null ? r.getTitulo() : "" %>"
                                required
@@ -82,19 +82,19 @@
                     </div>
 
                     <div class="form-group form-span-2">
-                        <label for="descricao">Descrição</label>
+                        <label for="descricao" style="color: var(--accent);">Descrição</label>
                         <textarea id="descricao" name="descricao" rows="4" placeholder="Detalhes e pauta da reunião"><%= r.getDescricao() != null ? r.getDescricao() : "" %></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label for="dataHora">Data e Hora</label>
+                        <label for="dataHora"style="color: var(--accent);">Data e Hora</label>
                         <input type="datetime-local" id="dataHora" name="dataHora"
                                value="<%= dataHoraFormatada %>"
                                required>
                     </div>
 
                     <div class="form-group">
-                        <label for="link">Link da reunião</label>
+                        <label for="link"style="color: var(--accent);">Link da reunião</label>
                         <input type="url" id="link" name="link"
                                value="<%= r.getLink() != null ? r.getLink() : "" %>"
                                <%= googleConectado ? "readonly" : "" %>
@@ -102,7 +102,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="alcance">Alcance</label>
+                        <label for="alcance"style="color: var(--accent);">Alcance</label>
                         <select id="alcance" name="alcance">
                             <option value="GERAL" <%= "GERAL".equals(r.getAlcance()) ? "selected" : "" %>>Todos</option>
                             <option value="ALUNOS" <%= "ALUNOS".equals(r.getAlcance()) ? "selected" : "" %>>Somente Alunos</option>

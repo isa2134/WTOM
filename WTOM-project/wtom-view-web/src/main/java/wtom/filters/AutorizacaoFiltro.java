@@ -32,7 +32,7 @@ public class AutorizacaoFiltro implements Filter {
         Object usuario = (session != null) ? session.getAttribute("usuarioLogado") : null;
 
         if (usuario == null) {
-            res.sendRedirect(req.getContextPath() + "/index.jsp");
+            res.sendRedirect(req.getContextPath() + "/LoginController");
             return;
         }
 
