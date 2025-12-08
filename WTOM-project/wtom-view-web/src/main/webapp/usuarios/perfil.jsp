@@ -1,7 +1,16 @@
+<%@page import="wtom.model.domain.Professor"%>
+<%@page import="wtom.model.service.ProfessorService"%>
+<%@page import="wtom.model.domain.Aluno"%>
+<%@page import="wtom.model.service.AlunoService"%>
+<%@page import="wtom.model.domain.Usuario"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="/core/menu.jsp"%>
 
 <%
+    if (usuarioHeader == null) {
+        usuarioHeader = (Usuario) session.getAttribute("usuarioAutenticado");
+    }
+
     String erro = (String) request.getAttribute("erro");
     String sucesso = (String) session.getAttribute("sucesso");
     if (sucesso != null)
@@ -210,7 +219,7 @@
 
 <div class="page-profile-container">
 
-    <% if (usuario == null) { %>
+    <% if (usuarioHeader == null) { %>
     <div style="text-align: center; margin-top: 50px;">
         <p>Nenhum usuário autenticado. <a href="${pageContext.request.contextPath}/index.jsp">Faça login</a>.</p>
     </div>
@@ -219,10 +228,10 @@
     <div class="profile-card">
         <div class="profile-left">
             <div class="profile-img-placeholder">
-                <%= usuario.getNome().substring(0, 1).toUpperCase()%>
+                <%= usuarioHeader.getNome().substring(0, 1).toUpperCase()%>
             </div>
-            <h3><%= usuario.getNome()%></h3>
-            <p><%= usuario.getTipo()%></p>
+            <h3><%= usuarioHeader.getNome()%></h3>
+            <p><%= usuarioHeader.getTipo()%></p>
         </div>
 
         <div class="profile-right">
@@ -234,9 +243,9 @@
             <div class="alert alert-success"><%= sucesso%></div>
             <% } %>
 
-            <% if (usuario.getTipo() != null && usuario.getTipo().name().equals("ALUNO")) { %>
+            <% if (usuarioHeader.getTipo() != null && usuarioHeader.getTipo().name().equals("ALUNO")) { %>
             <h4 class="section-title">Dados do Aluno</h4>
-            <% } else if (usuario.getTipo() != null && usuario.getTipo().name().equals("PROFESSOR")) { %>
+            <% } else if (usuarioHeader.getTipo() != null && usuarioHeader.getTipo().name().equals("PROFESSOR")) { %>
             <h4 class="section-title">Dados do Professor</h4>
             <% } else { %>
             <h4 class="section-title">Informações Pessoais</h4>
@@ -245,23 +254,23 @@
             <div class="info-grid">
                 <div class="info-item">
                     <h5>Email</h5>
-                    <p><%= usuario.getEmail()%></p>
+                    <p><%= usuarioHeader.getEmail()%></p>
                 </div>
                 <div class="info-item">
                     <h5>Telefone</h5>
-                    <p><%= usuario.getTelefone()%></p>
+                    <p><%= usuarioHeader.getTelefone()%></p>
                 </div>
                 <div class="info-item">
                     <h5>CPF</h5>
-                    <p><%= usuario.getCpf()%></p>
+                    <p><%= usuarioHeader.getCpf()%></p>
                 </div>
                 <div class="info-item">
                     <h5>Login</h5>
-                    <p><%= usuario.getLogin()%></p>
+                    <p><%= usuarioHeader.getLogin()%></p>
                 </div>
 
-                <% if (usuario.getTipo() != null && usuario.getTipo().name().equals("ALUNO")) {
-                        wtom.model.domain.Aluno a = new wtom.model.service.AlunoService().buscarAlunoPorUsuario(usuario.getId());
+                <% if (usuarioHeader.getTipo() != null && usuarioHeader.getTipo().name().equals("ALUNO")) {
+                        wtom.model.domain.Aluno a = new wtom.model.service.AlunoService().buscarAlunoPorUsuario(usuarioHeader.getId());
                         if (a != null) {%>
                 <div class="info-item">
                     <h5>Curso</h5>
@@ -272,8 +281,8 @@
                     <p><%= a.getSerie()%></p>
                 </div>
                 <% } %>
-                <% } else if (usuario.getTipo() != null && usuario.getTipo().name().equals("PROFESSOR")) {
-                    wtom.model.domain.Professor p = new wtom.model.service.ProfessorService().buscarProfessorPorUsuario(usuario.getId());
+                <% } else if (usuarioHeader.getTipo() != null && usuarioHeader.getTipo().name().equals("PROFESSOR")) {
+                    wtom.model.domain.Professor p = new wtom.model.service.ProfessorService().buscarProfessorPorUsuario(usuarioHeader.getId());
                     if (p != null) {%>
                 <div class="info-item">
                     <h5>Área</h5>
@@ -283,7 +292,7 @@
                 <% }%>
             </div>
 
-            <a href="${pageContext.request.contextPath}/EditarUsuarioController?id=<%= usuario.getId()%>" class="btn-edit">
+            <a href="${pageContext.request.contextPath}/EditarUsuarioController?id=<%= usuarioHeader.getId()%>" class="btn-edit">
                 Editar Perfil
             </a>
 

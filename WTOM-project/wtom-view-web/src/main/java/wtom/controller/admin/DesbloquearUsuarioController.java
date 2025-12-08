@@ -18,7 +18,7 @@ import wtom.model.dao.LogAuditoriaDAO;
 public class DesbloquearUsuarioController extends HttpServlet {
 
     private final UsuarioService usuarioService = new UsuarioService();
-    private final LogAuditoriaDAO logDAO = new LogAuditoriaDAO();
+    private final LogAuditoriaDAO logDAO = LogAuditoriaDAO.getInstance();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -90,7 +90,7 @@ public class DesbloquearUsuarioController extends HttpServlet {
     }
 
     private void registrarLog(HttpServletRequest request, String tipoAcao,
-                              String detalhes, Long usuarioIdLong) {
+            String detalhes, Long usuarioIdLong) {
 
         try {
             LogAuditoria log = new LogAuditoria();

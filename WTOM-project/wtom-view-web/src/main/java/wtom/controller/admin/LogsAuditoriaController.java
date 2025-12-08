@@ -14,12 +14,12 @@ import wtom.model.domain.LogAuditoria;
 @WebServlet(name = "LogsAuditoriaController", urlPatterns = {"/admin/logs_auditoria"})
 public class LogsAuditoriaController extends HttpServlet {
 
-    private final LogAuditoriaDAO logDAO = new LogAuditoriaDAO();
+    private final LogAuditoriaDAO logDAO = LogAuditoriaDAO.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         System.out.println(">>> [LOGS CONTROLLER] LogsAuditoriaController ACIONADO.");
 
         try {
@@ -33,8 +33,8 @@ public class LogsAuditoriaController extends HttpServlet {
 
         } catch (SQLException e) {
             System.err.println(">>> [ERRO FATAL DB] Falha ao buscar Logs de Auditoria.");
-            e.printStackTrace(); 
-            
+            e.printStackTrace();
+
             request.setAttribute("erro", "Erro interno ao carregar logs. Verifique o servidor.");
             request.getRequestDispatcher("/erro.jsp").forward(request, response);
         }

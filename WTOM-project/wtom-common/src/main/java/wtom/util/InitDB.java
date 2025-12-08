@@ -317,9 +317,9 @@ public class InitDB {
         String sql = """
             INSERT IGNORE INTO usuario (cpf, nome, telefone, email, data_nascimento, senha, login, tipo)
             VALUES  
-                ('123.456.789-00', 'Administrador', '11999999999', 'admin@gmail.com', '1980-01-01', 'admin123', 'admin@gmail.com', 'ADMINISTRADOR'),
-                ('987.654.321-00', 'Professor', '11888888888', 'professor@gmail.com', '1985-05-10', 'prof123', 'professor@gmail.com', 'PROFESSOR'),
-                ('111.222.333-44', 'Aluno', '11777777777', 'aluno@gmail.com', '2005-08-15', 'aluno123', 'aluno@gmail.com', 'ALUNO'),
+                ('123.456.789-00', 'Administrador', '11999999999', 'admin@gmail.com', '1980-01-01', '123', 'admin@gmail.com', 'ADMINISTRADOR'),
+                ('987.654.321-00', 'Professor', '11888888888', 'professor@gmail.com', '1985-05-10', '123', 'professor@gmail.com', 'PROFESSOR'),
+                ('111.222.333-44', 'Aluno', '11777777777', 'aluno@gmail.com', '2005-08-15', '123', 'aluno@gmail.com', 'ALUNO'),
 
                 ('102.456.789-11', 'Carlos Admin', '11987654321', 'carlos@gmail.com', '1982-03-10', 'carlos123', 'carlos@gmail.com', 'ADMINISTRADOR'),
                 ('222.333.444-55', 'Juliana Admin', '11976543210', 'juliana@gmail.com', '1984-11-22', 'juliana123', 'juliana@gmail.com', 'ADMINISTRADOR'),
@@ -354,7 +354,7 @@ public class InitDB {
 
     public void initAlunosPadrao() throws SQLException {
         String[][] alunosData = {
-            {"111.222.333-44", "Informática", "1º Ano"}, 
+            {"111.222.333-44", "Informática", "1º Ano"},
             {"111.333.555-01", "Edificações", "2º Ano"},
             {"222.444.666-02", "Eletrônica", "3º Ano"},
             {"333.555.777-03", "Eletrotécnica", "1º Ano"},
@@ -368,7 +368,7 @@ public class InitDB {
         };
 
         String sqlInsert = "INSERT IGNORE INTO aluno (usuario_id, curso, pontuacao, serie) VALUES (?, ?, 0, ?)";
-        
+
         try (PreparedStatement ps = con.prepareStatement(sqlInsert)) {
             for (String[] data : alunosData) {
                 Long id = buscarIdPorCpf(data[0]);
@@ -384,7 +384,7 @@ public class InitDB {
 
     public void initProfessoresPadrao() throws SQLException {
         String[][] professoresData = {
-            {"987.654.321-00", "Matemática"}, 
+            {"987.654.321-00", "Matemática"},
             {"321.654.987-01", "Física"},
             {"654.987.321-02", "Química"},
             {"741.852.963-03", "Matemática"},
@@ -522,6 +522,43 @@ public class InitDB {
         }
     }
 
+    public void initConfiguracoesUsuario() throws SQLException {
+        String sql = """
+        CREATE TABLE IF NOT EXISTS configuracoes_usuario (
+            id_usuario BIGINT PRIMARY KEY,
+            -- Segurança
+            verificacao_duas_etapas BOOLEAN DEFAULT FALSE,
+            sem_login_automatico BOOLEAN DEFAULT FALSE,
+            rec_pergunta1 VARCHAR(255),
+            rec_resposta1 VARCHAR(255),
+            rec_pergunta2 VARCHAR(255),
+            rec_resposta2 VARCHAR(255),
+            -- Notificações
+            notif_reuniao_new BOOLEAN DEFAULT TRUE,
+            notif_reuniao_start BOOLEAN DEFAULT TRUE,
+            notif_forum BOOLEAN DEFAULT TRUE,
+            notif_conteudo BOOLEAN DEFAULT TRUE,
+            notif_olimpiadas BOOLEAN DEFAULT TRUE,
+            -- Interface e Preferências
+            ui_fonte_maior BOOLEAN DEFAULT FALSE,
+            ui_alto_contraste BOOLEAN DEFAULT FALSE,
+            ui_tema_escuro BOOLEAN DEFAULT FALSE,
+            interesses TEXT, -- Guardará "algebra,fisica" separados por vírgula
+            -- Privacidade
+            priv_nome_ranking BOOLEAN DEFAULT TRUE,
+            priv_foto_ranking BOOLEAN DEFAULT TRUE,
+            modo_estudo BOOLEAN DEFAULT FALSE,
+            
+            FOREIGN KEY (id_usuario) REFERENCES usuario(id) ON DELETE CASCADE
+        );
+    """;
+
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+            System.out.println("Tabela 'configuracoes_usuario' criada ou já existente.");
+        }
+    }
+
     public void initPremiacoesPadrao() throws SQLException {
         String sql = """
             INSERT IGNORE INTO premiacao 
@@ -575,14 +612,16 @@ public class InitDB {
             initRespostas();
             initDuvidasTeste();
             initRespostasTeste();
-            
-            initAlunosPadrao();      
+
+            initAlunosPadrao();
             initProfessoresPadrao();
-            
+
             initPremiacoes();
             initPremiacoesPadrao();
             initOlimpiadasPadrao();
             initLogAuditoria();
+            initConfiguracoesUsuario();
+
         } catch (SQLException e) {
             throw new PersistenciaException("erro ao inicializar tabelas: " + e.getMessage());
         }

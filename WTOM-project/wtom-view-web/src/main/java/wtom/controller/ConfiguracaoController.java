@@ -29,7 +29,7 @@ public class ConfiguracaoController extends HttpServlet {
     @Override
     public void init() throws ServletException {
         this.configDAO = new ConfiguracaoDAO();
-        this.logDAO = new LogAuditoriaDAO();
+        this.logDAO = LogAuditoriaDAO.getInstance();
         this.usuarioService = new UsuarioService();
         this.notificacaoDAO = NotificacaoDAO.getInstance();
         this.manutencaoService = new ManutencaoService();

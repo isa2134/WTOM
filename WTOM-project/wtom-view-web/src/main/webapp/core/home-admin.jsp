@@ -57,7 +57,7 @@
                         <div class="card-arrow"><i class="fa-solid fa-chevron-right"></i></div>
                     </a>
 
-                    <a href="${pageContext.request.contextPath}/relatorio?acao=gerar" class="dashboard-card card-live">
+                    <a href="${pageContext.request.contextPath}/olimpiada" class="dashboard-card card-live">
                         <div class="card-icon"><i class="fa-solid fa-chart-bar"></i></div>
                         <div class="card-info">
                             <h3>Gerenciar as Olimpíadas</h3>

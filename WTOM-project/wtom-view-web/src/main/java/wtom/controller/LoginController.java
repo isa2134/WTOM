@@ -19,7 +19,7 @@ import wtom.model.dao.LogAuditoriaDAO;
 public class LoginController extends HttpServlet {
 
     private final ConfiguracaoDAO configDAO = new ConfiguracaoDAO();
-    private final LogAuditoriaDAO logDAO = new LogAuditoriaDAO();
+    private final LogAuditoriaDAO logDAO = LogAuditoriaDAO.getInstance(); 
     private final UsuarioService usuarioService = new UsuarioService(); 
 
     private static final int LIMITE_TENTATIVAS = 5;

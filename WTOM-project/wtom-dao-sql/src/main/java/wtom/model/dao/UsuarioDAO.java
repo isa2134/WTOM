@@ -326,6 +326,17 @@ public class UsuarioDAO {
         }
     }
 
+    public void deletar(Long id) throws PersistenciaException {
+        String sql = "DELETE FROM usuario WHERE id = ?";
+
+        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setLong(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new PersistenciaException("Erro ao deletar usuário: " + e.getMessage());
+        }
+    }
+
     private Usuario mapResultSet(ResultSet rs) throws SQLException {
 
         Usuario u = new Usuario(

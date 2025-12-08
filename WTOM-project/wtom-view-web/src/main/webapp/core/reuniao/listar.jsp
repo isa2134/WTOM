@@ -7,6 +7,7 @@
 <%@ include file="/core/menu.jsp" %>
 
 <%
+    Usuario usuario = (Usuario) session.getAttribute("usuario");
     List<Reuniao> reunioes = (List<Reuniao>) request.getAttribute("reunioes");
 
     boolean admin = usuario != null && usuario.getTipo() == UsuarioTipo.ADMINISTRADOR;
@@ -37,7 +38,7 @@
         background: #8e8e93;
         color:white;
     }
-    
+
     .btn-light {
         display: inline-block;
         padding: 8px 12px;
@@ -58,7 +59,7 @@
         font-weight: bold;
         text-align: center;
         transition: background-color 0.2s;
-        border: 1px solid transparent; 
+        border: 1px solid transparent;
         color: white;
         background-color: #dc3545;
     }
@@ -86,19 +87,19 @@
         </div>
 
         <%
-            } else {
-                for (Reuniao r : reunioes) {
+        } else {
+            for (Reuniao r : reunioes) {
 
-                    boolean dono = usuario != null
-                            && r.getCriadoPor() != null
-                            && usuario.getId().equals(r.getCriadoPor().getId());
+                boolean dono = usuario != null
+                        && r.getCriadoPor() != null
+                        && usuario.getId().equals(r.getCriadoPor().getId());
 
-                    String status = (r.getStatus() != null) ? r.getStatus() : "indefinido";
-                    String badgeClass
-                            = status.equals("aovivo") ? "badge-ao-vivo"
-                            : status.equals("embreve") ? "badge-em-breve"
-                            : status.equals("agendada") ? "badge-agendada"
-                            : "badge-encerrada";
+                String status = (r.getStatus() != null) ? r.getStatus() : "indefinido";
+                String badgeClass
+                        = status.equals("aovivo") ? "badge-ao-vivo"
+                        : status.equals("embreve") ? "badge-em-breve"
+                        : status.equals("agendada") ? "badge-agendada"
+                        : "badge-encerrada";
         %>
 
         <div class="card" style="padding:20px; border-left:5px solid var(--accent); margin-bottom:15px;">
@@ -132,26 +133,26 @@
                        href="<%= r.getLink()%>" 
                        target="_blank" 
                        style="padding: 8px 12px; border-radius: 4px; text-decoration: none; color: white; background-color: #007bff; font-weight: bold;">
-                       Entrar
+                        Entrar
                     </a>
                     <% } %>
 
                     <% if (admin || dono) {%>
                     <a class="btn-light"
-                        href="${pageContext.request.contextPath}/reuniao?acao=editar&id=<%= r.getId()%>">
+                       href="${pageContext.request.contextPath}/reuniao?acao=editar&id=<%= r.getId()%>">
                         Editar
                     </a>
 
                     <a class="btn-danger"
-                        href="${pageContext.request.contextPath}/reuniao?acao=excluir&id=<%= r.getId()%>"
-                        onclick="return confirm('Excluir reunião?');">
+                       href="${pageContext.request.contextPath}/reuniao?acao=excluir&id=<%= r.getId()%>"
+                       onclick="return confirm('Excluir reunião?');">
                         Excluir
                     </a>
 
                     <% if (!status.equals("encerrada")) {%>
                     <a class="btn-danger" style="background:#555;"
-                        href="${pageContext.request.contextPath}/reuniao?acao=encerrar&id=<%= r.getId()%>"
-                        onclick="return confirm('Encerrar agora?');">
+                       href="${pageContext.request.contextPath}/reuniao?acao=encerrar&id=<%= r.getId()%>"
+                       onclick="return confirm('Encerrar agora?');">
                         Encerrar
                     </a>
                     <% } %>
@@ -177,5 +178,5 @@
         %>
 
     </section>
-        <script src="${pageContext.request.contextPath}/js/cssControl.js"></script>
+    <script src="${pageContext.request.contextPath}/js/cssControl.js"></script>
 </main>
