@@ -177,4 +177,5 @@
         %>
 
     </section>
+        <script src="${pageContext.request.contextPath}/js/cssControl.js"></script>
 </main>

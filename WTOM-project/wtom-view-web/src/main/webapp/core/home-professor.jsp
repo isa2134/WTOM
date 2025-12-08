@@ -13,7 +13,7 @@
 
 <body style="background: linear-gradient(250deg, #143037 0%, #06232b 100%);"> 
     
-    <%@include file="/core/header.jsp"%> 
+    <%@include file="/core/menu.jsp"%> 
 
     <main class="content"> 
         <div class="dashboard-container">
