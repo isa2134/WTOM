@@ -2,11 +2,14 @@ package wtom.model.service;
 
 import wtom.dao.exception.PersistenciaException;
 import wtom.model.dao.UsuarioDAO;
+import wtom.model.dao.ConfiguracaoDAO;
+import wtom.model.domain.Configuracao;
 import wtom.model.domain.Usuario;
 import wtom.model.domain.util.UsuarioTipo;
 import wtom.model.service.exception.NegocioException;
 import wtom.model.service.exception.UsuarioInvalidoException;
 import wtom.util.ValidadorUtil;
+import wtom.model.domain.util.SenhaUtil;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,6 +17,24 @@ import java.util.List;
 public class UsuarioService {
 
     private final UsuarioDAO usuarioDAO = UsuarioDAO.getInstance();
+    private final ConfiguracaoDAO configuracaoDAO = new ConfiguracaoDAO();
+
+    private void validarSenha(String senha) throws NegocioException {
+        try {
+            Configuracao config = configuracaoDAO.buscarConfiguracoes();
+            int minTamanhoSenha = config.getMinTamanhoSenha();
+            
+            if (senha == null || senha.isBlank()) {
+                throw new NegocioException("A senha não pode ser vazia.");
+            }
+
+            if (senha.length() < minTamanhoSenha) {
+                throw new NegocioException("A senha deve ter pelo menos " + minTamanhoSenha + " caracteres.");
+            }
+        } catch (RuntimeException e) {
+            throw new NegocioException("Erro interno ao buscar a política de senha: " + e.getMessage());
+        }
+    }
 
     public Usuario cadastrarUsuario(Usuario u) throws NegocioException {
         try {
@@ -34,9 +55,8 @@ public class UsuarioService {
                 throw new NegocioException("Data de nascimento inválida.");
             }
 
-            if (u.getSenha() == null || u.getSenha().isBlank()) {
-                throw new NegocioException("Senha não pode estar vazia.");
-            }
+            validarSenha(u.getSenha());
+            u.setSenha(SenhaUtil.hash(u.getSenha()));
 
             Usuario existente = usuarioDAO.buscarPorCpfOuEmail(u.getCpf(), u.getEmail());
             if (existente != null) {
@@ -97,7 +117,7 @@ public class UsuarioService {
             if (u.getEmail() != null && !ValidadorUtil.validarEmail(u.getEmail())) {
                 throw new NegocioException("E-mail inválido.");
             }
-
+            
             usuarioDAO.atualizar(u);
         } catch (PersistenciaException e) {
             throw new NegocioException("Erro ao atualizar usuário: " + e.getMessage());

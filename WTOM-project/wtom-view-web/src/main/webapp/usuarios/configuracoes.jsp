@@ -456,8 +456,8 @@
                 </div>
                 <div class="session-item">
                     <div class="session-info">
-                        <strong>iPhone 13 - Safari</strong>
-                        <small>São Paulo, SP • Último acesso há 2h</small>
+                        <strong>iPhone 10 - Safari</strong>
+                        <small>Ribeirão Das Neves, MG • Último acesso há 12h</small>
                     </div>
                     <button class="btn btn-outline" style="padding: 5px 10px; font-size: 0.8rem;">Sair</button>
                 </div>

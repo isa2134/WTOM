@@ -11,8 +11,8 @@ import wtom.model.domain.Usuario;
 import wtom.model.domain.Aluno;
 import wtom.model.domain.Professor;
 import wtom.model.domain.util.UsuarioTipo;
-import wtom.model.dao.ConfiguracaoDAO; 
-import wtom.model.domain.Configuracao; 
+import wtom.model.dao.ConfiguracaoDAO;
+import wtom.model.domain.Configuracao;
 import wtom.model.service.UsuarioService;
 import wtom.model.service.AlunoService;
 import wtom.model.service.ProfessorService;
@@ -25,7 +25,7 @@ public class CadastroUsuarioController extends HttpServlet {
     private final UsuarioService usuarioService = new UsuarioService();
     private final AlunoService alunoService = new AlunoService();
     private final ProfessorService professorService = new ProfessorService();
-    private final ConfiguracaoDAO configuracaoDAO = new ConfiguracaoDAO(); 
+    private final ConfiguracaoDAO configuracaoDAO = new ConfiguracaoDAO();
 
     private static final String VIEW_CADASTRO = "/usuarios/cadastro.jsp";
     private static final String VIEW_INICIO = "/index.jsp";
@@ -44,6 +44,7 @@ public class CadastroUsuarioController extends HttpServlet {
         if ("GET".equalsIgnoreCase(req.getMethod())) {
             String tipo = req.getParameter("tipo");
             req.setAttribute("tipo", tipo);
+            req.setAttribute("minTamanhoSenha", config.getMinTamanhoSenha());
             req.getRequestDispatcher(VIEW_CADASTRO).forward(req, resp);
         } else if ("POST".equalsIgnoreCase(req.getMethod())) {
             processarCadastro(req, resp);
@@ -93,6 +94,7 @@ public class CadastroUsuarioController extends HttpServlet {
             
             Configuracao config = configuracaoDAO.buscarConfiguracoes();
             if (config != null && senha.length() < config.getMinTamanhoSenha()) {
+                req.setAttribute("minTamanhoSenha", config.getMinTamanhoSenha());
                 throw new NegocioException("A senha deve ter no mínimo " + config.getMinTamanhoSenha() + " caracteres.");
             }
 
@@ -120,8 +122,8 @@ public class CadastroUsuarioController extends HttpServlet {
                 Aluno aluno = new Aluno(usuario, curso, serie);
                 alunoService.cadastrarAlunoComUsuario(aluno);
 
-                usuario = aluno.getUsuario(); 
-
+                usuario = aluno.getUsuario();
+                
             } else if (tipo == UsuarioTipo.PROFESSOR) {
 
                 String area = req.getParameter("area");
@@ -132,7 +134,9 @@ public class CadastroUsuarioController extends HttpServlet {
                 Professor professor = new Professor(usuario, area);
                 professorService.cadastrarProfessor(professor);
 
-                usuario = professor.getUsuario(); 
+                usuario = professor.getUsuario();
+            } else {
+                usuario = usuarioService.cadastrarUsuarioERetornar(usuario);
             }
 
             HttpSession session = req.getSession();
@@ -143,14 +147,27 @@ public class CadastroUsuarioController extends HttpServlet {
 
         } catch (NegocioException e) {
             req.setAttribute("erro", e.getMessage());
+            req.setAttribute("tipo", req.getParameter("tipo"));
+            
+            if (req.getAttribute("minTamanhoSenha") == null) {
+                try {
+                    Configuracao config = configuracaoDAO.buscarConfiguracoes();
+                    req.setAttribute("minTamanhoSenha", config.getMinTamanhoSenha());
+                } catch (Exception ex) {
+                    req.setAttribute("minTamanhoSenha", 8);
+                }
+            }
+            
             req.getRequestDispatcher(VIEW_CADASTRO).forward(req, resp);
 
         } catch (DateTimeParseException e) {
             req.setAttribute("erro", "Formato de data inválido. Use AAAA-MM-DD.");
+            req.setAttribute("tipo", req.getParameter("tipo"));
             req.getRequestDispatcher(VIEW_CADASTRO).forward(req, resp);
 
         } catch (Exception e) {
             req.setAttribute("erro", "Erro inesperado: " + e.getMessage());
+            req.setAttribute("tipo", req.getParameter("tipo"));
             req.getRequestDispatcher(VIEW_CADASTRO).forward(req, resp);
         }
     }
