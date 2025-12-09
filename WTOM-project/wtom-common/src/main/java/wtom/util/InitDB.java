@@ -38,7 +38,7 @@ public class InitDB {
                 permitir_cadastro BOOLEAN DEFAULT TRUE,
                 min_tamanho_senha INT DEFAULT 8,
                 atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-            );
+                );
         """;
 
         try (Statement st = con.createStatement()) {
@@ -49,8 +49,8 @@ public class InitDB {
     public void initLogAuditoria() throws SQLException {
         String sql = """
             CREATE TABLE IF NOT EXISTS log_auditoria (
-            id BIGINT AUTO_INCREMENT PRIMARY KEY, 
-            usuario_id BIGINT,                     
+            id BIGINT AUTO_INCREMENT PRIMARY KEY,  
+            usuario_id BIGINT,                      
             tipo_acao VARCHAR(50) NOT NULL,
             detalhes TEXT,
             ip_origem VARCHAR(45),
@@ -84,7 +84,7 @@ public class InitDB {
                 
                 bloqueado BOOLEAN DEFAULT FALSE,
                 tentativas_login INT DEFAULT 0,
-                data_bloqueio TIMESTAMP NULL, 
+                data_bloqueio TIMESTAMP NULL,  
                 
                 criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -511,7 +511,7 @@ public class InitDB {
     }
 
     public void initEvento() throws SQLException {
-        String sql = """
+        String createTableSql = """
         CREATE TABLE IF NOT EXISTS evento (
             id BIGINT AUTO_INCREMENT PRIMARY KEY,
             titulo VARCHAR(255) NOT NULL,
@@ -520,14 +520,51 @@ public class InitDB {
             horario TIME,
             descricao TEXT,
             id_categoria BIGINT DEFAULT 1,
+            tipo_repeticao VARCHAR(50) NULL,  
+            anexo_url VARCHAR(255) NULL,      
+            autor_id BIGINT NULL,            
+            editor_id BIGINT NULL,           
+            data_ultima_edicao DATE NULL,      
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            FOREIGN KEY (id_categoria) REFERENCES categoria(id)
+            FOREIGN KEY (id_categoria) REFERENCES categoria(id),
+            FOREIGN KEY (autor_id) REFERENCES usuario(id) ON DELETE SET NULL, 
+            FOREIGN KEY (editor_id) REFERENCES usuario(id) ON DELETE SET NULL  
         )
-    """;
+        """;
 
         try (Statement st = con.createStatement()) {
-            st.executeUpdate(sql);
+            st.executeUpdate(createTableSql);
+
+            try {
+                st.executeUpdate("ALTER TABLE evento ADD COLUMN tipo_repeticao VARCHAR(50) NULL AFTER descricao");
+            } catch (SQLException e) {
+            }
+
+            try {
+                st.executeUpdate("ALTER TABLE evento ADD COLUMN anexo_url VARCHAR(255) NULL AFTER tipo_repeticao");
+            } catch (SQLException e) {
+            }
+
+            try {
+                st.executeUpdate("ALTER TABLE evento ADD COLUMN autor_id BIGINT NULL AFTER anexo_url");
+                st.executeUpdate("ALTER TABLE evento ADD CONSTRAINT fk_evento_autor FOREIGN KEY (autor_id) REFERENCES usuario(id) ON DELETE SET NULL");
+            } catch (SQLException e) {
+            }
+
+            try {
+                st.executeUpdate("ALTER TABLE evento ADD COLUMN editor_id BIGINT NULL AFTER autor_id");
+                st.executeUpdate("ALTER TABLE evento ADD CONSTRAINT fk_evento_editor FOREIGN KEY (editor_id) REFERENCES usuario(id) ON DELETE SET NULL");
+            } catch (SQLException e) {
+            }
+
+            try {
+                st.executeUpdate("ALTER TABLE evento ADD COLUMN data_ultima_edicao DATE NULL AFTER editor_id");
+            } catch (SQLException e) {
+            }
+
+            System.out.println("Tabela 'evento' verificada e atualizada.");
+
         }
     }
 
@@ -536,31 +573,44 @@ public class InitDB {
         CREATE TABLE IF NOT EXISTS categoria (
             id BIGINT AUTO_INCREMENT PRIMARY KEY,
             nome VARCHAR(100) NOT NULL,
-            cor_hex VARCHAR(7) NOT NULL
+            cor_hex VARCHAR(7) NOT NULL,
+            icone_css VARCHAR(50) 
         )
-    """;
+        """;
+
+        String alterTableIcone = "ALTER TABLE categoria ADD COLUMN icone_css VARCHAR(50) NULL";
 
         String insertDataSql = """
-        INSERT INTO categoria (id, nome, cor_hex) VALUES 
-        (1, 'Outros', '#8a96a3'), 
-        (2, 'Provas', '#dc3545'), 
-        (3, 'Aulas Extras', '#28a745'), 
-        (4, 'Olimpíadas', '#ffc107'),
-        (5, 'Reuniões', '#6f42c1')
-        ON DUPLICATE KEY UPDATE nome=nome
-    """;
+        INSERT INTO categoria (id, nome, cor_hex, icone_css) VALUES  
+        (1, 'Outros', '#8a96a3', 'fa-solid fa-folder'),  
+        (2, 'Provas', '#dc3545', 'fa-solid fa-graduation-cap'),  
+        (3, 'Aulas Extras', '#28a745', 'fa-solid fa-chalkboard-user'),  
+        (4, 'Olimpíadas', '#ffc107', 'fa-solid fa-medal'),
+        (5, 'Reuniões', '#6f42c1', 'fa-solid fa-users')
+        ON DUPLICATE KEY UPDATE nome=VALUES(nome), cor_hex=VALUES(cor_hex), icone_css=VALUES(icone_css)
+        """;
 
         try (Statement st = con.createStatement()) {
             st.executeUpdate(createTableSql);
+
+            try {
+                st.executeUpdate(alterTableIcone);
+            } catch (SQLException e) {
+                if (e.getErrorCode() != 1060) {
+                    System.out.println("Aviso ao tentar adicionar coluna icone_css (pode já existir): " + e.getMessage());
+                }
+            }
+
             st.executeUpdate(insertDataSql);
+            System.out.println("Tabela 'categoria' verificada e populada, incluindo 'icone_css'.");
         }
     }
 
     public void initRespostasTeste() throws SQLException {
         String sql = """
             INSERT IGNORE INTO resposta (id_duvida, id_professor, conteudo, data)
-            SELECT d.id, u.id, 'No jardim américa', NOW() 
-            FROM duvida d, usuario u 
+            SELECT d.id, u.id, 'No jardim américa', NOW()  
+            FROM duvida d, usuario u  
             WHERE d.titulo = 'Churrasco' AND u.cpf = '987.654.321-00';
         """;
         try (Statement st = con.createStatement()) {
@@ -572,25 +622,21 @@ public class InitDB {
         String sql = """
         CREATE TABLE IF NOT EXISTS configuracoes_usuario (
             id_usuario BIGINT PRIMARY KEY,
-            -- Segurança
             verificacao_duas_etapas BOOLEAN DEFAULT FALSE,
             sem_login_automatico BOOLEAN DEFAULT FALSE,
             rec_pergunta1 VARCHAR(255),
             rec_resposta1 VARCHAR(255),
             rec_pergunta2 VARCHAR(255),
             rec_resposta2 VARCHAR(255),
-            -- Notificações
             notif_reuniao_new BOOLEAN DEFAULT TRUE,
             notif_reuniao_start BOOLEAN DEFAULT TRUE,
             notif_forum BOOLEAN DEFAULT TRUE,
             notif_conteudo BOOLEAN DEFAULT TRUE,
             notif_olimpiadas BOOLEAN DEFAULT TRUE,
-            -- Interface e Preferências
             ui_fonte_maior BOOLEAN DEFAULT FALSE,
             ui_alto_contraste BOOLEAN DEFAULT FALSE,
             ui_tema_escuro BOOLEAN DEFAULT FALSE,
-            interesses TEXT, -- Guardará "algebra,fisica" separados por vírgula
-            -- Privacidade
+            interesses TEXT, 
             priv_nome_ranking BOOLEAN DEFAULT TRUE,
             priv_foto_ranking BOOLEAN DEFAULT TRUE,
             modo_estudo BOOLEAN DEFAULT FALSE,
@@ -607,8 +653,8 @@ public class InitDB {
 
     public void initPremiacoesPadrao() throws SQLException {
         String sql = """
-            INSERT IGNORE INTO premiacao 
-                (usuario_id, olimpiada_id, olimpiada_nome, olimpiada_peso, 
+            INSERT IGNORE INTO premiacao  
+                (usuario_id, olimpiada_id, olimpiada_nome, olimpiada_peso,  
                  tipo_premio, nivel, ano, peso_final)
             VALUES
                 ((SELECT id FROM usuario WHERE cpf = '111.222.333-44'), 1, 'OBMEP', 2.0, 'OURO', 'Nível 2', 2023, 2.0),

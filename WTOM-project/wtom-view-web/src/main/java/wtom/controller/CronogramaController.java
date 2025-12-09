@@ -1,7 +1,7 @@
 package wtom.controller;
 
-import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,19 +9,21 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import wtom.model.domain.Categoria;
 import wtom.model.domain.Evento;
 import wtom.model.domain.Usuario;
+import wtom.model.domain.util.RepeticaoTipo;
 import wtom.model.domain.util.UsuarioTipo;
 import wtom.model.service.CategoriaService;
 import wtom.model.service.EventoService;
 
 @WebServlet(name = "CronogramaController", urlPatterns = {"/CronogramaController"})
+@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2,
+                 maxFileSize = 1024 * 1024 * 10,
+                 maxRequestSize = 1024 * 1024 * 50)
 public class CronogramaController extends HttpServlet {
 
     private EventoService eventoService = EventoService.getInstance();
@@ -41,6 +43,8 @@ public class CronogramaController extends HttpServlet {
         String horarioStr = request.getParameter("horario");
         String descricao = request.getParameter("descricao");
         String idCategoriaStr = request.getParameter("idCategoria");
+        String tipoRepeticaoStr = request.getParameter("tipoRepeticao");
+        String anexoUrl = request.getParameter("anexoUrl");
 
         Evento evento = new Evento();
         if (idEventoStr != null && !idEventoStr.isEmpty()) {
@@ -50,6 +54,7 @@ public class CronogramaController extends HttpServlet {
         LocalDate dataEvento = null;
         if (dataEventoStr != null && !dataEventoStr.isEmpty()) {
             dataEvento = LocalDate.parse(dataEventoStr);
+
             validarDataFutura(dataEvento);
         }
         evento.setDataEvento(dataEvento);
@@ -77,10 +82,30 @@ public class CronogramaController extends HttpServlet {
         }
         evento.setCategoria(categoria);
 
+        if (tipoRepeticaoStr != null && !tipoRepeticaoStr.isEmpty()) {
+            try {
+                RepeticaoTipo tipo = RepeticaoTipo.valueOf(tipoRepeticaoStr.toUpperCase());
+                evento.setTipoRepeticao(tipo);
+            } catch (IllegalArgumentException e) {
+                evento.setTipoRepeticao(RepeticaoTipo.NENHUM);
+            }
+        } else {
+            evento.setTipoRepeticao(RepeticaoTipo.NENHUM);
+        }
+
+        evento.setAnexoUrl(anexoUrl);
         evento.setTitulo(titulo);
         evento.setDescricao(descricao);
 
         return evento;
+    }
+
+    private Usuario getUsuarioLogado(HttpServletRequest request) throws SecurityException {
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        if (usuario == null) {
+            throw new SecurityException("Usuário não logado.");
+        }
+        return usuario;
     }
 
     @Override
@@ -88,12 +113,21 @@ public class CronogramaController extends HttpServlet {
             throws ServletException, IOException {
 
         String acao = request.getParameter("acao");
-        String dataAtual = request.getParameter("dataAtual");
+        String dataAtualStr = request.getParameter("dataAtual");
+        String termoPesquisa = request.getParameter("pesquisa");
         String url = "/core/cronograma/listar.jsp";
+
+        LocalDate dataReferencia;
+        try {
+            dataReferencia = (dataAtualStr != null && !dataAtualStr.isEmpty())
+                    ? LocalDate.parse(dataAtualStr, DateTimeFormatter.ISO_DATE)
+                    : LocalDate.now();
+        } catch (DateTimeParseException e) {
+            dataReferencia = LocalDate.now();
+        }
 
         try {
             if ("excluir".equals(acao)) {
-
                 if (!podeGerenciar(request)) {
                     throw new SecurityException("Acesso negado. Usuário sem permissão para excluir evento.");
                 }
@@ -104,14 +138,19 @@ public class CronogramaController extends HttpServlet {
 
             } else if ("listar".equals(acao) || acao == null) {
 
-            } else {
-                request.setAttribute("erro", "Ação inválida.");
+            } else if ("pesquisar".equals(acao) && termoPesquisa != null && !termoPesquisa.isEmpty()) {
+                request.setAttribute("eventos", eventoService.pesquisar(termoPesquisa));
+                request.setAttribute("view", "lista");
             }
 
             request.setAttribute("categorias", categoriaService.listarTodos());
 
-            List<Evento> eventos = eventoService.listarTodos();
-            request.setAttribute("eventos", eventos);
+            if (!"pesquisar".equals(acao) || request.getAttribute("eventos") == null) {
+
+                List<Evento> todosEventos = eventoService.listarTodos();
+
+                request.setAttribute("eventos", todosEventos);
+            }
 
         } catch (SecurityException e) {
             request.setAttribute("erro", e.getMessage());
@@ -122,8 +161,10 @@ public class CronogramaController extends HttpServlet {
         } catch (Exception e) {
             request.setAttribute("erro", "Erro na operação: " + e.getMessage());
         } finally {
-            if (dataAtual != null && !dataAtual.isEmpty()) {
-                request.setAttribute("dataAtualParam", dataAtual);
+            request.setAttribute("dataAtualParam", dataReferencia.toString());
+
+            if (termoPesquisa != null && !termoPesquisa.isEmpty()) {
+                request.setAttribute("termoPesquisa", termoPesquisa);
             }
             request.getRequestDispatcher(url).forward(request, response);
         }
@@ -135,9 +176,12 @@ public class CronogramaController extends HttpServlet {
 
         String acao = request.getParameter("acao");
         String dataAtual = request.getParameter("dataAtual");
-        String urlRedirecionamento = request.getContextPath() + "/CronogramaController?dataAtual=" + dataAtual;
+        
+        String urlRedirecionamento = request.getContextPath() + "/CronogramaController?dataAtual=" + (dataAtual != null && !dataAtual.isEmpty() ? dataAtual : LocalDate.now().toString());
 
+        Usuario usuarioLogado = null;
         try {
+            usuarioLogado = getUsuarioLogado(request);
             if (!podeGerenciar(request)) {
                 throw new SecurityException("Acesso negado. Usuário sem permissão para gerenciar eventos.");
             }
@@ -145,19 +189,18 @@ public class CronogramaController extends HttpServlet {
             Evento evento = carregarEvento(request);
 
             if ("editar".equals(acao)) {
-
                 if (evento.getId() == null) {
                     throw new IllegalArgumentException("ID do evento é obrigatório para edição.");
                 }
 
-                eventoService.atualizar(evento);
+                eventoService.atualizar(evento, usuarioLogado);
 
                 response.sendRedirect(urlRedirecionamento + "&mensagem=Evento atualizado com sucesso!");
                 return;
 
             } else if ("cadastrar".equals(acao)) {
 
-                eventoService.salvar(evento);
+                eventoService.salvar(evento, usuarioLogado);
 
                 response.sendRedirect(urlRedirecionamento + "&mensagem=Evento cadastrado com sucesso!");
                 return;
@@ -175,7 +218,12 @@ public class CronogramaController extends HttpServlet {
         }
 
         try {
+            LocalDate dataPost = (dataAtual != null && !dataAtual.isEmpty())
+                    ? LocalDate.parse(dataAtual, DateTimeFormatter.ISO_DATE)
+                    : LocalDate.now();
+            
             List<Evento> eventos = eventoService.listarTodos();
+
             request.setAttribute("eventos", eventos);
             request.setAttribute("categorias", categoriaService.listarTodos());
 

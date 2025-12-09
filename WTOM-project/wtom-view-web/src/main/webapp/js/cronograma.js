@@ -1,418 +1,514 @@
-const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-
-const INITIAL_DATE_KEY = document.getElementById('initialDateInput') ? document.getElementById('initialDateInput').value : '';
-
-let date = new Date();
-let currentYear = date.getFullYear();
-let currentMonth = date.getMonth();
-let selectedDay = date.getDate();
-
-if (INITIAL_DATE_KEY) {
-    try {
-        const parts = INITIAL_DATE_KEY.split('-');
-        if (parts.length === 3) {
-            currentYear = parseInt(parts[0]);
-            currentMonth = parseInt(parts[1]) - 1;
-            selectedDay = parseInt(parts[2]);
-            date = new Date(currentYear, currentMonth, selectedDay);
-        }
-    } catch (e) {
-        console.error("Erro ao processar data inicial:", e);
-    }
-}
-
-const monthListEl = document.getElementById('monthList');
-const daysGridEl = document.getElementById('daysGrid');
-const yearDisplayEl = document.getElementById('currentYear');
-const monthHeaderEl = document.getElementById('monthHeader');
-const selectedDateDisplayEl = document.getElementById('selectedDateDisplay');
-const eventListEl = document.getElementById('eventList');
-const eventDataInput = document.getElementById('eventDataInput');
-const eventForm = document.getElementById('eventForm');
-const dataEventoInput = document.getElementById('dataEvento');
-const addEventButton = document.getElementById('addEventButton');
-const formContainer = document.getElementById('formContainer');
-
-const TODAY_DATE = document.getElementById('todayDateInput') ? document.getElementById('todayDateInput').value : '';
-const TODAY = new Date(TODAY_DATE + 'T00:00:00');
-
-const acaoInput = document.getElementById('acaoInput');
-const idEventoInput = document.getElementById('idEventoInput');
-const tituloInput = document.getElementById('titulo');
-const descricaoInput = document.getElementById('descricao');
-
-const dataFimInput = document.getElementById('dataFim');
-const horarioInput = document.getElementById('horario');
-const idCategoriaInput = document.getElementById('idCategoria');
-
-const events = eventDataInput ? JSON.parse(eventDataInput.value) : {};
-
-function formatKey(date) {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
-}
-
-function getSelectedDateKey() {
-    const monthPadded = (currentMonth + 1).toString().padStart(2, '0');
-    const dayPadded = selectedDay.toString().padStart(2, '0');
-    return `${currentYear}-${monthPadded}-${dayPadded}`;
-}
-
-function isDateInPast(dateKey) {
-    const selectedDate = new Date(dateKey + 'T00:00:00');
-    return selectedDate.getTime() < TODAY.getTime();
-}
-
-function getAllEvents() {
-    const allEvents = [];
-    for (const key in events) {
-        if (events.hasOwnProperty(key)) {
-            allEvents.push(...events[key]);
-        }
-    }
-    return allEvents;
-}
-
-function getAllEventsForDay(dateKey) {
-    const targetDate = new Date(dateKey + 'T00:00:00');
-    const allEvents = getAllEvents();
-
-    return allEvents.filter(evt => {
-        const startDate = new Date(evt.dataEvento + 'T00:00:00');
-        let endDate = startDate;
-        if (evt.dataFim) {
-            endDate = new Date(evt.dataFim + 'T00:00:00');
-        }
-
-        return targetDate.getTime() >= startDate.getTime() && targetDate.getTime() <= endDate.getTime();
-    }).sort((a, b) => {
-        const timeA = a.horario || '23:59';
-        const timeB = b.horario || '23:59';
-        return timeA.localeCompare(timeB) || a.titulo.localeCompare(b.titulo);
-    });
-}
-
-function toggleFormVisibility(show) {
-    if (formContainer) {
-        if (show) {
-            formContainer.classList.remove('hidden');
-        } else {
-            formContainer.classList.add('hidden');
-        }
-    }
-    if (addEventButton) {
-        const selectedDateKey = getSelectedDateKey();
-        const isPast = isDateInPast(selectedDateKey);
-
-        if (window.canManage) {
-            if (show) {
-                addEventButton.style.display = 'none';
-            } else if (!isPast) {
-                addEventButton.style.display = 'inline-block';
-            } else {
-                addEventButton.style.display = 'none';
+document.addEventListener('DOMContentLoaded', function() {
+    const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+    
+    const initialDateInput = document.getElementById('initialDateInput');
+    const INITIAL_DATE_KEY = initialDateInput ? initialDateInput.value : '';
+    const todayDateInput = document.getElementById('todayDateInput');
+    const todayDateKey = todayDateInput ? todayDateInput.value : new Date().toISOString().split('T')[0];
+    
+    let date = new Date();
+    let currentYear = date.getFullYear();
+    let currentMonth = date.getMonth();
+    let selectedDay = date.getDate();
+    let eventsByDate = {};
+    let allEvents = [];
+    let categoriasMap = {};
+    let currentView = 'mensal';
+    
+    if (INITIAL_DATE_KEY) {
+        try {
+            const parts = INITIAL_DATE_KEY.split('-');
+            if (parts.length === 3) {
+                currentYear = parseInt(parts[0]);
+                currentMonth = parseInt(parts[1]) - 1;
+                selectedDay = parseInt(parts[2]);
+                date = new Date(currentYear, currentMonth, selectedDay);
             }
-        } else {
-            addEventButton.style.display = 'none';
+        } catch (e) {
+            console.error("Erro ao inicializar data do input:", e);
         }
     }
-}
+    
+    const monthListEl = document.getElementById('monthList');
+    const daysGridEl = document.getElementById('daysGrid');
+    const yearDisplayEl = document.getElementById('currentYear');
+    const monthHeaderEl = document.getElementById('monthHeader');
+    const selectedDateDisplayEl = document.getElementById('selectedDateDisplay');
+    const eventListEl = document.getElementById('eventList');
+    const eventDataInput = document.getElementById('eventDataInput');
+    const categoriesDataInput = document.getElementById('categoriesDataInput');
+    const eventForm = document.getElementById('eventForm');
+    const addEventButton = document.getElementById('addEventButton');
+    const formContainer = document.getElementById('eventFormContainer');
+    const fileInput = document.getElementById('anexoFile');
+    const fileNameDisplay = document.getElementById('fileNameDisplay');
+    const anexoUrlInput = document.getElementById('anexoUrl');
+    const viewSwitcher = document.getElementById('viewSwitcher');
+    const prevYearBtn = document.getElementById('prevYear');
+    const nextYearBtn = document.getElementById('nextYear');
+    const cancelButton = document.getElementById('cancelButton');
+    
+    const fileLabel = document.querySelector('.file-input-wrapper .file-label');
 
-function resetForm() {
-    toggleFormVisibility(false);
-    if (idEventoInput) {
-        idEventoInput.value = '';
+    function getDaysInMonth(year, month) {
+        return new Date(year, month + 1, 0).getDate();
     }
-    if (acaoInput) {
-        acaoInput.value = 'cadastrar';
+    
+    function getFirstDayOfMonth(year, month) {
+        return new Date(year, month, 1).getDay();
     }
-    if (tituloInput) {
-        tituloInput.value = '';
+    
+    function formatDateKey(year, month, day) {
+        const m = String(month + 1).padStart(2, '0');
+        const d = String(day).padStart(2, '0');
+        return `${year}-${m}-${d}`;
     }
-    if (descricaoInput) {
-        descricaoInput.value = '';
+    
+    function isDateInPast(dateKey) {
+        return dateKey < todayDateKey;
     }
-    if (dataFimInput) {
-        dataFimInput.value = '';
+    
+    function getSelectedDateKey() {
+        return formatDateKey(currentYear, currentMonth, selectedDay);
     }
-    if (horarioInput) {
-        horarioInput.value = '';
-    }
-    if (idCategoriaInput) {
-        idCategoriaInput.value = '';
-    }
-    const submitButton = document.querySelector('#eventForm button[type="submit"]');
-    if (submitButton) {
-        submitButton.textContent = 'Salvar Evento';
-    }
-}
-
-function editEvent(evt) {
-    if (!window.canManage)
-        return;
-
-    const selectedDateKey = getSelectedDateKey();
-    if (isDateInPast(selectedDateKey)) {
-        alert("Não é possível editar eventos em datas passadas.");
-        return;
-    }
-
-    if (idEventoInput) {
-        idEventoInput.value = evt.id;
-    }
-    if (acaoInput) {
-        acaoInput.value = 'editar';
-    }
-    if (tituloInput) {
-        tituloInput.value = evt.titulo;
-    }
-    if (descricaoInput) {
-        descricaoInput.value = evt.descricao.replace(/\\n/g, '\n');
-    }
-    if (dataEventoInput) {
-        dataEventoInput.value = evt.dataEvento;
-    }
-    if (dataFimInput) {
-        dataFimInput.value = evt.dataFim || '';
-    }
-    if (horarioInput) {
-        horarioInput.value = evt.horario || '';
-    }
-    if (idCategoriaInput) {
-        idCategoriaInput.value = evt.idCategoria;
-    }
-
-    const submitButton = document.querySelector('#eventForm button[type="submit"]');
-    if (submitButton) {
-        submitButton.textContent = 'Atualizar Evento';
-    }
-
-    toggleFormVisibility(true);
-
-    if (tituloInput) {
-        tituloInput.focus();
-    }
-}
-
-function renderCalendar() {
-
-    yearDisplayEl.innerText = currentYear;
-    monthHeaderEl.innerText = `${months[currentMonth].toUpperCase()} ${currentYear}`;
-
-    monthListEl.innerHTML = "";
-    months.forEach((m, index) => {
-        const li = document.createElement('li');
-        li.innerText = m;
-        if (index === currentMonth)
-            li.classList.add('active');
-        li.onclick = () => {
-            currentMonth = index;
-            renderCalendar();
-        };
-        monthListEl.appendChild(li);
-    });
-
-    daysGridEl.innerHTML = "";
-    const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
-    const lastDay = new Date(currentYear, currentMonth + 1, 0).getDate();
-
-    for (let i = 0; i < firstDayIndex; i++) {
-        const emptyDiv = document.createElement('div');
-        emptyDiv.classList.add('day-cell', 'empty');
-        daysGridEl.appendChild(emptyDiv);
-    }
-
-    for (let i = 1; i <= lastDay; i++) {
-        const dayDiv = document.createElement('div');
-        dayDiv.classList.add('day-cell');
-        dayDiv.innerText = i;
-
-        const dateKey = formatKey(new Date(currentYear, currentMonth, i));
-
-        const dayEvents = getAllEventsForDay(dateKey);
-
-        if (dayEvents.length > 0) {
-            dayDiv.classList.add('has-event');
-            const dot = document.createElement('div');
-            dot.classList.add('dot');
-
-            const firstEventColor = dayEvents[0].corHex || 'var(--cal-event-dot)';
-            dot.style.backgroundColor = firstEventColor;
-
-            dayDiv.appendChild(dot);
-        }
-
-        if (dateKey === TODAY_DATE) {
-            dayDiv.classList.add('today');
-        }
-
-        if (i === selectedDay && new Date(currentYear, currentMonth, i).toDateString() === new Date(currentYear, currentMonth, selectedDay).toDateString()) {
-            dayDiv.classList.add('selected');
-        }
-
-
-        dayDiv.onclick = () => {
-            document.querySelectorAll('.day-cell').forEach(el => el.classList.remove('selected'));
-            dayDiv.classList.add('selected');
-            selectedDay = i;
-            updateEventPanel(i);
-        };
-
-        daysGridEl.appendChild(dayDiv);
-    }
-
-    updateEventPanel(selectedDay);
-}
-
-document.getElementById('prevYear').onclick = () => {
-    currentYear--;
-    renderCalendar();
-};
-
-document.getElementById('nextYear').onclick = () => {
-    currentYear++;
-    renderCalendar();
-};
-
-function updateEventPanel(day) {
-    resetForm();
-
-    const dayPadded = day.toString().padStart(2, '0');
-    const monthPadded = (currentMonth + 1).toString().padStart(2, '0');
-    const fullDate = `${dayPadded}/${monthPadded}/${currentYear}`;
-    selectedDateDisplayEl.innerText = fullDate;
-
-    const dateKey = `${currentYear}-${monthPadded}-${dayPadded}`;
-    eventListEl.innerHTML = "";
-
-    if (dataEventoInput) {
-        dataEventoInput.value = dateKey;
-    }
-
-    const isPast = isDateInPast(dateKey);
-    if (addEventButton) {
-        if (window.canManage) {
-            addEventButton.style.display = isPast ? 'none' : 'inline-block';
-        } else {
-            addEventButton.style.display = 'none';
+    
+    function toggleFormVisibility(visible, isEdit = false) {
+        if (!formContainer) return;
+        formContainer.style.display = visible ? 'block' : 'none';
+        const formAcao = document.getElementById('formAcao');
+        if (formAcao) formAcao.value = isEdit ? 'editar' : 'cadastrar';
+        if (!visible) {
+            resetForm();
         }
     }
+    
+    function resetForm(dataEventoKey = getSelectedDateKey()) {
+        if (!eventForm) return;
+        eventForm.reset();
+        const dataEventoEl = document.getElementById('dataEvento');
+        const idEventoEl = document.getElementById('idEvento');
+        const formAcaoEl = document.getElementById('formAcao');
+        
+        if (dataEventoEl) dataEventoEl.value = dataEventoKey;
+        if (idEventoEl) idEventoEl.value = '';
+        if (formAcaoEl) formAcaoEl.value = 'cadastrar';
+        if (fileNameDisplay) fileNameDisplay.textContent = '';
+        if (anexoUrlInput) anexoUrlInput.disabled = false;
+        
+        const dataAtualInput = eventForm.querySelector('input[name="dataAtual"]');
+        if (dataAtualInput) dataAtualInput.value = getSelectedDateKey();
+    }
 
-
-    const dayEvents = getAllEventsForDay(dateKey);
-
-    if (dayEvents.length > 0) {
-        dayEvents.forEach(evt => {
-            const card = document.createElement('div');
-            card.classList.add('event-card');
-
-            const eventColor = evt.corHex || 'var(--cal-event-dot)';
-            card.style.borderLeft = `3px solid ${eventColor}`;
-
-            const eventHeader = document.createElement('div');
-            eventHeader.classList.add('event-header');
-
-            const eventTitleDiv = document.createElement('div');
-            eventTitleDiv.classList.add('event-title');
-            eventTitleDiv.innerHTML = `<span class="event-marker" style="background-color: ${eventColor};"></span> ${evt.titulo}`;
-            eventHeader.appendChild(eventTitleDiv);
-
-            const eventDetailsMeta = document.createElement('div');
-            eventDetailsMeta.classList.add('event-details-meta');
-
-            if (evt.horario) {
-                const timeSpan = document.createElement('span');
-                timeSpan.classList.add('event-time');
-                timeSpan.innerText = `⏱️ ${evt.horario}`;
-                eventDetailsMeta.appendChild(timeSpan);
-            }
-
-            if (evt.dataFim && evt.dataFim !== evt.dataEvento) {
-                const [y, m, d] = evt.dataFim.split('-');
-                const durationSpan = document.createElement('span');
-                durationSpan.classList.add('event-duration');
-                durationSpan.innerText = `📅 Fim: ${d}/${m}/${y}`;
-                eventDetailsMeta.appendChild(durationSpan);
-            }
-
-            if (eventDetailsMeta.children.length > 0) {
-                eventHeader.appendChild(eventDetailsMeta);
-            }
-
-            const eventDescDiv = document.createElement('div');
-            eventDescDiv.classList.add('event-desc');
-            eventDescDiv.innerText = evt.descricao;
-
-            card.appendChild(eventHeader);
-            card.appendChild(eventDescDiv);
-
-            if (window.canManage) {
-                const actionsDiv = document.createElement('div');
-                actionsDiv.classList.add('event-actions');
-
-                if (!isDateInPast(evt.dataEvento)) {
-                    const editButton = document.createElement('a');
-                    editButton.href = "#";
-                    editButton.classList.add('edit-event-btn');
-                    editButton.title = "Editar Evento";
-                    editButton.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>';
-                    editButton.onclick = (e) => {
-                        e.preventDefault();
-                        editEvent(evt);
-                    };
-                    actionsDiv.appendChild(editButton);
-
-                    const deleteLink = document.createElement('a');
-                    deleteLink.href = `${evt.contextPath}/CronogramaController?acao=excluir&id=${evt.id}&dataAtual=${dateKey}`;
-                    deleteLink.classList.add('delete-event-btn');
-                    deleteLink.title = "Excluir Evento";
-                    deleteLink.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
-                    deleteLink.onclick = () => {
-                        return confirm(`Tem certeza que deseja excluir o evento: ${evt.titulo.replace(/'/g, "\\'") }?`);
-                    };
-                    actionsDiv.appendChild(deleteLink);
+    function preprocessEvents() {
+        try {
+            const rawData = eventDataInput ? eventDataInput.value : '[]';
+            const data = JSON.parse(rawData);
+            eventsByDate = {};
+            allEvents = data;
+            
+            data.forEach(event => {
+                if (!event.dataEvento) return;
+                
+                const startDate = new Date(event.dataEvento + 'T00:00:00');
+                const tipoRepeticao = event.tipoRepeticao; 
+                const endDateDuration = event.dataFim ? new Date(event.dataFim + 'T00:00:00') : null;
+                
+                let limitDate = new Date(startDate);
+                
+                if (tipoRepeticao !== 'NENHUM') {
+                    limitDate.setFullYear(startDate.getFullYear() + 1);
+                    if (endDateDuration && endDateDuration > startDate && endDateDuration < limitDate) {
+                         limitDate = endDateDuration; 
+                    }
+                } else {
+                    limitDate = endDateDuration || startDate; 
                 }
 
-                eventTitleDiv.appendChild(actionsDiv);
-            }
+                let currentOccurrenceDate = new Date(startDate);
+                const originalDay = startDate.getDate();
+                const originalDayOfWeek = startDate.getDay(); 
 
-            eventListEl.appendChild(card);
-        });
-    } else {
-        eventListEl.innerHTML = '<div class="no-event">Nenhum evento para este dia.</div>';
+                let safeCounter = 0; 
+                const MAX_ITERATIONS = tipoRepeticao === 'NENHUM' ? 1 : 366; 
+                
+                while (currentOccurrenceDate <= limitDate && safeCounter < MAX_ITERATIONS) {
+                    const dateKey = formatDateKey(currentOccurrenceDate.getFullYear(), currentOccurrenceDate.getMonth(), currentOccurrenceDate.getDate());
+                    
+                    let isValidOccurrence = true;
+
+                    if (safeCounter > 0) {
+                        if (tipoRepeticao === 'SEMANAL' && currentOccurrenceDate.getDay() !== originalDayOfWeek) {
+                            isValidOccurrence = false; 
+                        }
+
+                    }
+
+                    if (isValidOccurrence) {
+                        if (!eventsByDate[dateKey]) {
+                            eventsByDate[dateKey] = [];
+                        }
+                        eventsByDate[dateKey].push({
+                            ...event, 
+                            dataExibicao: dateKey,
+                            isRepetition: tipoRepeticao !== 'NENHUM'
+                        });
+                    }
+                    
+                    const day = currentOccurrenceDate.getDate();
+                    const month = currentOccurrenceDate.getMonth();
+                    const year = currentOccurrenceDate.getFullYear();
+                    
+                    switch (tipoRepeticao) {
+                        case 'DIARIO':
+                            currentOccurrenceDate.setDate(day + 1);
+                            break;
+                        case 'SEMANAL':
+                            currentOccurrenceDate.setDate(day + 7);
+                            break;
+                        case 'MENSAL':
+
+                            let nextMonthDate = new Date(year, month + 1, 1);
+
+                            currentOccurrenceDate = new Date(year, month + 1, originalDay);
+
+                            if (currentOccurrenceDate.getDate() !== originalDay) {
+                                currentOccurrenceDate = new Date(year, month + 1, 0); 
+                            }
+                            
+                            break;
+                        case 'ANUAL':
+                            currentOccurrenceDate.setFullYear(year + 1);
+                            break;
+                        default: 
+                            safeCounter = MAX_ITERATIONS;
+                            break;
+                    }
+                    safeCounter++;
+                }
+            });
+        } catch (e) {
+            console.error("Erro no preprocessEvents:", e);
+            eventsByDate = {};
+            allEvents = [];
+        }
     }
-}
 
-if (addEventButton) {
-    addEventButton.onclick = () => {
-        const selectedDateKey = getSelectedDateKey();
-        if (isDateInPast(selectedDateKey)) {
-            alert("Não é possível criar eventos em datas passadas.");
+    
+    function loadCategories() {
+        try {
+            const rawCats = categoriesDataInput ? categoriesDataInput.value : '[]';
+            const categoriasFromJSP = JSON.parse(rawCats);
+            categoriasMap = categoriasFromJSP.reduce((acc, cat) => {
+                acc[cat.id] = cat;
+                return acc;
+            }, {});
+        } catch (e) {
+            console.error("Erro ao carregar categorias:", e);
+            categoriasMap = {};
+        }
+    }
+    
+    function renderCalendar() {
+        loadCategories();
+        preprocessEvents();
+        
+        if (monthHeaderEl) monthHeaderEl.textContent = `${months[currentMonth].toUpperCase()} ${currentYear}`;
+        if (yearDisplayEl) yearDisplayEl.textContent = currentYear;
+        if (daysGridEl) daysGridEl.innerHTML = '';
+        
+        const daysInMonth = getDaysInMonth(currentYear, currentMonth);
+        const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
+        
+        if (monthListEl) {
+             monthListEl.querySelectorAll('li').forEach((li, index) => {
+                 li.classList.remove('active');
+                 if (index === currentMonth) {
+                     li.classList.add('active');
+                 }
+             });
+        }
+        
+        if (daysGridEl) {
+            for (let i = 0; i < firstDay; i++) {
+                daysGridEl.innerHTML += '<div class="day day-empty"></div>';
+            }
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateKey = formatDateKey(currentYear, currentMonth, day);
+                const isToday = dateKey === todayDateKey;
+                const isSelected = day === selectedDay;
+                const events = eventsByDate[dateKey] || [];
+                
+                let dayClass = 'day';
+                if (isToday) dayClass += ' today';
+                if (isSelected) dayClass += ' selected';
+                if (isDateInPast(dateKey)) dayClass += ' past-day';
+                
+                const dayEl = document.createElement('div');
+                dayEl.className = dayClass;
+                dayEl.dataset.date = dateKey;
+                dayEl.textContent = day;
+                
+                if (events.length > 0) {
+                    const countSpan = document.createElement('span');
+                    countSpan.className = 'day-event-count';
+                    countSpan.textContent = events.length;
+                    dayEl.appendChild(countSpan);
+                }
+                
+                dayEl.onclick = () => {
+                    selectedDay = day;
+                    renderCalendar(); 
+                    renderEventList(dateKey, eventsByDate[dateKey] || []);
+                    toggleFormVisibility(false);
+                    resetForm(dateKey);
+                };
+                
+                daysGridEl.appendChild(dayEl);
+            }
+        }
+        
+        renderEventList(getSelectedDateKey(), eventsByDate[getSelectedDateKey()] || []);
+    }
+    
+    function renderEventList(dateKey, events) {
+        if (selectedDateDisplayEl) selectedDateDisplayEl.textContent = `Eventos em ${dateKey.split('-').reverse().join('/')}`;
+        if (!eventListEl) return;
+        eventListEl.innerHTML = '';
+        
+        if (events.length > 0) {
+            events.sort((a, b) => (a.horario || '23:59').localeCompare(b.horario || '23:59'));
+            
+            events.forEach(evt => {
+                const category = categoriasMap[evt.categoria.id] || { nome: 'Outros', corHex: '#888', iconeCss: 'fa-solid fa-circle' };
+                const card = document.createElement('div');
+                card.className = 'event-card';
+                card.style.borderLeftColor = category.corHex;
+                
+                const content = `
+                    <div class="event-header">
+                        <h4>
+                            <i class="${category.iconeCss}"></i>
+                            ${evt.titulo}
+                            ${evt.horario ? `<span class="event-horario"> (${evt.horario.substring(0, 5)})</span>` : ''}
+                        </h4>
+                        <div class="event-actions" data-id="${evt.id}">
+                            ${!evt.isRepetition ? `<a href="#" class="edit-event-btn" data-id="${evt.id}"><i class="fa-solid fa-pen-to-square"></i></a>` : ''}
+                            
+                            <a href="${typeof CONTEXT_PATH !== 'undefined' ? CONTEXT_PATH : ''}/CronogramaController?acao=excluir&id=${evt.id}&dataAtual=${getSelectedDateKey()}"
+                               class="delete-event-btn"
+                               onclick="return confirm('Tem certeza que deseja excluir o evento: ${evt.titulo.replace(/'/g, "\\'")}?');">
+                                    <i class="fa-solid fa-trash-can"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <p class="event-category" style="color:${category.corHex};">Categoria: ${category.nome}</p>
+                    <p class="event-description">${evt.descricao}</p>
+                    ${evt.dataFim ? `<p class="event-duration">Duração: ${evt.dataEvento.split('-').reverse().join('/')} até ${evt.dataFim.split('-').reverse().join('/')}</p>` : ''}
+                    ${evt.tipoRepeticao !== 'NENHUM' ? `<p class="event-repetition">Repetição: ${evt.tipoRepeticao} ${evt.isRepetition ? '(Ocorrência)' : ''}</p>` : ''}
+                    ${evt.anexoUrl ? `<p class="event-anexo"><a href="${evt.anexoUrl}" target="_blank"><i class="fa-solid fa-link"></i> Anexo / Link</a></p>` : ''}
+                    
+                    <div class="event-log">
+                        Criado por: ${evt.autor ? evt.autor.nome : 'N/A'} em ${evt.dataCriacao ? evt.dataCriacao.split('-').reverse().join('/') : 'N/A'}<br>
+                        ${evt.editor ? `Última edição por: ${evt.editor.nome} em ${evt.dataUltimaEdicao.split('-').reverse().join('/')}` : ''}
+                    </div>
+                `;
+                
+                card.innerHTML = content;
+                eventListEl.appendChild(card);
+            });
+            
+        } else {
+            eventListEl.innerHTML = '<div class="no-event">Nenhum evento para este dia.</div>';
+        }
+        
+        document.querySelectorAll('.edit-event-btn').forEach(btn => {
+            btn.onclick = (e) => {
+                e.preventDefault();
+                const id = btn.dataset.id;
+                const eventToEdit = allEvents.find(e => e.id == id); 
+                if (eventToEdit) {
+                    loadFormForEdit(eventToEdit);
+                }
+            };
+        });
+    }
+    
+    function loadFormForEdit(event) {
+        if (isDateInPast(event.dataEvento)) {
+            alert("Não é possível editar eventos com data de início no passado.");
             return;
         }
-        resetForm();
-        toggleFormVisibility(true);
-        document.getElementById('titulo').focus();
-    };
-
-    document.getElementById('cancelButton').onclick = (e) => {
-        e.preventDefault();
-        resetForm();
-    };
-
-    eventForm.onsubmit = () => {
-        const selectedDateKey = getSelectedDateKey();
-
-        if (isDateInPast(selectedDateKey)) {
-            alert("A operação não pode ser realizada em datas passadas.");
-            return false;
+        
+        document.getElementById('idEvento').value = event.id;
+        document.getElementById('titulo').value = event.titulo;
+        document.getElementById('dataEvento').value = event.dataEvento;
+        document.getElementById('dataFim').value = event.dataFim || '';
+        document.getElementById('horario').value = event.horario || '';
+        document.getElementById('descricao').value = event.descricao;
+        document.getElementById('idCategoria').value = event.categoria.id;
+        document.getElementById('tipoRepeticao').value = event.tipoRepeticao || 'NENHUM';
+        
+        const anexoUrlField = document.getElementById('anexoUrl');
+        if (anexoUrlField) {
+             anexoUrlField.value = event.anexoUrl || '';
+             anexoUrlField.disabled = false;
         }
-
-        eventForm.querySelector('input[name="dataAtual"]').value = selectedDateKey;
-        return true;
+        
+        if (fileNameDisplay) fileNameDisplay.textContent = '';
+        if (fileInput) fileInput.value = '';
+        
+        toggleFormVisibility(true, true);
+        
+        const dataAtualInput = eventForm.querySelector('input[name="dataAtual"]');
+        if (dataAtualInput) dataAtualInput.value = getSelectedDateKey();
     }
-}
+    
+    function renderWeeklyView() {
+        const weeklyGrid = document.getElementById('weeklyGrid');
+        if (weeklyGrid) {
+            weeklyGrid.innerHTML = '<p style="color:#FFF;">Funcionalidade de Visualização Semanal em desenvolvimento...</p>';
+        }
+    }
+    
+    function switchView(viewName) {
+        document.querySelectorAll('.calendar-widget, .view-content').forEach(el => {
+            el.classList.remove('view-active');
+            el.classList.add('view-hidden');
+        });
+        
+        document.querySelectorAll('.btn-view').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        currentView = viewName;
+        const targetElement = document.getElementById(`view${viewName.charAt(0).toUpperCase() + viewName.slice(1)}`);
+        if (targetElement) {
+            targetElement.classList.add('view-active');
+            targetElement.classList.remove('view-hidden');
+        }
+        const targetButton = document.querySelector(`.btn-view[data-view="${viewName}"]`);
+        if (targetButton) {
+            targetButton.classList.add('active');
+        }
+        
+        if (viewName === 'mensal') {
+             renderCalendar();
+        } else if (viewName === 'semanal') {
+            renderWeeklyView();
+        }
+    }
 
-renderCalendar();
+    if (prevYearBtn) prevYearBtn.onclick = () => { currentYear--; renderCalendar(); };
+    if (nextYearBtn) nextYearBtn.onclick = () => { currentYear++; renderCalendar(); };
+    
+    if (monthListEl) {
+        months.forEach((month, index) => {
+            const li = document.createElement('li');
+            li.textContent = month.substring(0, 3);
+            li.onclick = () => {
+                currentMonth = index;
+                selectedDay = 1; 
+                renderCalendar();
+            };
+            monthListEl.appendChild(li);
+        });
+    }
+    
+    if (addEventButton) {
+        addEventButton.onclick = () => {
+            const selectedDateKey = getSelectedDateKey();
+            if (isDateInPast(selectedDateKey)) {
+                alert("Não é possível criar eventos em datas passadas.");
+                return;
+            }
+            resetForm();
+            toggleFormVisibility(true);
+            const tituloInput = document.getElementById('titulo');
+            if (tituloInput) tituloInput.focus();
+        };
+    }
+
+    if (cancelButton) {
+        cancelButton.onclick = (e) => {
+            e.preventDefault();
+            resetForm();
+            toggleFormVisibility(false);
+        };
+    }
+    
+    if (eventForm) {
+        eventForm.onsubmit = () => {
+            const dataEventoEl = document.getElementById('dataEvento');
+            if (!dataEventoEl) return false;
+            
+            const dataEventoForm = dataEventoEl.value;
+            if (isDateInPast(dataEventoForm)) {
+                alert("A operação não pode ser realizada com a data de início no passado. Por favor, selecione uma data futura.");
+                return false;
+            }
+            
+            const dataAtualInput = eventForm.querySelector('input[name="dataAtual"]');
+            if (dataAtualInput) {
+                dataAtualInput.value = getSelectedDateKey();
+            }
+            return true;
+        }
+    }
+    
+    
+    if (fileLabel && fileInput) {
+        fileLabel.onclick = () => {
+            fileInput.click();
+        };
+    }
+    
+    if (fileInput) {
+        fileInput.onchange = () => {
+            if (fileInput.files.length > 0) {
+                if (fileNameDisplay) fileNameDisplay.textContent = `Arquivo selecionado: ${fileInput.files[0].name}`;
+                if (anexoUrlInput) {
+                    anexoUrlInput.disabled = true;
+                    anexoUrlInput.value = '';
+                }
+            } else {
+                if (fileNameDisplay) fileNameDisplay.textContent = '';
+                if (anexoUrlInput) anexoUrlInput.disabled = false;
+            }
+        };
+    }
+    
+    if (anexoUrlInput) {
+        anexoUrlInput.oninput = () => {
+            if (anexoUrlInput.value) {
+                if (fileInput) fileInput.value = '';
+                if (fileNameDisplay) fileNameDisplay.textContent = '';
+            }
+        };
+    }
+    
+    
+    if (viewSwitcher) {
+        viewSwitcher.querySelectorAll('.btn-view').forEach(btn => {
+            btn.onclick = () => switchView(btn.dataset.view);
+        });
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialView = urlParams.get('view') || 'mensal';
+        switchView(initialView);
+    } else {
+        renderCalendar();
+    }
+    
+    document.querySelectorAll('.edit-event-list').forEach(btn => {
+        btn.onclick = (e) => {
+            e.preventDefault();
+            const id = btn.dataset.id;
+            const eventToEdit = allEvents.find(e => e.id == id);
+            if (eventToEdit) {
+                loadFormForEdit(eventToEdit);
+                switchView('mensal');
+            }
+        };
+    });
+});

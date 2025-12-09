@@ -1,17 +1,20 @@
 package wtom.model.domain;
 
-
 public class Categoria {
+
     private Long id;
     private String nome;
     private String corHex;
+    private String iconeCss;
 
-    public Categoria() {}
+    public Categoria() {
+    }
 
-    public Categoria(Long id, String nome, String corHex) {
+    public Categoria(Long id, String nome, String corHex, String iconeCss) {
         this.id = id;
         this.nome = nome;
         this.corHex = corHex;
+        this.iconeCss = iconeCss;
     }
 
     public Long getId() {
@@ -36,5 +39,13 @@ public class Categoria {
 
     public void setCorHex(String corHex) {
         this.corHex = corHex;
+    }
+
+    public String getIconeCss() {
+        return iconeCss;
+    }
+
+    public void setIconeCss(String iconeCss) {
+        this.iconeCss = iconeCss;
     }
 }
