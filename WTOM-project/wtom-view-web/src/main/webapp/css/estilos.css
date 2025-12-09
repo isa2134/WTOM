@@ -90,9 +90,11 @@ body {
 }
 
 .menu {
-    flex-grow: 1;
-    padding: 10px 0;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 120px);
     overflow-y: auto;
+    padding-right: 1px;
 }
 
 .menu a {
@@ -222,7 +224,7 @@ input, select, textarea {
     padding: 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(255, 255, 255, 0.05);
-    color: var(--sidebar-bg);
+    color: var(--accent);
     border-radius: 8px;
     width: 100%;
     box-sizing: border-box;

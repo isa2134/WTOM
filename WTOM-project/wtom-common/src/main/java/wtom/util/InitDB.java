@@ -510,6 +510,52 @@ public class InitDB {
         }
     }
 
+    public void initEvento() throws SQLException {
+        String sql = """
+        CREATE TABLE IF NOT EXISTS evento (
+            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            titulo VARCHAR(255) NOT NULL,
+            dataEvento DATE NOT NULL,
+            dataFim DATE,
+            horario TIME,
+            descricao TEXT,
+            id_categoria BIGINT DEFAULT 1,
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            FOREIGN KEY (id_categoria) REFERENCES categoria(id)
+        )
+    """;
+
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
+
+    public void initCategoria() throws SQLException {
+        String createTableSql = """
+        CREATE TABLE IF NOT EXISTS categoria (
+            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            nome VARCHAR(100) NOT NULL,
+            cor_hex VARCHAR(7) NOT NULL
+        )
+    """;
+
+        String insertDataSql = """
+        INSERT INTO categoria (id, nome, cor_hex) VALUES 
+        (1, 'Outros', '#8a96a3'), 
+        (2, 'Provas', '#dc3545'), 
+        (3, 'Aulas Extras', '#28a745'), 
+        (4, 'Olimpíadas', '#ffc107'),
+        (5, 'Reuniões', '#6f42c1')
+        ON DUPLICATE KEY UPDATE nome=nome
+    """;
+
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(createTableSql);
+            st.executeUpdate(insertDataSql);
+        }
+    }
+
     public void initRespostasTeste() throws SQLException {
         String sql = """
             INSERT IGNORE INTO resposta (id_duvida, id_professor, conteudo, data)
@@ -621,6 +667,8 @@ public class InitDB {
             initOlimpiadasPadrao();
             initLogAuditoria();
             initConfiguracoesUsuario();
+            initCategoria();
+            initEvento();
 
         } catch (SQLException e) {
             throw new PersistenciaException("erro ao inicializar tabelas: " + e.getMessage());

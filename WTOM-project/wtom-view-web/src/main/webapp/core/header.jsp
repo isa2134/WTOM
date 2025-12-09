@@ -6,7 +6,7 @@
 <%@page import="wtom.model.domain.util.UsuarioTipo" %>
 
 <%
-    
+
     Usuario usuarioHeader = (Usuario) session.getAttribute("usuario");
     String nomeUsuario = (usuarioHeader != null && usuarioHeader.getNome() != null) ? usuarioHeader.getNome() : "Usuário";
     String inicial = (nomeUsuario.length() > 0) ? nomeUsuario.substring(0, 1) : "U";
@@ -90,8 +90,11 @@
             .menu {
                 display: flex;
                 flex-direction: column;
-                height: calc(100vh - 60px);
+                height: calc(100vh - 120px);
+                overflow-y: auto;
+                padding-right: 1px;
             }
+
             .user-profile-container {
                 margin-top: auto;
                 padding: 10px 15px;
@@ -191,7 +194,7 @@
                 }
             }
         </style>
-    </head>  
+    </head>   
 
     <body class="<%=(headerConfig.isUiAltoContraste() ? "high-contrast" : "")
             + (headerConfig.isUiFonteMaior() ? " fonte-maior" : "")
@@ -260,6 +263,11 @@
                 <a href="${pageContext.request.contextPath}/DuvidaController?acao=listar"
                    class="${pageContext.request.servletPath.contains('duvida') || pageContext.request.servletPath.contains('DuvidaController') ? 'active' : ''}">
                     <i class="fa-solid fa-question-circle"></i> <span>Dúvidas</span>
+                </a>
+
+                <a href="${pageContext.request.contextPath}/CronogramaController?acao=listar"
+                   class="${pageContext.request.servletPath.contains('cronograma') || pageContext.request.servletPath.contains('CronogramaController') ? 'active' : ''}">
+                    <i class="fa-solid fa-calendar"></i> <span>Cronograma</span>
                 </a>
 
                 <a href="${pageContext.request.contextPath}/reuniao?acao=listar"
@@ -347,5 +355,3 @@
                 }
             })();
         </script>
-    </body>
-</html>
