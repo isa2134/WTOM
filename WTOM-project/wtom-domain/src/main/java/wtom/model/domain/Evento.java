@@ -1,9 +1,21 @@
 package wtom.model.domain;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class Evento {
+
+    private String titulo;
+    private LocalDate dataEvento;
+    private LocalDate dataFim;
+    private LocalTime horario;
+    private String descricao;
+    private Categoria categoria;
     private Long id;
+    
+
+    public Evento() {
+    }
 
     public LocalDate getDataFim() {
         return dataFim;
@@ -27,15 +39,6 @@ public class Evento {
 
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
-    }
-    private String titulo;
-    private LocalDate dataEvento;
-    private LocalDate dataFim;
-    private LocalTime horario; 
-    private String descricao;
-    private Categoria categoria;
-
-    public Evento() {
     }
 
     public Evento(Long id, String titulo, LocalDate dataEvento, String descricao) {
