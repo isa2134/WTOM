@@ -13,7 +13,7 @@ public class InitDB {
     public InitDB(Connection con) {
         this.con = con;
     }
-    
+
     public void initUsuario() throws SQLException {
         String sql = """
             CREATE TABLE IF NOT EXISTS usuario (
@@ -35,8 +35,9 @@ public class InitDB {
             st.executeUpdate(sql);
         }
     }
+
     public void initAviso() throws SQLException {
-    String sql = """
+        String sql = """
         CREATE TABLE IF NOT EXISTS aviso (
             id BIGINT AUTO_INCREMENT PRIMARY KEY,
             titulo VARCHAR(200) NOT NULL,
@@ -51,10 +52,10 @@ public class InitDB {
         );
     """;
 
-    try (Statement st = con.createStatement()) {
-        st.executeUpdate(sql);
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
     }
-}
 
     public void initProfessor() throws SQLException {
         String sql = """
@@ -132,23 +133,23 @@ public class InitDB {
             st.executeUpdate(sql);
         }
     }
-    
-    public void initOlimpiadas() throws SQLException{
-        String sql = "CREATE TABLE IF NOT EXISTS olimpiadas("
-                +"nome VARCHAR(100) NOT NULL, "
-                +"id INT PRIMARY KEY, "
-                +"topico VARCHAR(100) NOT NULL, "
-                +"data_limite_inscricao DATE NOT NULL, "
-                +"data_prova DATE NOT NULL, "
-                +"descricao VARCHAR(100) NOT NULL, "
-                +"peso DOUBLE NOT NULL"
-                +")";
 
-        try(Statement st = con.createStatement()){
+    public void initOlimpiadas() throws SQLException {
+        String sql = "CREATE TABLE IF NOT EXISTS olimpiadas("
+                + "nome VARCHAR(100) NOT NULL, "
+                + "id INT PRIMARY KEY, "
+                + "topico VARCHAR(100) NOT NULL, "
+                + "data_limite_inscricao DATE NOT NULL, "
+                + "data_prova DATE NOT NULL, "
+                + "descricao VARCHAR(100) NOT NULL, "
+                + "peso DOUBLE NOT NULL"
+                + ")";
+
+        try (Statement st = con.createStatement()) {
             st.executeUpdate(sql);
         }
     }
-   
+
     public void initDesafios() throws SQLException {
         String sql = """
             CREATE TABLE IF NOT EXISTS desafios (
@@ -168,7 +169,7 @@ public class InitDB {
             st.executeUpdate(sql);
         }
     }
-    
+
     public void initAlternativas() throws SQLException {
         String sql = """
             CREATE TABLE IF NOT EXISTS alternativas_desafio (
@@ -187,7 +188,7 @@ public class InitDB {
             st.executeUpdate(sql);
         }
     }
-    
+
     public void initResolucoes() throws SQLException {
         String sql = """
             CREATE TABLE IF NOT EXISTS resolucoes_desafio (
@@ -207,7 +208,7 @@ public class InitDB {
             st.executeUpdate(sql);
         }
     }
-    
+
     public void initSubmissoes() throws SQLException {
         String sql = """
             CREATE TABLE IF NOT EXISTS submissoes_desafio (
@@ -226,7 +227,7 @@ public class InitDB {
             st.executeUpdate(sql);
         }
     }
-    
+
     public void initInscricoes() throws SQLException {
         String sql = """
             CREATE TABLE IF NOT EXISTS inscricoes (
@@ -251,7 +252,7 @@ public class InitDB {
             st.executeUpdate(sql);
         }
     }
-    
+
     public void initUsuariosPadrao() throws SQLException {
         String sql = """
             INSERT IGNORE INTO usuario (cpf, nome, telefone, email, data_nascimento, senha, login, tipo)
@@ -294,7 +295,7 @@ public class InitDB {
             st.executeUpdate(sql);
         }
     }
-    
+
     public void initAlunosPadrao() throws SQLException {
         String sql = """
             INSERT IGNORE INTO aluno (usuario_id, curso, pontuacao, serie)
@@ -341,7 +342,6 @@ public class InitDB {
         }
     }
 
-    
     public void initPremiacoes() throws SQLException {
         String sql = """
             CREATE TABLE IF NOT EXISTS premiacao (
@@ -389,8 +389,8 @@ public class InitDB {
             st.executeUpdate(sql);
         }
     }
-    
-        public void initDuvidas() throws SQLException {
+
+    public void initDuvidas() throws SQLException {
         String sql = """
             CREATE TABLE IF NOT EXISTS duvida (
                 id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -428,8 +428,8 @@ public class InitDB {
             st.executeUpdate(sql);
         }
     }
-    
-        public void initDuvidasTeste() throws SQLException {
+
+    public void initDuvidasTeste() throws SQLException {
         String sql = """
             INSERT INTO duvida (id_aluno, titulo, descricao, data_criacao)
             VALUES 
@@ -452,6 +452,7 @@ public class InitDB {
             st.executeUpdate(sql);
         }
     }
+
     public void initPremiacoesPadrao() throws SQLException {
         String sql = """
             INSERT IGNORE INTO premiacao 
@@ -499,29 +500,28 @@ public class InitDB {
 
     public void initOlimpiadasPadrao() throws SQLException {
         String sql = """
-            INSERT IGNORE INTO olimpiadas
-                (id, nome, peso)
-            VALUES
-                (1, 'OBMEP - Olimpíada Brasileira de Matemática das Escolas Públicas', 2.0),
-                (2, 'Canguru de Matemática', 1.5),
-                (3, 'Olimpíada Paulista de Matemática', 2.0),
-                (4, 'ONC - Olimpíada Nacional de Ciências', 1.2),
-                (5, 'OBA - Olimpíada Brasileira de Astronomia e Astronáutica', 1.0);
-            """;
+        INSERT IGNORE INTO olimpiadas
+            (id, nome, topico, data_limite_inscricao, data_prova, descricao, peso)
+        VALUES
+            (1, 'OBMEP', 'Matemática', '2025-03-01', '2025-03-10', 'Olimpíada de matemática', 2.0),
+            (2, 'Canguru', 'Matemática', '2025-04-01', '2025-04-15', 'Prova internacional canguru', 1.5),
+            (3, 'OPM', 'Matemática', '2025-05-01', '2025-05-20', 'Olimpíada paulista', 2.0),
+            (4, 'ONC', 'Ciências', '2025-06-01', '2025-06-15', 'Olimpíada nacional de ciências', 1.2),
+            (5, 'OBA', 'Astronomia', '2025-07-01', '2025-07-30', 'OBA astronômica', 1.0);
+        """;
 
         try (Statement st = con.createStatement()) {
             st.executeUpdate(sql);
         }
     }
 
-    
     public void initTodos() throws PersistenciaException {
         try {
-            initUsuario();   
-            initProfessor();     
-            initAluno();        
-            initConteudos();     
-            initNotificacoes();  
+            initUsuario();
+            initProfessor();
+            initAluno();
+            initConteudos();
+            initNotificacoes();
             initOlimpiadas();
             initDesafios();
             initAlternativas();

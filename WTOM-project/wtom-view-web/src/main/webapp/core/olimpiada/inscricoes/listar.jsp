@@ -406,7 +406,7 @@
       <button class="btn-voltar">⬅ Voltar para Olimpíadas</button>
     </form>
   </div>
-
+  
   <c:choose>
     <c:when test="${not empty inscricoes}">
       <div class="container-cards">
