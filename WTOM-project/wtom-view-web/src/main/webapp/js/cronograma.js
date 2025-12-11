@@ -15,6 +15,11 @@ document.addEventListener('DOMContentLoaded', function() {
     let categoriasMap = {};
     let currentView = 'mensal';
     
+    let currentWeekStart = new Date();
+    const dayOfWeek = currentWeekStart.getDay();
+    currentWeekStart.setDate(currentWeekStart.getDate() - dayOfWeek);
+    currentWeekStart.setHours(0,0,0,0);
+    
     if (INITIAL_DATE_KEY) {
         try {
             const parts = INITIAL_DATE_KEY.split('-');
@@ -23,6 +28,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentMonth = parseInt(parts[1]) - 1;
                 selectedDay = parseInt(parts[2]);
                 date = new Date(currentYear, currentMonth, selectedDay);
+                
+                const initDateObj = new Date(currentYear, currentMonth, selectedDay);
+                const dw = initDateObj.getDay();
+                currentWeekStart = new Date(initDateObj);
+                currentWeekStart.setDate(initDateObj.getDate() - dw);
             }
         } catch (e) {
             console.error("Erro ao inicializar data do input:", e);
@@ -47,6 +57,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const prevYearBtn = document.getElementById('prevYear');
     const nextYearBtn = document.getElementById('nextYear');
     const cancelButton = document.getElementById('cancelButton');
+    
+    const prevWeekBtn = document.getElementById('prevWeek');
+    const nextWeekBtn = document.getElementById('nextWeek');
+    const weekRangeLabel = document.getElementById('weekRangeLabel');
+    const weeklyGrid = document.getElementById('weeklyGrid');
     
     const fileLabel = document.querySelector('.file-input-wrapper .file-label');
 
@@ -166,15 +181,11 @@ document.addEventListener('DOMContentLoaded', function() {
                             currentOccurrenceDate.setDate(day + 7);
                             break;
                         case 'MENSAL':
-
                             let nextMonthDate = new Date(year, month + 1, 1);
-
                             currentOccurrenceDate = new Date(year, month + 1, originalDay);
-
                             if (currentOccurrenceDate.getDate() !== originalDay) {
                                 currentOccurrenceDate = new Date(year, month + 1, 0); 
                             }
-                            
                             break;
                         case 'ANUAL':
                             currentOccurrenceDate.setFullYear(year + 1);
@@ -365,9 +376,102 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function renderWeeklyView() {
-        const weeklyGrid = document.getElementById('weeklyGrid');
-        if (weeklyGrid) {
-            weeklyGrid.innerHTML = '<p style="color:#FFF;">Funcionalidade de Visualização Semanal em desenvolvimento...</p>';
+        if (!weeklyGrid) return;
+        loadCategories();
+        preprocessEvents();
+        
+        weeklyGrid.innerHTML = '';
+        const dayNames = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
+        const weekDates = [];
+        const endDate = new Date(currentWeekStart);
+        endDate.setDate(endDate.getDate() + 6);
+        
+        if (weekRangeLabel) {
+            const fmt = (d) => `${d.getDate()}/${d.getMonth()+1}`;
+            weekRangeLabel.textContent = `${fmt(currentWeekStart)} - ${fmt(endDate)} de ${currentWeekStart.getFullYear()}`;
+        }
+        
+        const tempDate = new Date(currentWeekStart);
+        for(let i=0; i<7; i++) {
+            weekDates.push(new Date(tempDate));
+            tempDate.setDate(tempDate.getDate() + 1);
+        }
+        
+        const cornerCell = document.createElement('div');
+        cornerCell.className = 'weekly-header-cell';
+        cornerCell.innerHTML = '<i class="fa-regular fa-clock"></i>';
+        weeklyGrid.appendChild(cornerCell);
+        
+        weekDates.forEach((d, index) => {
+            const dateKey = formatDateKey(d.getFullYear(), d.getMonth(), d.getDate());
+            const isToday = dateKey === todayDateKey;
+            
+            const cell = document.createElement('div');
+            cell.className = `weekly-header-cell ${isToday ? 'today' : ''}`;
+            cell.innerHTML = `<div>${dayNames[index]}</div><div style="font-size:1.2rem">${d.getDate()}</div>`;
+            weeklyGrid.appendChild(cell);
+        });
+        
+        const allDayLabel = document.createElement('div');
+        allDayLabel.className = 'time-slot-label';
+        allDayLabel.textContent = 'Dia todo';
+        weeklyGrid.appendChild(allDayLabel);
+        
+        weekDates.forEach(d => {
+            const dateKey = formatDateKey(d.getFullYear(), d.getMonth(), d.getDate());
+            const cell = document.createElement('div');
+            cell.className = 'day-slot';
+            
+            const events = eventsByDate[dateKey] || [];
+            const allDayEvents = events.filter(e => !e.horario);
+            
+            allDayEvents.forEach(evt => {
+                 const cat = categoriasMap[evt.categoria.id] || {corHex: '#888'};
+                 const div = document.createElement('div');
+                 div.className = 'weekly-event-item';
+                 div.style.backgroundColor = cat.corHex;
+                 div.textContent = evt.titulo;
+                 div.title = evt.titulo + (evt.descricao ? ` - ${evt.descricao}` : '');
+                 div.onclick = () => {
+                     if (!evt.isRepetition) loadFormForEdit(allEvents.find(x => x.id == evt.id));
+                 };
+                 cell.appendChild(div);
+            });
+            weeklyGrid.appendChild(cell);
+        });
+
+        for(let hour = 0; hour < 24; hour++) {
+            const timeLabel = document.createElement('div');
+            timeLabel.className = 'time-slot-label';
+            timeLabel.textContent = `${String(hour).padStart(2,'0')}:00`;
+            weeklyGrid.appendChild(timeLabel);
+            
+            weekDates.forEach(d => {
+                const dateKey = formatDateKey(d.getFullYear(), d.getMonth(), d.getDate());
+                const cell = document.createElement('div');
+                cell.className = 'day-slot';
+                
+                const events = eventsByDate[dateKey] || [];
+                const hourEvents = events.filter(e => {
+                    if (!e.horario) return false;
+                    const h = parseInt(e.horario.split(':')[0]);
+                    return h === hour;
+                });
+                
+                hourEvents.forEach(evt => {
+                     const cat = categoriasMap[evt.categoria.id] || {corHex: '#888'};
+                     const div = document.createElement('div');
+                     div.className = 'weekly-event-item';
+                     div.style.backgroundColor = cat.corHex;
+                     div.innerHTML = `<b>${evt.horario.substring(0,5)}</b> ${evt.titulo}`;
+                     div.title = evt.titulo;
+                     div.onclick = () => {
+                        if (!evt.isRepetition) loadFormForEdit(allEvents.find(x => x.id == evt.id));
+                     };
+                     cell.appendChild(div);
+                });
+                weeklyGrid.appendChild(cell);
+            });
         }
     }
     
@@ -401,6 +505,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (prevYearBtn) prevYearBtn.onclick = () => { currentYear--; renderCalendar(); };
     if (nextYearBtn) nextYearBtn.onclick = () => { currentYear++; renderCalendar(); };
+    
+    if (prevWeekBtn) prevWeekBtn.onclick = () => {
+        currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+        renderWeeklyView();
+    };
+    
+    if (nextWeekBtn) nextWeekBtn.onclick = () => {
+        currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+        renderWeeklyView();
+    };
     
     if (monthListEl) {
         months.forEach((month, index) => {

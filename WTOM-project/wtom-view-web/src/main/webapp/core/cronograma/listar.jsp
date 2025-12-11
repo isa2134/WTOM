@@ -34,7 +34,6 @@
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     String todayDateFormatted = today.format(formatter);
     pageContext.setAttribute("todayDateFormatted", todayDateFormatted);
-
     JsonSerializer<LocalDate> localDateSerializer = new JsonSerializer<LocalDate>() {
         @Override
         public JsonElement serialize(LocalDate src, Type typeOfSrc, JsonSerializationContext context) {
@@ -53,29 +52,34 @@
             .registerTypeAdapter(LocalDate.class, localDateSerializer)
             .registerTypeAdapter(LocalTime.class, localTimeSerializer)
             .create();
-
     StringBuilder categoriesJson = new StringBuilder("[");
     if (categorias != null) {
         for (int i = 0; i < categorias.size(); i++) {
             Categoria cat = categorias.get(i);
             String corHex = cat.getCorHex() != null ? cat.getCorHex() : "#0056b3";
-            String iconeCss = cat.getIconeCss() != null ? cat.getIconeCss() : "fa-solid fa-calendar";
+            String iconeCss = cat.getIconeCss() != null ?
+                    cat.getIconeCss() : "fa-solid fa-calendar";
 
             if (cat.getNome() != null) {
                 if (cat.getNome().toLowerCase().contains("prova")) {
-                    corHex = cat.getCorHex() != null ? cat.getCorHex() : "#176B87";
+                    corHex = cat.getCorHex() != null ?
+                            cat.getCorHex() : "#176B87";
                     iconeCss = cat.getIconeCss() != null ? cat.getIconeCss() : "fa-solid fa-file-lines";
                 } else if (cat.getNome().toLowerCase().contains("aula")) {
-                    corHex = cat.getCorHex() != null ? cat.getCorHex() : "#3AA76D";
+                    corHex = cat.getCorHex() != null ?
+                            cat.getCorHex() : "#3AA76D";
                     iconeCss = cat.getIconeCss() != null ? cat.getIconeCss() : "fa-solid fa-chalkboard";
                 } else if (cat.getNome().toLowerCase().contains("olimpíada")) {
-                    corHex = cat.getCorHex() != null ? cat.getCorHex() : "#E3B23C";
+                    corHex = cat.getCorHex() != null ?
+                            cat.getCorHex() : "#E3B23C";
                     iconeCss = cat.getIconeCss() != null ? cat.getIconeCss() : "fa-solid fa-medal";
                 } else if (cat.getNome().toLowerCase().contains("reunião")) {
-                    corHex = cat.getCorHex() != null ? cat.getCorHex() : "#6F2DA8";
+                    corHex = cat.getCorHex() != null ?
+                            cat.getCorHex() : "#6F2DA8";
                     iconeCss = cat.getIconeCss() != null ? cat.getIconeCss() : "fa-solid fa-users";
                 } else if (cat.getNome().toLowerCase().contains("importante")) {
-                    corHex = cat.getCorHex() != null ? cat.getCorHex() : "#dc3545";
+                    corHex = cat.getCorHex() != null ?
+                            cat.getCorHex() : "#dc3545";
                     iconeCss = cat.getIconeCss() != null ? cat.getIconeCss() : "fa-solid fa-triangle-exclamation";
                 }
             }
@@ -89,7 +93,6 @@
     }
     categoriesJson.append("]");
     pageContext.setAttribute("categoriesJson", categoriesJson.toString());
-
     String eventsJson = gson.toJson(eventos);
     pageContext.setAttribute("eventsJson", eventsJson);
 
@@ -238,9 +241,15 @@
             </div>
 
             <div id="viewSemanal" class="view-content ${currentView == 'semanal' ? 'view-active' : 'view-hidden'}">
-                <h2 style="color: #00d2ff;">Visualização Semanal</h2>
-                <div id="weeklyGrid">
-                    <p>Funcionalidade de Visualização Semanal em desenvolvimento...</p>
+                <div class="weekly-controls">
+                    <button id="prevWeek" class="nav-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                    <h2 id="weekRangeLabel">Semana</h2>
+                    <button id="nextWeek" class="nav-btn"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                
+                <div class="weekly-wrapper">
+                    <div id="weeklyGrid" class="weekly-grid">
+                    </div>
                 </div>
             </div>
 
