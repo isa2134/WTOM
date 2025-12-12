@@ -618,9 +618,9 @@ public class InitDB {
         }
     }
 
-    public void initConfiguracoesUsuario() throws SQLException {
+    public void initConfiguracaoUsuario() throws SQLException {
         String sql = """
-        CREATE TABLE IF NOT EXISTS configuracoes_usuario (
+        CREATE TABLE IF NOT EXISTS configuracao_usuario (
             id_usuario BIGINT PRIMARY KEY,
             verificacao_duas_etapas BOOLEAN DEFAULT FALSE,
             sem_login_automatico BOOLEAN DEFAULT FALSE,
@@ -712,7 +712,7 @@ public class InitDB {
             initPremiacoesPadrao();
             initOlimpiadasPadrao();
             initLogAuditoria();
-            initConfiguracoesUsuario();
+            initConfiguracaoUsuario();
             initCategoria();
             initEvento();
 
