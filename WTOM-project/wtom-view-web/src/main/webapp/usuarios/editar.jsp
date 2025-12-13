@@ -1,5 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="/core/menu.jsp"%>
+<%@page import="wtom.model.domain.Usuario"%>
 
 <%
     String erro = (String) request.getAttribute("erro");
@@ -9,13 +10,13 @@
 
     if (idParam != null && !idParam.isEmpty()) {
         Long usuarioId = Long.parseLong(idParam);
-        usuario = new wtom.model.service.UsuarioService().buscarPorId(usuarioId);
+        usuarioHeader = new wtom.model.service.UsuarioService().buscarPorId(usuarioId); 
 
-        if (usuario != null) {
-            if (usuario.getTipo() != null && usuario.getTipo().name().equals("ALUNO")) {
-                aluno = new wtom.model.service.AlunoService().buscarAlunoPorUsuario(usuario.getId());
-            } else if (usuario.getTipo() != null && usuario.getTipo().name().equals("PROFESSOR")) {
-                professor = new wtom.model.service.ProfessorService().buscarProfessorPorUsuario(usuario.getId());
+        if (usuarioHeader != null) {
+            if (usuarioHeader.getTipo() != null && usuarioHeader.getTipo().name().equals("ALUNO")) { 
+                aluno = new wtom.model.service.AlunoService().buscarAlunoPorUsuario(usuarioHeader.getId()); 
+            } else if (usuarioHeader.getTipo() != null && usuarioHeader.getTipo().name().equals("PROFESSOR")) {
+                professor = new wtom.model.service.ProfessorService().buscarProfessorPorUsuario(usuarioHeader.getId());
             }
         }
     }
@@ -30,34 +31,34 @@
                 <div class="alert alert-danger"><%= erro %></div>
             <% } %>
 
-            <% if (usuario == null) { %>
+            <% if (usuarioHeader == null) { %>
                 <p>Usuário não encontrado.</p>
             <% } else { %>
                 <form action="${pageContext.request.contextPath}/EditarUsuarioController" method="post">
-                    <input type="hidden" name="id" value="<%= usuario.getId() %>">
+                    <input type="hidden" name="id" value="<%= usuarioHeader.getId() %>">
 
                     <label>Nome</label>
-                    <input type="text" name="nome" value="<%= usuario.getNome() %>" required>
+                    <input type="text" name="nome" value="<%= usuarioHeader.getNome() %>" required>
 
                     <label>CPF</label>
-                    <input type="text" name="cpf" value="<%= usuario.getCpf() %>" disabled>
+                    <input type="text" name="cpf" value="<%= usuarioHeader.getCpf() %>" disabled>
 
                     <label>E-mail</label>
-                    <input type="email" name="email" value="<%= usuario.getEmail() %>" required>
+                    <input type="email" name="email" value="<%= usuarioHeader.getEmail() %>" required>
 
                     <label>Telefone</label>
-                    <input type="text" name="telefone" value="<%= usuario.getTelefone() %>">
+                    <input type="text" name="telefone" value="<%= usuarioHeader.getTelefone() %>">
 
                     <label>Login</label>
-                    <input type="text" name="login" value="<%= usuario.getLogin() %>" disabled>
+                    <input type="text" name="login" value="<%= usuarioHeader.getLogin() %>" disabled>
 
                     <label>Senha (deixar em branco para manter)</label>
                     <input type="password" name="senha">
 
                     <label>Data de Nascimento</label>
-                    <input type="date" name="dataDeNascimento" value="<%= usuario.getDataDeNascimento() != null ? usuario.getDataDeNascimento().toString() : "" %>" required>
+                    <input type="date" name="dataDeNascimento" value="<%= usuarioHeader.getDataDeNascimento() != null ? usuarioHeader.getDataDeNascimento().toString() : "" %>" required>
 
-                    <% if (usuario.getTipo() != null && usuario.getTipo().name().equals("ALUNO")) { %>
+                    <% if (usuarioHeader.getTipo() != null && usuarioHeader.getTipo().name().equals("ALUNO")) { %>
                         <label>Curso</label>
                         <select name="curso" required>
                             <option value="">Selecione um curso</option>
@@ -88,14 +89,14 @@
                             <% } %>
                         </select>
 
-                    <% } else if (usuario.getTipo() != null && usuario.getTipo().name().equals("PROFESSOR")) { %>
+                    <% } else if (usuarioHeader.getTipo() != null && usuarioHeader.getTipo().name().equals("PROFESSOR")) { %>
                         <label>Área</label>
                         <input type="text" name="area" value="<%= professor != null ? professor.getArea() : "" %>">
                     <% } %>
 
                     <div class="login-actions">
                         <button type="submit" class="btn">Salvar</button>
-                        <a href="${pageContext.request.contextPath}/usuarios/perfil.jsp?id=<%= usuario.getId() %>" class="btn ghost">Cancelar</a>
+                        <a href="${pageContext.request.contextPath}/usuarios/perfil.jsp?id=<%= usuarioHeader.getId() %>" class="btn ghost">Cancelar</a>
                     </div>
                 </form>
             <% } %>
@@ -103,10 +104,10 @@
     </div>
 </div>
 
-<div id="edit-confirm-modal" 
-     class="modal hidden" 
-     aria-modal="true" 
-     role="dialog" 
+<div id="edit-confirm-modal"
+     class="modal hidden"
+     aria-modal="true"
+     role="dialog"
      aria-labelledby="edit-modal-title">
 
     <div class="modal-backdrop" aria-hidden="true"></div>

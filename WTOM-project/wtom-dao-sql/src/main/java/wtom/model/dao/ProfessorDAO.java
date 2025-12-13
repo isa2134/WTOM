@@ -41,7 +41,7 @@ public class ProfessorDAO {
         List<Professor> professores = new ArrayList<>();
         String sql = """
             SELECT p.id AS p_id, p.area,
-                   u.id AS u_id, u.login, u.cpf, u.nome, u.telefone, u.email, u.data_nascimento, u.senha, u.tipo
+                    u.id AS u_id, u.login, u.cpf, u.nome, u.telefone, u.email, u.data_nascimento, u.senha, u.tipo
             FROM professor p
             JOIN usuario u ON u.id = p.usuario_id
             """;
@@ -56,17 +56,25 @@ public class ProfessorDAO {
                 usuario.setNome(rs.getString("nome"));
                 usuario.setTelefone(rs.getString("telefone"));
                 usuario.setEmail(rs.getString("email"));
+                
                 java.sql.Date dataSql = rs.getDate("data_nascimento");
-                if (dataSql != null) usuario.setDataDeNascimento(dataSql.toLocalDate());
+                if (dataSql != null) {
+                    usuario.setDataDeNascimento(dataSql.toLocalDate());
+                } else {
+                    usuario.setDataDeNascimento(null);
+                }
+                
                 usuario.setSenha(rs.getString("senha"));
+                
                 String tipoStr = rs.getString("tipo");
                 if (tipoStr != null) {
-                    usuario.setTipo(wtom.model.domain.util.UsuarioTipo.valueOf(tipoStr));
+                    usuario.setTipo(wtom.model.domain.util.UsuarioTipo.valueOf(tipoStr)); 
                 }
 
-                Professor p = new Professor(usuario);
-                p.setId(rs.getLong("p_id"));
+                Professor p = new Professor(usuario); 
+                p.setId(rs.getLong("p_id")); 
                 p.setArea(rs.getString("area"));
+
                 professores.add(p);
             }
         } catch (SQLException e) {
@@ -75,7 +83,6 @@ public class ProfessorDAO {
 
         return professores;
     }
-
 
     public void atualizar(Professor professor) throws PersistenciaException {
         String sql = "UPDATE professor SET area = ? WHERE id = ?";

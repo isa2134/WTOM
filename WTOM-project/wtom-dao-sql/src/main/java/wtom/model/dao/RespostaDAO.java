@@ -14,14 +14,15 @@ public class RespostaDAO {
     private static RespostaDAO instance;
 
     public static RespostaDAO getInstance() {
-        if (instance == null) instance = new RespostaDAO();
+        if (instance == null) {
+            instance = new RespostaDAO();
+        }
         return instance;
     }
 
     public void inserir(Resposta r) throws PersistenciaException {
         String sql = "INSERT INTO resposta (id_duvida, id_professor, conteudo, data) VALUES (?, ?, ?, ?)";
-        try (Connection con = ConexaoDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setLong(1, r.getIdDuvida());
             ps.setLong(2, r.getIdProfessor());
@@ -30,7 +31,9 @@ public class RespostaDAO {
 
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) r.setId(rs.getLong(1));
+                if (rs.next()) {
+                    r.setId(rs.getLong(1));
+                }
             }
 
         } catch (SQLException e) {
@@ -40,13 +43,12 @@ public class RespostaDAO {
 
     public List<Resposta> listarPorDuvida(Long idDuvida) throws PersistenciaException {
         List<Resposta> lista = new ArrayList<>();
-        String sql = "SELECT r.*, u.nome AS nomeAutor " +
-                     "FROM resposta r " +
-                     "JOIN usuario u ON r.id_professor = u.id " +
-                     "WHERE r.id_duvida=? " +
-                     "ORDER BY r.data";
-        try (Connection con = ConexaoDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        String sql = "SELECT r.*, u.nome AS nomeAutor "
+                + "FROM resposta r "
+                + "JOIN usuario u ON r.id_professor = u.id "
+                + "WHERE r.id_duvida=? "
+                + "ORDER BY r.data";
+        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, idDuvida);
             try (ResultSet rs = ps.executeQuery()) {
@@ -68,8 +70,10 @@ public class RespostaDAO {
         r.setIdProfessor(rs.getLong("id_professor"));
         r.setConteudo(rs.getString("conteudo"));
         Timestamp ts = rs.getTimestamp("data");
-        if (ts != null) r.setData(ts.toLocalDateTime());
-        r.setNomeAutor(rs.getString("nomeAutor")); 
+        if (ts != null) {
+            r.setData(ts.toLocalDateTime());
+        }
+        r.setNomeAutor(rs.getString("nomeAutor"));
         return r;
     }
 }

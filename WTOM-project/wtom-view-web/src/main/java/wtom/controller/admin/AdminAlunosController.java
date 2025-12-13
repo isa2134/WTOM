@@ -31,8 +31,17 @@ public class AdminAlunosController extends HttpServlet {
 
         try {
             List<Aluno> alunos = alunoService.listarTodos();
+            
+            System.out.println("DEBUG: AlunosService.listarTodos() foi chamado.");
+            if (alunos != null) {
+                System.out.println("DEBUG: Tamanho da lista de alunos: " + alunos.size());
+            } else {
+                System.out.println("DEBUG: Lista de alunos é NULL.");
+            }
+
             req.setAttribute("alunos", alunos);
         } catch (NegocioException e) {
+            System.err.println("ERRO DE NEGÓCIO ao listar alunos: " + e.getMessage());
             req.setAttribute("erro", e.getMessage());
         }
 
