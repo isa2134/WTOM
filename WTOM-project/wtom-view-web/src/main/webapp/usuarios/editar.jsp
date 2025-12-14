@@ -34,8 +34,26 @@
             <% if (usuarioHeader == null) { %>
                 <p>Usuário não encontrado.</p>
             <% } else { %>
-                <form action="${pageContext.request.contextPath}/EditarUsuarioController" method="post">
+                <!-- 🔥 ALTERAÇÃO: enctype para permitir upload -->
+                <form action="${pageContext.request.contextPath}/EditarUsuarioController"
+                      method="post"
+                      enctype="multipart/form-data">
+
                     <input type="hidden" name="id" value="<%= usuarioHeader.getId() %>">
+
+                    <!-- 🔥 NOVO: Foto de perfil -->
+                    <label>Foto de Perfil</label>
+
+                    <% if (usuarioHeader.getFotoPerfil() != null && !usuarioHeader.getFotoPerfil().isBlank()) { %>
+                        <div style="margin-bottom:10px;">
+                            <img src="<%= request.getContextPath() + usuarioHeader.getFotoPerfil() %>"
+                                 style="width:80px;height:80px;border-radius:50%;object-fit:cover;">
+                        </div>
+                    <% } %>
+
+                    <input type="file" name="foto" accept="image/*">
+
+                    <hr style="margin:20px 0">
 
                     <label>Nome</label>
                     <input type="text" name="nome" value="<%= usuarioHeader.getNome() %>" required>
@@ -56,7 +74,10 @@
                     <input type="password" name="senha">
 
                     <label>Data de Nascimento</label>
-                    <input type="date" name="dataDeNascimento" value="<%= usuarioHeader.getDataDeNascimento() != null ? usuarioHeader.getDataDeNascimento().toString() : "" %>" required>
+                    <input type="date" name="dataDeNascimento"
+                           value="<%= usuarioHeader.getDataDeNascimento() != null
+                               ? usuarioHeader.getDataDeNascimento().toString()
+                               : "" %>" required>
 
                     <% if (usuarioHeader.getTipo() != null && usuarioHeader.getTipo().name().equals("ALUNO")) { %>
                         <label>Curso</label>
@@ -72,7 +93,9 @@
                                 };
                                 for (String c : cursos) {
                             %>
-                                <option value="<%= c %>" <%= c.equals(cursoSel) ? "selected" : "" %>><%= c %></option>
+                                <option value="<%= c %>" <%= c.equals(cursoSel) ? "selected" : "" %>>
+                                    <%= c %>
+                                </option>
                             <% } %>
                         </select>
 
@@ -85,18 +108,22 @@
                                 String[] series = {"1º Ano", "2º Ano", "3º Ano"};
                                 for (String s : series) {
                             %>
-                                <option value="<%= s %>" <%= s.equals(serieSel) ? "selected" : "" %>><%= s %></option>
+                                <option value="<%= s %>" <%= s.equals(serieSel) ? "selected" : "" %>>
+                                    <%= s %>
+                                </option>
                             <% } %>
                         </select>
 
                     <% } else if (usuarioHeader.getTipo() != null && usuarioHeader.getTipo().name().equals("PROFESSOR")) { %>
                         <label>Área</label>
-                        <input type="text" name="area" value="<%= professor != null ? professor.getArea() : "" %>">
+                        <input type="text" name="area"
+                               value="<%= professor != null ? professor.getArea() : "" %>">
                     <% } %>
 
                     <div class="login-actions">
                         <button type="submit" class="btn">Salvar</button>
-                        <a href="${pageContext.request.contextPath}/usuarios/perfil.jsp?id=<%= usuarioHeader.getId() %>" class="btn ghost">Cancelar</a>
+                        <a href="${pageContext.request.contextPath}/usuarios/perfil.jsp?id=<%= usuarioHeader.getId() %>"
+                           class="btn ghost">Cancelar</a>
                     </div>
                 </form>
             <% } %>
@@ -131,7 +158,7 @@
         </div>
     </div>
 </div>
-        
+
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const form = document.querySelector("form");

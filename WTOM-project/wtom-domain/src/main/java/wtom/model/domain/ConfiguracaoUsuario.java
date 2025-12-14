@@ -3,8 +3,12 @@ package wtom.model.domain;
 public class ConfiguracaoUsuario {
 
     private int idUsuario;
+
+    private boolean permitirCadastro;
+
     private boolean verificacaoDuasEtapas;
     private boolean semLoginAutomatico;
+
     private String recPergunta1;
     private String recResposta1;
     private String recPergunta2;
@@ -34,6 +38,14 @@ public class ConfiguracaoUsuario {
 
     public void setIdUsuario(int idUsuario) {
         this.idUsuario = idUsuario;
+    }
+
+    public boolean isPermitirCadastro() {
+        return permitirCadastro;
+    }
+
+    public void setPermitirCadastro(boolean permitirCadastro) {
+        this.permitirCadastro = permitirCadastro;
     }
 
     public boolean isVerificacaoDuasEtapas() {
@@ -132,7 +144,6 @@ public class ConfiguracaoUsuario {
         this.uiFonteMaior = v;
     }
 
-    // VERIFICAÇÃO PRINCIPAL:
     public boolean isUiAltoContraste() {
         return uiAltoContraste;
     }

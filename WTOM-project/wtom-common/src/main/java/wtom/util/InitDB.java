@@ -69,32 +69,40 @@ public class InitDB {
         }
     }
 
-    public void initUsuario() throws SQLException {
-        String sql = """
-            CREATE TABLE IF NOT EXISTS usuario (
-                id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                cpf VARCHAR(14) NOT NULL UNIQUE,
-                nome VARCHAR(100) NOT NULL,
-                telefone VARCHAR(20),
-                email VARCHAR(120) UNIQUE NOT NULL,
-                data_nascimento DATE,
-                senha VARCHAR(100) NOT NULL,
-                login VARCHAR(50) UNIQUE NOT NULL,
-                tipo ENUM('ADMINISTRADOR', 'PROFESSOR', 'ALUNO') NOT NULL,
-                
-                bloqueado BOOLEAN DEFAULT FALSE,
-                tentativas_login INT DEFAULT 0,
-                data_bloqueio TIMESTAMP NULL,  
-                
-                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-            );
-        """;
+   public void initUsuario() throws SQLException {
+    String sql = """
+        CREATE TABLE IF NOT EXISTS usuario (
+            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            cpf VARCHAR(14) NOT NULL UNIQUE,
+            nome VARCHAR(100) NOT NULL,
+            telefone VARCHAR(20),
+            email VARCHAR(120) UNIQUE NOT NULL,
+            data_nascimento DATE,
+            senha VARCHAR(100) NOT NULL,
+            login VARCHAR(50) UNIQUE NOT NULL,
+            tipo ENUM('ADMINISTRADOR', 'PROFESSOR', 'ALUNO') NOT NULL,
+            
+            foto_perfil VARCHAR(255) NULL,
+            
+            bloqueado BOOLEAN DEFAULT FALSE,
+            tentativas_login INT DEFAULT 0,
+            data_bloqueio TIMESTAMP NULL,  
+            
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        );
+    """;
 
-        try (Statement st = con.createStatement()) {
-            st.executeUpdate(sql);
+    try (Statement st = con.createStatement()) {
+        st.executeUpdate(sql);
+
+        try {
+            st.executeUpdate("ALTER TABLE usuario ADD COLUMN foto_perfil VARCHAR(255) NULL");
+        } catch (SQLException e) {
         }
     }
+}
+
 
     public void initAviso() throws SQLException {
         String sql = """
