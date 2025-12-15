@@ -482,4 +482,40 @@ textarea, select {
     }
     
     
+.card-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.user-card {
+    background: var(--surface);
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 180px;
+    border: 1px solid rgba(15,76,92,0.05);
+}
+
+.user-info h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.2rem;
+    color: var(--accent);
+}
+
+.user-info p {
+    margin: 3px 0;
+    font-size: 0.95rem;
+    color: #3a4a50;
+}
+
+.user-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
 }

@@ -80,6 +80,7 @@ public class AlunoDAO {
         return alunos;
     }
 
+
     public void atualizar(Aluno aluno) throws PersistenciaException {
         String sql = "UPDATE aluno SET curso = ?, pontuacao = ?, serie = ? WHERE id = ?";
         try (Connection con = ConexaoDB.getConnection();

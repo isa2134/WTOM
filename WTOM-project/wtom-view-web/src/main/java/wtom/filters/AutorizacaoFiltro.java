@@ -20,16 +20,16 @@ public class AutorizacaoFiltro implements Filter {
             caminho.contains("/css/") ||
             caminho.contains("/js/") ||
             caminho.contains("/images/") ||
+            caminho.contains("/favicon") ||
             caminho.contains("/logincontroller") ||
             caminho.contains("/cadastrousuariocontroller") ||
-            caminho.contains("/recuperarsenha") ||
-            caminho.contains("/favicon")
+            caminho.contains("/recuperarsenha")
         ) {
             chain.doFilter(request, response);
             return;
         }
 
-        Object usuario = (session != null) ? session.getAttribute("usuario") : null;
+        Object usuario = (session != null) ? session.getAttribute("usuarioLogado") : null;
 
         if (usuario == null) {
             res.sendRedirect(req.getContextPath() + "/index.jsp");

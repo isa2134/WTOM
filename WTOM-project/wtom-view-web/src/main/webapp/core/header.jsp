@@ -46,5 +46,10 @@
                 <a href="${pageContext.request.contextPath}/notificacao"> <span>Notificações</span></a>
                 <a href="${pageContext.request.contextPath}/reuniao?acao=listar">Reuniões Online</a>
                 <a href="${pageContext.request.contextPath}/usuarios/perfil.jsp"> <span>Perfil</span></a>
+                <%-- Botões exclusivos do ADMIN --%> 
+                <c:if test="${usuario != null && usuario.tipo != null && usuario.tipo.name() == 'ADMINISTRADOR'}"> 
+                    <a href="${pageContext.request.contextPath}/AdminAlunosController"><span>Alunos</span></a> 
+                    <a href="${pageContext.request.contextPath}/AdminProfessoresController"><span>Professores</span></a> 
+                </c:if>
             </nav>
         </aside>
