@@ -6,7 +6,6 @@
 <%@page import="wtom.model.domain.util.UsuarioTipo" %>
 
 <%
-
     Usuario usuarioHeader = (Usuario) session.getAttribute("usuario");
     String nomeUsuario = (usuarioHeader != null && usuarioHeader.getNome() != null) ? usuarioHeader.getNome() : "Usuário";
     String inicial = (nomeUsuario.length() > 0) ? nomeUsuario.substring(0, 1) : "U";
@@ -288,16 +287,20 @@
                             <i class="fa-solid fa-right-from-bracket"></i> <span>Sair</span>
                         </a>
                     </div>
-                    <div class="user-info-box">
-                        <div class="user-avatar">
-                            <%= inicial%>
-                        </div>
-                        <div class="user-details">
-                            <span class="user-name"><%= nomeUsuario%></span>
-                            <span class="user-role">${usuario.tipo}</span>
-                        </div>
-                        <i class="fa-solid fa-chevron-up" style="font-size: 10px; margin-left: auto;"></i>
+                    <div class="user-avatar">
+                        <% if (usuarioHeader.getFotoPerfil() != null && !usuarioHeader.getFotoPerfil().isBlank()) {%>
+                        <img src="<%= request.getContextPath() + usuarioHeader.getFotoPerfil()%>">
+                        <% } else {%>
+                        <%= usuarioHeader.getNome().substring(0, 1).toUpperCase()%>
+                        <% }%>
                     </div>
+
+                    <div class="user-details">
+                        <span class="user-name"><%= nomeUsuario%></span>
+                        <span class="user-role">${usuario.tipo}</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-up" style="font-size: 10px; margin-left: auto;"></i>
+                </div>
                 </div>
             </nav>
         </aside>

@@ -219,14 +219,6 @@
         <h3><%= usuarioHeader.getNome() %></h3>
         <p><%= usuarioHeader.getTipo() %></p>
 
-        <!-- 🔥 UPLOAD DE IMAGEM -->
-        <form class="upload-form"
-              action="${pageContext.request.contextPath}/usuarios/perfil"
-              method="post"
-              enctype="multipart/form-data">
-            <input type="file" name="foto" accept="image/*" required>
-            <button type="submit">Atualizar foto</button>
-        </form>
     </div>
 
     <div class="profile-right">
