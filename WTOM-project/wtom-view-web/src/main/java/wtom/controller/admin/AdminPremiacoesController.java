@@ -6,7 +6,6 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-
 import wtom.model.domain.Premiacao;
 import wtom.model.domain.Usuario;
 import wtom.model.domain.Aluno;
@@ -141,7 +140,6 @@ public class AdminPremiacoesController extends HttpServlet {
             if (aluno != null && aluno.getId() != null) {
                 resp.sendRedirect(req.getContextPath() + "/AdminPremiacoesController?idAluno=" + aluno.getId());
             } else {
-                // se não achou, volta para lista de alunos
                 resp.sendRedirect(req.getContextPath() + "/AdminAlunosController");
             }
 

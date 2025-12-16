@@ -4,7 +4,6 @@ import wtom.dao.exception.PersistenciaException;
 import wtom.model.dao.PremiacaoDAO;
 import wtom.model.domain.Premiacao;
 import wtom.model.domain.Olimpiada;
-import wtom.model.domain.util.TipoPremio;
 import wtom.model.service.exception.NegocioException;
 
 import java.util.List;
@@ -35,6 +34,7 @@ public class PremiacaoService {
         }
 
         validarPremiacao(p);
+
         recalcularPeso(p);
 
         try {
@@ -125,11 +125,11 @@ public class PremiacaoService {
             throw new NegocioException("Multiplicador do prêmio está incorreto.");
     }
 
+   
     private void recalcularPeso(Premiacao p) {
         double peso = p.getOlimpiada().getPesoOlimpiada() *
-                       p.getTipoPremio().getMultiplicador();
+                      p.getTipoPremio().getMultiplicador();
 
         p.setPesoFinalForDao(peso);
     }
 }
-

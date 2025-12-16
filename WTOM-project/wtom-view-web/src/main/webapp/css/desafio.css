@@ -1,0 +1,132 @@
+.page *, .page *::before, .page *::after {
+    box-sizing: border-box;
+}
+
+.enunciado-img {
+    max-width: 500px;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.enunciado-img:hover {
+    opacity: 0.8;
+}
+
+.desafio-titulo {
+    font-size: 2rem;
+    color: var(--accent);
+    margin-bottom: 20px;
+}
+
+.enunciado-area {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: 20px 0;
+}
+
+.titulo-alternativas {
+    margin-top: 30px;
+    font-size: 1.5rem;
+    color: var(--accent);
+}
+
+.alternativas-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.alternativa-box {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    width: 100%;
+    padding: 12px 15px;
+    background-color: #fafafa;
+    cursor: pointer;
+    transition: 0.2s;
+    min-height: 55px;
+    max-width: 100%;
+}
+
+.alternativa-box:hover {
+    background-color: #f0f0f0;
+    border-color: var(--accent);
+}
+
+.alternativa-box input[type="radio"] {
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+.alternativa-texto {
+    display: block;
+    margin-top: 2px;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.resolucao-area {
+    margin-top: 35px;
+    padding: 20px;
+    border-left: 3px solid var(--accent);
+    background: #f8f8f8;
+}
+
+.data-postagem {
+    font-size: 0.9rem;
+    color: #777;
+    margin-top: 40px;
+}
+
+.alternativa-box.correct {
+    border-color: #2e7d32; 
+    background: #e8f5e9;
+    color: #0b3e1a;
+}
+.alternativa-box.incorrect {
+    border-color: #d32f2f; 
+    background: #ffebee;
+    color: #5a1010;
+}
+.alternativa-box.neutral {
+    background: #fafafa;
+    border-color: #ddd;
+}
+.alternativa-box input[type="radio"][disabled] {
+    cursor: default;
+}
+.badge { 
+    padding: 6px 8px; 
+    border-radius: 6px; 
+    font-weight:600; 
+}
+.badge-success { 
+    background:#e8f5e9; 
+    color:#2e7d32; 
+    border:1px solid #c8e6c9; 
+}
+.badge-danger { 
+    background:#ffebee; 
+    color:#b71c1c; 
+    border:1px solid #ffcdd2; 
+}
+
+.table-submissoes tbody tr:hover { 
+    background:#fafafa;
+}
+
+.badge-inativo {
+    background-color: red;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.85em;
+}
