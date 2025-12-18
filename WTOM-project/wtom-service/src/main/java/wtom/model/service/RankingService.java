@@ -2,26 +2,20 @@ package wtom.model.service;
 
 import wtom.model.dao.RankingPremiacaoDAO;
 import wtom.model.dao.RankingDesafioDAO;
-import wtom.model.domain.RankingPremiacaoDTO;
-import wtom.model.domain.RankingDesafioDTO;
+import wtom.model.domain.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RankingService {
 
-    private final RankingPremiacaoDAO premiacaoDAO;
-    private final RankingDesafioDAO desafioDAO;
+    private final RankingPremiacaoDAO premiacaoDAO = new RankingPremiacaoDAO();
+    private final RankingDesafioDAO desafioDAO = new RankingDesafioDAO();
 
-    public RankingService() {
-        this.premiacaoDAO = new RankingPremiacaoDAO();
-        this.desafioDAO = new RankingDesafioDAO();
-    }
-
-    public List<RankingPremiacaoDTO> gerarRankingPremiacoes() {
+    public List<RankingDTO> buscarRankingOlimpiadas(boolean verTodos) {
 
         List<Object[]> dados = premiacaoDAO.buscarRankingPremiacoes();
-        List<RankingPremiacaoDTO> ranking = new ArrayList<>();
+        List<RankingDTO> ranking = new ArrayList<>();
 
         int posicao = 1;
 
@@ -31,18 +25,19 @@ public class RankingService {
                     (Long) linha[0],
                     (String) linha[1],
                     (String) linha[2],
-                    (Double) linha[3],
-                    (Integer) linha[4]
+                    (String) linha[3],
+                    linha[4] != null ? (Double) linha[4] : 0.0,
+                    linha[5] != null ? (Integer) linha[5] : 0
             ));
         }
 
         return ranking;
     }
 
-    public List<RankingDesafioDTO> gerarRankingDesafios() {
+    public List<RankingDTO> buscarRankingDesafios(boolean verTodos) {
 
         List<Object[]> dados = desafioDAO.buscarRankingDesafios();
-        List<RankingDesafioDTO> ranking = new ArrayList<>();
+        List<RankingDTO> ranking = new ArrayList<>();
 
         int posicao = 1;
 
@@ -52,11 +47,13 @@ public class RankingService {
                     (Long) linha[0],
                     (String) linha[1],
                     (String) linha[2],
-                    (Integer) linha[3],
-                    (Integer) linha[4]
+                    (String) linha[3],
+                    linha[4] != null ? (Integer) linha[4] : 0,
+                    linha[5] != null ? (Integer) linha[5] : 0
             ));
         }
 
         return ranking;
     }
+
 }

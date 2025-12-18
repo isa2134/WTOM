@@ -6,12 +6,15 @@ public abstract class RankingDTO {
     protected Long alunoId;
     protected String nomeAluno;
     protected String curso;
+    protected String fotoPerfil;
 
-    protected RankingDTO(int posicao, Long alunoId, String nomeAluno, String curso) {
+    protected RankingDTO(int posicao, Long alunoId, String nomeAluno,
+            String curso, String fotoPerfil) {
         this.posicao = posicao;
         this.alunoId = alunoId;
         this.nomeAluno = nomeAluno;
         this.curso = curso;
+        this.fotoPerfil = fotoPerfil;
     }
 
     public int getPosicao() {
@@ -29,5 +32,9 @@ public abstract class RankingDTO {
     public String getCurso() {
         return curso;
     }
-}
 
+    public String getFotoPerfil() {
+        return fotoPerfil;
+    }
+
+}

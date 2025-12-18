@@ -6,18 +6,14 @@ public class RankingPremiacaoDTO extends RankingDTO {
     private int totalPremiacoes;
 
     public RankingPremiacaoDTO(int posicao, Long alunoId, String nomeAluno,
-            String curso, double pontuacao, int totalPremiacoes) {
+            String curso, String fotoPerfil,
+            double pontuacao, int totalPremiacoes) {
 
-        super(posicao, alunoId, nomeAluno, curso);
+        super(posicao, alunoId, nomeAluno, curso, fotoPerfil);
         this.pontuacao = pontuacao;
         this.totalPremiacoes = totalPremiacoes;
     }
 
-    public double getPontuacao() {
-        return pontuacao;
-    }
-
-    public int getTotalPremiacoes() {
-        return totalPremiacoes;
-    }
+    public double getPontuacao() { return pontuacao; }
+    public int getTotalPremiacoes() { return totalPremiacoes; }
 }

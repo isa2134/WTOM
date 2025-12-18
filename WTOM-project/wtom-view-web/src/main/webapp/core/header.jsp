@@ -223,7 +223,7 @@
                         <i class="fa-solid fa-trophy"></i> <span>Olimpíadas</span>
                     </a>
 
-                    <a href="${pageContext.request.contextPath}/core/ranking/listar.jsp"
+                    <a href="${pageContext.request.contextPath}/core/ranking/ranking.jsp"
                        class="${pageContext.request.servletPath.contains('ranking') ? 'active' : ''}">
                         <i class="fa-solid fa-chart-line"></i> <span>Ranking</span>
                     </a>

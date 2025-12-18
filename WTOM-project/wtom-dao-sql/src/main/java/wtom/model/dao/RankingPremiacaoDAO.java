@@ -16,16 +16,17 @@ public class RankingPremiacaoDAO {
 
         String sql = """
             SELECT
-                a.id AS aluno_id,
+                u.id AS aluno_id,
                 u.nome AS nome_aluno,
                 a.curso AS curso,
-                SUM(p.peso_final) AS pontuacao,
-                COUNT(p.id) AS total_premiacoes
-            FROM premiacao p
-            JOIN usuario u ON u.id = p.usuario_id
+                u.foto_perfil AS foto_perfil,
+                COALESCE(SUM(p.peso_final), 0) AS pontuacao,
+                COUNT(DISTINCT p.id) AS total_premiacoes
+            FROM usuario u
             JOIN aluno a ON a.usuario_id = u.id
-            GROUP BY a.id, u.nome, a.curso
-            ORDER BY pontuacao DESC
+            LEFT JOIN premiacao p ON p.usuario_id = u.id
+            GROUP BY u.id, u.nome, a.curso, u.foto_perfil
+            ORDER BY pontuacao DESC, nome_aluno ASC
         """;
 
         try (
@@ -34,16 +35,15 @@ public class RankingPremiacaoDAO {
             ResultSet rs = ps.executeQuery()
         ) {
             while (rs.next()) {
-
                 ranking.add(new Object[]{
                     rs.getLong("aluno_id"),
                     rs.getString("nome_aluno"),
                     rs.getString("curso"),
+                    rs.getString("foto_perfil"),
                     rs.getDouble("pontuacao"),
                     rs.getInt("total_premiacoes")
                 });
             }
-
         } catch (Exception e) {
             throw new RuntimeException("Erro ao buscar ranking de premiações", e);
         }

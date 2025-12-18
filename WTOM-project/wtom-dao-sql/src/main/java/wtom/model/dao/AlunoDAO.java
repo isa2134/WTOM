@@ -14,8 +14,7 @@ public class AlunoDAO {
 
     public Aluno inserirERetornar(Aluno aluno) throws PersistenciaException {
         String sql = "INSERT INTO aluno (usuario_id, curso, pontuacao, serie) VALUES (?, ?, ?, ?)";
-        try (Connection con = ConexaoDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setLong(1, aluno.getUsuario().getId());
             ps.setString(2, aluno.getCurso());
@@ -49,9 +48,7 @@ public class AlunoDAO {
             LEFT JOIN usuario u ON u.id = a.usuario_id
             """;
 
-        try (Connection con = ConexaoDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Usuario usuario = new Usuario(rs.getString("login"), rs.getString("cpf"));
@@ -60,7 +57,9 @@ public class AlunoDAO {
                 usuario.setTelefone(rs.getString("telefone"));
                 usuario.setEmail(rs.getString("email"));
                 java.sql.Date dataSql = rs.getDate("data_nascimento");
-                if (dataSql != null) usuario.setDataDeNascimento(dataSql.toLocalDate());
+                if (dataSql != null) {
+                    usuario.setDataDeNascimento(dataSql.toLocalDate());
+                }
                 usuario.setSenha(rs.getString("senha"));
                 String tipoStr = rs.getString("tipo");
                 if (tipoStr != null) {
@@ -82,11 +81,9 @@ public class AlunoDAO {
         return alunos;
     }
 
-
     public void atualizar(Aluno aluno) throws PersistenciaException {
         String sql = "UPDATE aluno SET curso = ?, pontuacao = ?, serie = ? WHERE id = ?";
-        try (Connection con = ConexaoDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, aluno.getCurso());
             ps.setInt(2, aluno.getPontuacao());
@@ -99,10 +96,27 @@ public class AlunoDAO {
         }
     }
 
+    public void adicionarPontuacao(Long usuarioId, int pontos) {
+
+        String sql = """
+        UPDATE aluno
+        SET pontuacao = COALESCE(pontuacao, 0) + ?
+        WHERE usuario_id = ?
+    """;
+
+        try (
+                Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, pontos);
+            ps.setLong(2, usuarioId);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao atualizar pontuação do aluno", e);
+        }
+    }
+
     public void remover(Long idAluno) throws PersistenciaException {
         String sql = "DELETE FROM aluno WHERE id = ?";
-        try (Connection con = ConexaoDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, idAluno);
             ps.executeUpdate();
