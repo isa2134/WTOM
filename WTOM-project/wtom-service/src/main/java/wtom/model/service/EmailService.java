@@ -15,7 +15,7 @@ public class EmailService {
 
     private static final String BASE_URL = "https://seudominio.com";
 
-    public void enviarRedefinicaoSenha(String emailDestino, String token) {
+    public void enviarEmailRedefinicaoSenha(String emailDestino, String token) {
 
         String assunto = "Redefinição de senha";
         String link = BASE_URL + "/redefinir-senha?token=" + token;
@@ -51,15 +51,20 @@ public class EmailService {
         try {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(SMTP_USER));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
+            message.setRecipients(
+                    Message.RecipientType.TO,
+                    InternetAddress.parse(destinatario)
+            );
             message.setSubject(assunto);
             message.setText(corpo);
 
             Transport.send(message);
 
         } catch (MessagingException e) {
-            throw new RuntimeException("Erro ao enviar e-mail: " + e.getMessage(), e);
+            throw new RuntimeException(
+                    "Erro ao enviar e-mail para " + destinatario,
+                    e
+            );
         }
     }
 }
-
