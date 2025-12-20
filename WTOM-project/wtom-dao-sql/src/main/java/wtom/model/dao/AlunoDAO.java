@@ -4,6 +4,7 @@ import wtom.model.domain.Aluno;
 import wtom.model.domain.Usuario;
 import wtom.dao.exception.PersistenciaException;
 import wtom.util.ConexaoDB;
+import wtom.model.domain.util.UsuarioTipo;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ public class AlunoDAO {
             SELECT a.id AS a_id, a.curso, a.pontuacao, a.serie,
                    u.id AS u_id, u.login, u.cpf, u.nome, u.telefone, u.email, u.data_nascimento, u.senha, u.tipo
             FROM aluno a
-            JOIN usuario u ON u.id = a.usuario_id
+            LEFT JOIN usuario u ON u.id = a.usuario_id
             """;
 
         try (Connection con = ConexaoDB.getConnection();
@@ -63,7 +64,7 @@ public class AlunoDAO {
                 usuario.setSenha(rs.getString("senha"));
                 String tipoStr = rs.getString("tipo");
                 if (tipoStr != null) {
-                    usuario.setTipo(wtom.model.domain.util.UsuarioTipo.valueOf(tipoStr));
+                    usuario.setTipo(UsuarioTipo.valueOf(tipoStr));
                 }
 
                 Aluno a = new Aluno(usuario);
@@ -74,11 +75,13 @@ public class AlunoDAO {
                 alunos.add(a);
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new PersistenciaException("Erro ao listar alunos: " + e.getMessage());
         }
 
         return alunos;
     }
+
 
     public void atualizar(Aluno aluno) throws PersistenciaException {
         String sql = "UPDATE aluno SET curso = ?, pontuacao = ?, serie = ? WHERE id = ?";

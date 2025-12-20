@@ -78,4 +78,26 @@ public class AlunoService {
             throw new NegocioException("Erro ao excluir aluno: " + e.getMessage());
         }
     }
+    
+    public List<Aluno> listarTodos() throws NegocioException {
+        try {
+            return alunoDAO.listarTodos();
+        } catch (PersistenciaException e) {
+            throw new NegocioException("Erro ao listar alunos: " + e.getMessage());
+        }
+    }
+    
+    public Aluno buscarPorId(Long idAluno) throws NegocioException {
+        try {
+            List<Aluno> alunos = alunoDAO.listarTodos();
+            for (Aluno a : alunos) {
+                if (a.getId().equals(idAluno)) return a;
+            }
+            return null;
+        } catch (PersistenciaException e) {
+            throw new NegocioException("Erro ao buscar aluno por ID: " + e.getMessage());
+        }
+    }
+
+
 }
