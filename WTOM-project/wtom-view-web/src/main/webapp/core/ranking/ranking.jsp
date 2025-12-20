@@ -4,241 +4,210 @@
 
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>WTOM - Ranking</title>
+<head>
+    <meta charset="UTF-8">
+    <title>WTOM - Ranking</title>
 
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/menu.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/menu.css">
 
-        <style>
-            .ranking-container {
-                max-width: 960px;
-                margin: 40px auto;
-                padding: 30px;
-                background: white;
-                border-radius: 18px;
-                box-shadow: 0 15px 40px rgba(0,0,0,0.08);
-                animation: fadeIn 0.4s ease;
-            }
+    <style>
+        .ranking-container {
+            max-width: 960px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+        }
 
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(12px);
-                }
-                to   {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--accent);
+        }
 
-            h1 {
-                text-align: center;
-                margin-bottom: 25px;
-                color: var(--accent);
-                font-size: 2rem;
-            }
+        .ranking-tabs,
+        .ranking-subtabs {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 25px;
+        }
 
-            /* ABAS */
-            .ranking-tabs {
-                display: flex;
-                justify-content: center;
-                gap: 14px;
-                margin-bottom: 30px;
-            }
+        .ranking-tabs a,
+        .ranking-subtabs a {
+            padding: 10px 26px;
+            border-radius: 999px;
+            font-weight: 600;
+            text-decoration: none;
+            background: #e6f3f7;
+            color: #0e3c4b;
+        }
 
-            .ranking-tabs a {
-                padding: 10px 26px;
-                border-radius: 999px;
-                font-weight: 600;
-                text-decoration: none;
-                color: #0e3c4b;
-                background: #e6f3f7;
-                transition: all 0.25s ease;
-            }
+        .ranking-tabs a.active,
+        .ranking-subtabs a.active {
+            background: linear-gradient(135deg, #0e3c4b, #1fa4c4);
+            color: white;
+        }
 
-            .ranking-tabs a:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-            }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-            .ranking-tabs a.active {
-                background: linear-gradient(135deg, #0e3c4b, #1fa4c4);
-                color: white;
-                box-shadow: 0 8px 22px rgba(0,0,0,0.18);
-            }
+        th {
+            background: #f0f7fa;
+            padding: 14px;
+            text-align: left;
+        }
 
-            table {
-                width: 100%;
-                border-collapse: collapse;
-            }
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #eee;
+        }
 
-            th {
-                background: #f0f7fa;
-                padding: 14px;
-                text-align: left;
-                color: #0e3c4b;
-                font-weight: 700;
-            }
+        .aluno {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-            td {
-                padding: 14px;
-                border-bottom: 1px solid #eee;
-                color: #333;
-            }
+        .aluno img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
 
-            tr {
-                transition: background 0.2s ease;
-            }
+        .aluno-inicial {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
 
-            tr:hover {
-                background: #f9fcfe;
-            }
+        .gold { color: #d4a017; font-weight: bold; }
+        .silver { color: #9e9e9e; font-weight: bold; }
+        .bronze { color: #cd7f32; font-weight: bold; }
+    </style>
+</head>
 
-            .pos {
-                font-weight: 700;
-                font-size: 1.05rem;
-            }
+<body>
 
-            .gold {
-                color: #d4a017;
-            }
-            .silver {
-                color: #9e9e9e;
-            }
-            .bronze {
-                color: #cd7f32;
-            }
+<%@include file="/core/menu.jsp"%>
 
-            .aluno {
-                display: flex;
-                align-items: center;
-                gap: 14px;
-            }
+<main class="content">
+    <div class="ranking-container">
 
-            .aluno img {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                object-fit: cover;
-                border: 2px solid #e0eef3;
-            }
+        <h1>Ranking Geral</h1>
 
-            .aluno-inicial {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                background: linear-gradient(135deg, var(--accent), #1fa4c4);
-                color: white;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: 700;
-                font-size: 1.1rem;
-            }
+        <div class="ranking-tabs">
+            <a href="${pageContext.request.contextPath}/ranking?tipo=olimpiada&modo=${modo}"
+               class="${tipo eq 'olimpiada' ? 'active' : ''}">
+                Olimpíadas
+            </a>
 
-            /* Destaque TOP 3 */
-            tr:nth-child(2) td {
-                background: rgba(212,160,23,0.06);
-            }
-            tr:nth-child(3) td {
-                background: rgba(158,158,158,0.06);
-            }
-            tr:nth-child(4) td {
-                background: rgba(205,127,50,0.06);
-            }
+            <a href="${pageContext.request.contextPath}/ranking?tipo=desafio"
+               class="${tipo eq 'desafio' ? 'active' : ''}">
+                Desafios
+            </a>
+        </div>
 
-            @media (max-width: 768px) {
-                .ranking-container {
-                    padding: 20px;
-                }
+        <c:if test="${tipo eq 'olimpiada'}">
+            <div class="ranking-subtabs">
+                <a href="${pageContext.request.contextPath}/ranking?tipo=olimpiada&modo=medalhas"
+                   class="${modo eq 'medalhas' ? 'active' : ''}">
+                    Medalhas
+                </a>
 
-                th:nth-child(3),
-                td:nth-child(3) {
-                    text-align: right;
-                }
-            }
-        </style>
-    </head>
+                <a href="${pageContext.request.contextPath}/ranking?tipo=olimpiada&modo=peso"
+                   class="${modo eq 'peso' ? 'active' : ''}">
+                    Peso
+                </a>
+            </div>
+        </c:if>
 
-    <body>
+        <table>
+            <tr>
+                <th>#</th>
+                <th>Aluno</th>
+                <th>Curso</th>
 
-        <%@include file="/core/menu.jsp"%>
+                <c:if test="${tipo eq 'olimpiada' && modo eq 'medalhas'}">
+                    <th>🥇</th>
+                    <th>🥈</th>
+                    <th>🥉</th>
+                </c:if>
 
-        <main class="content">
-            <div class="ranking-container">
+                <c:if test="${tipo eq 'olimpiada' && modo eq 'peso'}">
+                    <th>Pontuação</th>
+                </c:if>
 
-                <h1>Ranking Geral</h1>
+                <c:if test="${tipo eq 'desafio'}">
+                    <th>Pontuação</th>
+                    <th>Tentativas</th>
+                </c:if>
+            </tr>
 
-                <div class="ranking-tabs">
-                    <a href="${pageContext.request.contextPath}/ranking?tipo=olimpiada"
-                       class="${tipo eq 'olimpiada' ? 'active' : ''}">
-                        Olimpíadas
-                    </a>
+            <c:forEach var="r" items="${ranking}">
+                <tr>
+                    <td>${r.posicao}º</td>
 
-                    <a href="${pageContext.request.contextPath}/ranking?tipo=desafio"
-                       class="${tipo eq 'desafio' ? 'active' : ''}">
-                        Desafios
-                    </a>
-                </div>
+                    <td>
+                        <div class="aluno">
+                            <c:choose>
+                                <c:when test="${not empty r.fotoPerfil}">
+                                    <img src="${pageContext.request.contextPath}${r.fotoPerfil}">
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="aluno-inicial">${fn:substring(r.nomeAluno, 0, 1)}</div>
+                                </c:otherwise>
+                            </c:choose>
+                            <span>${r.nomeAluno}</span>
+                        </div>
+                    </td>
 
-                <table>
-                    <tr>
-                        <th>Posição</th>
-                        <th>Aluno</th>
-                        <th>Pontuação</th>
-                    </tr>
+                    <td>${r.curso}</td>
 
-                    <c:forEach items="${ranking}" var="r" varStatus="s">
-                        <tr>
-                            <td class="pos
-                                ${s.index == 0 ? 'gold' :
-                                  s.index == 1 ? 'silver' :
-                                  s.index == 2 ? 'bronze' : ''}">
-                                    ${r.posicao}º
-                                </td>
+                    <c:if test="${tipo eq 'olimpiada' && modo eq 'medalhas'}">
+                        <td class="gold">${r.ouros}</td>
+                        <td class="silver">${r.pratas}</td>
+                        <td class="bronze">${r.bronzes}</td>
+                    </c:if>
 
-                                <td>
-                                    <div class="aluno">
-                                        <c:choose>
-                                            <c:when test="${not empty r.fotoPerfil}">
-                                                <img src="${pageContext.request.contextPath}${r.fotoPerfil}"
-                                                     alt="Foto de ${r.nomeAluno}">
-                                            </c:when>
+                    <c:if test="${tipo eq 'olimpiada' && modo eq 'peso'}">
+                        <td>${r.pontuacao}</td>
+                    </c:if>
 
-                                            <c:otherwise>
-                                                <div class="aluno-inicial">
-                                                    ${fn:substring(r.nomeAluno, 0, 1)}
-                                                </div>
-                                            </c:otherwise>
-                                        </c:choose>
+                    <c:if test="${tipo eq 'desafio'}">
+                        <td>${r.pontuacao}</td>
+                        <td>${r.totalSubmissoes}</td>
+                    </c:if>
+                </tr>
+            </c:forEach>
+        </table>
 
+    </div>
+</main>
 
-                                        <span>${r.nomeAluno}</span>
-                                    </div>
-                                </td>
+<script src="${pageContext.request.contextPath}/js/cssControl.js"></script>
 
-                                <td>${r.pontuacao} pts</td>
-                            </tr>
-                        </c:forEach>
-                    </table>
+<script>
+    document.querySelectorAll('.ranking-tabs a, .ranking-subtabs a').forEach(link => {
+        link.addEventListener('click', () => {
+            const container = document.querySelector('.ranking-container');
+            container.style.animation = 'none';
+            container.offsetHeight;
+            container.style.animation = null;
+        });
+    });
+</script>
 
-                </div>
-            </main>
-
-            <script src="${pageContext.request.contextPath}/js/cssControl.js"></script>
-
-            <script>
-                document.querySelectorAll('.ranking-tabs a').forEach(link => {
-                    link.addEventListener('click', () => {
-                        const container = document.querySelector('.ranking-container');
-                        container.style.animation = 'none';
-                        container.offsetHeight;
-                        container.style.animation = null;
-                    });
-                });
-            </script>
-
-        </body>
-    </html>
+</body>
+</html>

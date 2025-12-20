@@ -22,12 +22,14 @@ public class RankingController extends HttpServlet {
             throws ServletException, IOException {
 
         String tipo = request.getParameter("tipo");
+        String modo = request.getParameter("modo"); 
 
         if (tipo == null || tipo.isBlank()) {
-            response.sendRedirect(
-                request.getContextPath() + "/ranking?tipo=olimpiada"
-            );
-            return; 
+            tipo = "olimpiada";
+        }
+
+        if (modo == null || modo.isBlank()) {
+            modo = "medalhas";
         }
 
         Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
@@ -39,15 +41,26 @@ public class RankingController extends HttpServlet {
         List<RankingDTO> ranking;
 
         if ("desafio".equalsIgnoreCase(tipo)) {
+
             ranking = rankingService.buscarRankingDesafios(verTodos);
             tipo = "desafio";
+
         } else {
-            ranking = rankingService.buscarRankingOlimpiadas(verTodos);
+
+            if ("peso".equalsIgnoreCase(modo)) {
+                ranking = rankingService.buscarOlimpiadasPorPeso();
+                modo = "peso";
+            } else {
+                ranking = rankingService.buscarOlimpiadasPorMedalhas();
+                modo = "medalhas";
+            }
+
             tipo = "olimpiada";
         }
 
         request.setAttribute("ranking", ranking);
         request.setAttribute("tipo", tipo);
+        request.setAttribute("modo", modo);
 
         request.getRequestDispatcher("/core/ranking/ranking.jsp")
                .forward(request, response);
