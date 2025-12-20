@@ -1,6 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="jakarta.tags.core" prefix="c" %>
 <%@taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@taglib uri="jakarta.tags.functions" prefix="fn" %>
 <%@page import="wtom.model.domain.Usuario" %>
 <%@page import="wtom.model.domain.util.UsuarioTipo" %>
 <%@page import="wtom.model.domain.Categoria" %>
@@ -34,6 +35,7 @@
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     String todayDateFormatted = today.format(formatter);
     pageContext.setAttribute("todayDateFormatted", todayDateFormatted);
+
     JsonSerializer<LocalDate> localDateSerializer = new JsonSerializer<LocalDate>() {
         @Override
         public JsonElement serialize(LocalDate src, Type typeOfSrc, JsonSerializationContext context) {
@@ -52,34 +54,30 @@
             .registerTypeAdapter(LocalDate.class, localDateSerializer)
             .registerTypeAdapter(LocalTime.class, localTimeSerializer)
             .create();
+
     StringBuilder categoriesJson = new StringBuilder("[");
     if (categorias != null) {
         for (int i = 0; i < categorias.size(); i++) {
             Categoria cat = categorias.get(i);
             String corHex = cat.getCorHex() != null ? cat.getCorHex() : "#0056b3";
-            String iconeCss = cat.getIconeCss() != null ?
-                    cat.getIconeCss() : "fa-solid fa-calendar";
+            String iconeCss = cat.getIconeCss() != null ? cat.getIconeCss() : "fa-solid fa-calendar";
 
             if (cat.getNome() != null) {
-                if (cat.getNome().toLowerCase().contains("prova")) {
-                    corHex = cat.getCorHex() != null ?
-                            cat.getCorHex() : "#176B87";
+                String nomeLower = cat.getNome().toLowerCase();
+                if (nomeLower.contains("prova")) {
+                    corHex = cat.getCorHex() != null ? cat.getCorHex() : "#176B87";
                     iconeCss = cat.getIconeCss() != null ? cat.getIconeCss() : "fa-solid fa-file-lines";
-                } else if (cat.getNome().toLowerCase().contains("aula")) {
-                    corHex = cat.getCorHex() != null ?
-                            cat.getCorHex() : "#3AA76D";
+                } else if (nomeLower.contains("aula")) {
+                    corHex = cat.getCorHex() != null ? cat.getCorHex() : "#3AA76D";
                     iconeCss = cat.getIconeCss() != null ? cat.getIconeCss() : "fa-solid fa-chalkboard";
-                } else if (cat.getNome().toLowerCase().contains("olimpíada")) {
-                    corHex = cat.getCorHex() != null ?
-                            cat.getCorHex() : "#E3B23C";
+                } else if (nomeLower.contains("olimpíada")) {
+                    corHex = cat.getCorHex() != null ? cat.getCorHex() : "#E3B23C";
                     iconeCss = cat.getIconeCss() != null ? cat.getIconeCss() : "fa-solid fa-medal";
-                } else if (cat.getNome().toLowerCase().contains("reunião")) {
-                    corHex = cat.getCorHex() != null ?
-                            cat.getCorHex() : "#6F2DA8";
+                } else if (nomeLower.contains("reunião")) {
+                    corHex = cat.getCorHex() != null ? cat.getCorHex() : "#6F2DA8";
                     iconeCss = cat.getIconeCss() != null ? cat.getIconeCss() : "fa-solid fa-users";
-                } else if (cat.getNome().toLowerCase().contains("importante")) {
-                    corHex = cat.getCorHex() != null ?
-                            cat.getCorHex() : "#dc3545";
+                } else if (nomeLower.contains("importante")) {
+                    corHex = cat.getCorHex() != null ? cat.getCorHex() : "#dc3545";
                     iconeCss = cat.getIconeCss() != null ? cat.getIconeCss() : "fa-solid fa-triangle-exclamation";
                 }
             }
@@ -93,6 +91,7 @@
     }
     categoriesJson.append("]");
     pageContext.setAttribute("categoriesJson", categoriesJson.toString());
+
     String eventsJson = gson.toJson(eventos);
     pageContext.setAttribute("eventsJson", eventsJson);
 
@@ -118,7 +117,6 @@
         <%@include file="/core/menu.jsp"%>
 
         <main class="content">
-
             <div class="header-controls">
                 <div class="view-switcher" id="viewSwitcher">
                     <button class="btn-view ${currentView == 'mensal' ? 'active' : ''}" data-view="mensal" title="Mensal">
@@ -148,21 +146,17 @@
                         <span id="currentYear">2025</span>
                         <i class="fa-solid fa-chevron-right" id="nextYear"></i>
                     </div>
-                    <ul class="month-list" id="monthList">
-                    </ul>
+                    <ul class="month-list" id="monthList"></ul>
                 </div>
 
                 <div class="cal-main">
                     <div class="main-header">
                         <h2 class="current-date-title" id="monthHeader">JANEIRO 2025</h2>
                     </div>
-
                     <div class="weekdays-grid">
                         <span>DOM</span><span>SEG</span><span>TER</span><span>QUA</span><span>QUI</span><span>SEX</span><span>SÁB</span>
                     </div>
-
-                    <div class="days-grid" id="daysGrid">
-                    </div>
+                    <div class="days-grid" id="daysGrid"></div>
                 </div>
 
                 <div class="cal-events-panel">
@@ -223,9 +217,8 @@
                                 <textarea id="descricao" name="descricao" rows="3"></textarea>
                                 
                                 <label>Anexo (Link)</label>
-                                <input type="text" id="anexoUrl" name="anexoUrl" placeholder="Cole link útil aqui (ex: Google Drive, Meet)">
+                                <input type="text" id="anexoUrl" name="anexoUrl" placeholder="Cole link útil aqui">
                                 <span id="currentAnexoDisplay" class="small-text" style="display:none; margin-bottom: 5px;"></span>
-
                                 <span id="fileNameDisplay" class="small-text"></span>
 
                                 <div class="form-actions">
@@ -246,16 +239,14 @@
                     <h2 id="weekRangeLabel">Semana</h2>
                     <button id="nextWeek" class="nav-btn"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
-                
                 <div class="weekly-wrapper">
-                    <div id="weeklyGrid" class="weekly-grid">
-                    </div>
+                    <div id="weeklyGrid" class="weekly-grid"></div>
                 </div>
             </div>
 
             <div id="viewLista" class="view-content ${currentView == 'lista' ? 'view-active' : 'view-hidden'}">
                 <h2 style="color:#00d2ff;">Lista de Eventos <c:if test="${not empty termoPesquisa}">(Pesquisa por: ${termoPesquisa})</c:if></h2>
-                    <div id="listEventsContainer">
+                <div id="listEventsContainer">
                     <c:choose>
                         <c:when test="${not empty eventos}">
                             <table class="table-list-view">
@@ -263,11 +254,11 @@
                                     <tr>
                                         <th>Título</th>
                                         <th>Categoria</th>
-                                        <th>Data/Hora Início</th>
-                                        <th>Data Fim</th>
+                                        <th>Início</th>
+                                        <th>Fim</th>
                                         <th>Repetição</th>
-                                        <th>Criado por</th>
-                                        <th>Última Edição</th>
+                                        <th>Autor</th>
+                                        <th>Edição</th>
                                         <th>Anexo</th>
                                         <th>Ações</th>
                                     </tr>
@@ -277,33 +268,25 @@
                                         <tr>
                                             <td>${evento.titulo}</td>
                                             <td>${evento.categoria.nome}</td>
-                                            <td>
-                                                ${evento.dataEvento}
-                                                <c:if test="${not empty evento.horario}"> ${evento.horario}</c:if>
-                                            </td>
+                                            <td>${evento.dataEvento}<c:if test="${not empty evento.horario}"> ${evento.horario}</c:if></td>
                                             <td>${evento.dataFim}</td>
-                                            <td>
-                                                <span class="badge badge-${evento.tipoRepeticao.name().toLowerCase()}">
-                                                    ${evento.tipoRepeticao}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                ${evento.autor.nome}
-                                            </td>
+                                            <td><span class="badge badge-${evento.tipoRepeticao.name().toLowerCase()}">${evento.tipoRepeticao}</span></td>
+                                            <td>${evento.autor.nome}</td>
                                             <td>
                                                 <c:if test="${not empty evento.editor}">
-                                                    ${evento.editor.nome}
-                                                    <span class="small-text">(${evento.dataUltimaEdicao})</span>
+                                                    ${evento.editor.nome} <span class="small-text">(${evento.dataUltimaEdicao})</span>
                                                 </c:if>
                                             </td>
                                             <td>
                                                 <c:if test="${not empty evento.anexoUrl}">
-                                                    <a href="${evento.anexoUrl}" target="_blank" title="Acessar Anexo"><i class="fa-solid fa-paperclip"></i></a>
+                                                    <a href="${evento.anexoUrl}" target="_blank"><i class="fa-solid fa-paperclip"></i></a>
                                                 </c:if>
                                             </td>
                                             <td>
-                                                <a href="#" class="btn-action edit-event-list" data-id="${evento.id}"><i class="fa-solid fa-pen-to-square"></i></a>
-                                                <a href="${pageContext.request.contextPath}/CronogramaController?acao=excluir&id=${evento.id}" class="btn-action delete-event" onclick="return confirm('Tem certeza que deseja excluir o evento ${evento.titulo}?');"><i class="fa-solid fa-trash-can"></i></a>
+                                                <c:if test="${podeGerenciar}">
+                                                    <a href="#" class="btn-action edit-event-list" data-id="${evento.id}"><i class="fa-solid fa-pen-to-square"></i></a>
+                                                    <a href="${pageContext.request.contextPath}/CronogramaController?acao=excluir&id=${evento.id}" class="btn-action delete-event" onclick="return confirm('Excluir evento?');"><i class="fa-solid fa-trash-can"></i></a>
+                                                </c:if>
                                             </td>
                                         </tr>
                                     </c:forEach>

@@ -8,7 +8,7 @@ public class ConexaoDB {
     
     private static final String URL_COMPLETA = "jdbc:mysql://localhost:3306/wtom";
     private static final String USER = "root";
-    private static final String PASSWORD = "Wtom2025!";
+    private static final String PASSWORD = "";
     
     public static Connection getConnection() throws SQLException{
         try{
