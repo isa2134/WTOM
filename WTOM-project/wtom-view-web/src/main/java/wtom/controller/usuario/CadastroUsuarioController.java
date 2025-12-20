@@ -32,9 +32,9 @@ public class CadastroUsuarioController extends HttpServlet {
 
     private void verificarPermissaoECadastro(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        
+
         Configuracao config = configuracaoDAO.buscarConfiguracoes();
-        
+
         if (config == null || !config.getPermitirCadastro()) {
             req.setAttribute("erro", "O registro de novos usuários está temporariamente desabilitado pelo Administrador.");
             req.getRequestDispatcher(VIEW_INICIO).forward(req, resp);
@@ -62,10 +62,10 @@ public class CadastroUsuarioController extends HttpServlet {
             throws ServletException, IOException {
         verificarPermissaoECadastro(req, resp);
     }
-    
+
     private void processarCadastro(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        
+
         try {
             String cpf = req.getParameter("cpf");
             String nome = req.getParameter("nome");
@@ -76,60 +76,79 @@ public class CadastroUsuarioController extends HttpServlet {
             String login = req.getParameter("login");
             String tipoStr = req.getParameter("tipo");
 
-            if (cpf == null || !ValidadorUtil.validarCPF(cpf))
+            if (cpf == null || !ValidadorUtil.validarCPF(cpf)) {
                 throw new NegocioException("CPF inválido.");
+            }
 
-            if (email == null || !ValidadorUtil.validarEmail(email))
+            if (email == null || !ValidadorUtil.validarEmail(email)) {
                 throw new NegocioException("E-mail inválido.");
+            }
 
-            if (dataStr == null || !ValidadorUtil.validarFormatoData(dataStr))
+            if (dataStr == null || !ValidadorUtil.validarFormatoData(dataStr)) {
                 throw new NegocioException("Data de nascimento inválida.");
+            }
 
             LocalDate data = LocalDate.parse(dataStr);
-            if (!ValidadorUtil.validarData(data))
+            if (!ValidadorUtil.validarData(data)) {
                 throw new NegocioException("Data de nascimento não pode ser futura.");
+            }
 
-            if (senha == null || senha.isBlank())
+            if (senha == null || senha.isBlank()) {
                 throw new NegocioException("Senha não pode estar vazia.");
-            
+            }
+
             Configuracao config = configuracaoDAO.buscarConfiguracoes();
             if (config != null && senha.length() < config.getMinTamanhoSenha()) {
                 req.setAttribute("minTamanhoSenha", config.getMinTamanhoSenha());
                 throw new NegocioException("A senha deve ter no mínimo " + config.getMinTamanhoSenha() + " caracteres.");
             }
 
-            if (login == null || login.isBlank())
+            if (login == null || login.isBlank()) {
                 throw new NegocioException("Login não pode estar vazio.");
+            }
 
-            if (tipoStr == null)
+            if (tipoStr == null) {
                 throw new NegocioException("Tipo de usuário obrigatório.");
+            }
 
             UsuarioTipo tipo = UsuarioTipo.valueOf(tipoStr);
 
-            Usuario usuario = new Usuario(null, cpf, nome, telefone, email, data, senha, login, tipo, null);
+            Usuario usuario = new Usuario();
+            usuario.setCpf(cpf);
+            usuario.setNome(nome);
+            usuario.setTelefone(telefone);
+            usuario.setEmail(email);
+            usuario.setDataDeNascimento(data);
+            usuario.setSenha(senha);
+            usuario.setLogin(login);
+            usuario.setTipo(tipo);
+            usuario.setFotoPerfil(null);
 
             if (tipo == UsuarioTipo.ALUNO) {
 
                 String curso = req.getParameter("curso");
                 String serie = req.getParameter("serie");
 
-                if (curso == null || curso.isBlank())
+                if (curso == null || curso.isBlank()) {
                     throw new NegocioException("Curso é obrigatório para alunos.");
+                }
 
-                if (serie == null || serie.isBlank())
+                if (serie == null || serie.isBlank()) {
                     throw new NegocioException("Série é obrigatória para alunos.");
+                }
 
                 Aluno aluno = new Aluno(usuario, curso, serie);
                 alunoService.cadastrarAlunoComUsuario(aluno);
 
                 usuario = aluno.getUsuario();
-                
+
             } else if (tipo == UsuarioTipo.PROFESSOR) {
 
                 String area = req.getParameter("area");
 
-                if (area == null || area.isBlank())
+                if (area == null || area.isBlank()) {
                     throw new NegocioException("Área é obrigatória para professores.");
+                }
 
                 Professor professor = new Professor(usuario, area);
                 professorService.cadastrarProfessor(professor);
@@ -148,7 +167,7 @@ public class CadastroUsuarioController extends HttpServlet {
         } catch (NegocioException e) {
             req.setAttribute("erro", e.getMessage());
             req.setAttribute("tipo", req.getParameter("tipo"));
-            
+
             if (req.getAttribute("minTamanhoSenha") == null) {
                 try {
                     Configuracao config = configuracaoDAO.buscarConfiguracoes();
@@ -157,7 +176,7 @@ public class CadastroUsuarioController extends HttpServlet {
                     req.setAttribute("minTamanhoSenha", 8);
                 }
             }
-            
+
             req.getRequestDispatcher(VIEW_CADASTRO).forward(req, resp);
 
         } catch (DateTimeParseException e) {

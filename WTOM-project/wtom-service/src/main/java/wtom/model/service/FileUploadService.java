@@ -7,52 +7,55 @@ import java.nio.file.Paths;
 import wtom.dao.exception.FileException;
 
 public class FileUploadService {
-    
-    private static final String UPLOAD_DIR = "C:/uploads-servidor/";
-    
-    public static String salvarArquivo(Part arquivo) throws IOException, FileException{
-        
+
+    private static final String UPLOAD_DIR
+            = System.getProperty("user.home") + "/uploads-wtom/";
+
+    public static String salvarArquivo(Part arquivo)
+            throws IOException, FileException {
+
         if (arquivo == null || arquivo.getSize() == 0) {
-            throw new FileException("Nenhum arquivo foi enviado!");
+            throw new FileException("Nenhum arquivo enviado.");
         }
-        
-        String nomeArquivo = Paths.get(arquivo.getSubmittedFileName()).getFileName().toString();
-        nomeArquivo = nomeArquivo.replaceAll("[\\\\/:*?\"<>|\\[\\]]", "_");
-        
-        File pastaUploads = new File(UPLOAD_DIR);
-        if (!pastaUploads.exists()) {
-            pastaUploads.mkdirs();
+
+        String nomeArquivo = Paths.get(arquivo.getSubmittedFileName())
+                .getFileName()
+                .toString()
+                .replaceAll("[\\\\/:*?\"<>|]", "_");
+
+        File pasta = new File(UPLOAD_DIR);
+        if (!pasta.exists()) {
+            pasta.mkdirs();
         }
-        
-        File destino = new File(pastaUploads, nomeArquivo);
+
+        File destino = new File(pasta, nomeArquivo);
         arquivo.write(destino.getAbsolutePath());
-        
+
         return "/uploads/" + nomeArquivo;
     }
-    
-    public static void excluirArquivo(String caminhoRelativo) throws FileException {
+
+    public static void excluirArquivo(String caminhoRelativo)
+            throws FileException {
+
         if (caminhoRelativo == null || caminhoRelativo.isBlank()) {
-            throw new FileException("Caminho do arquivo inválido.");
+            return;
         }
 
         try {
-            String nomeArquivo = Paths.get(caminhoRelativo).getFileName().toString();
+            String nomeArquivo
+                    = Paths.get(caminhoRelativo).getFileName().toString();
+
             File arquivo = new File(UPLOAD_DIR + nomeArquivo);
 
-            if (!arquivo.exists()) {
-                throw new FileException("Arquivo não encontrado no servidor.");
-            }
-
-            boolean deletado = arquivo.delete();
-
-            if (!deletado) {
-                throw new FileException("Não foi possível excluir o arquivo.");
+            if (arquivo.exists()) {
+                arquivo.delete();
             }
 
         } catch (Exception e) {
-            throw new FileException("Erro ao excluir arquivo: " + e.getMessage());
+            throw new FileException(
+                    "Erro ao excluir arquivo: " + e.getMessage()
+            );
         }
     }
 
-    
 }

@@ -1,9 +1,9 @@
 package wtom.model.domain;
 
 import java.sql.Timestamp;
-import wtom.model.domain.util.UsuarioTipo;
 import java.time.LocalDate;
 import java.util.List;
+import wtom.model.domain.util.UsuarioTipo;
 
 public class Usuario {
 
@@ -17,13 +17,16 @@ public class Usuario {
     private String login;
     private UsuarioTipo tipo;
     private List<Premiacao> premiacoes;
+
     private boolean bloqueado;
     private int tentativasLogin;
     private Timestamp dataBloqueio;
+
+    private String fotoPerfil;
+
     private static final long TEMPO_BLOQUEIO_MS = 30 * 60 * 1000;
 
     public Usuario() {
-
     }
 
     public Usuario(String login, String cpf) {
@@ -37,21 +40,6 @@ public class Usuario {
         this.nome = nome;
         this.email = email;
         this.id = id;
-    }
-
-    public Usuario(Long id, String cpf, String nome, String telefone, String email,
-            LocalDate dataDeNascimento, String senha, String login,
-            UsuarioTipo tipo, List<Premiacao> premiacoes) {
-        this.id = id;
-        this.cpf = cpf;
-        this.nome = nome;
-        this.telefone = telefone;
-        this.email = email;
-        this.dataDeNascimento = dataDeNascimento;
-        this.senha = senha;
-        this.login = login;
-        this.tipo = tipo;
-        this.premiacoes = premiacoes;
     }
 
     public Long getId() {
@@ -149,21 +137,25 @@ public class Usuario {
     public void setTentativasLogin(int tentativasLogin) {
         this.tentativasLogin = tentativasLogin;
     }
-    
+
     public Timestamp getDataBloqueio() {
         return dataBloqueio;
     }
-    
+
     public void setDataBloqueio(Timestamp dataBloqueio) {
         this.dataBloqueio = dataBloqueio;
     }
 
+    public String getFotoPerfil() {
+        return fotoPerfil;
+    }
+
+    public void setFotoPerfil(String fotoPerfil) {
+        this.fotoPerfil = fotoPerfil;
+    }
+
     @Override
     public String toString() {
-        return "Usuário{"
-                + "id=" + id
-                + ", nome='" + nome + '\''
-                + ", tipo=" + tipo
-                + '}';
+        return "Usuario{id=" + id + ", nome='" + nome + "', tipo=" + tipo + "}";
     }
 }
