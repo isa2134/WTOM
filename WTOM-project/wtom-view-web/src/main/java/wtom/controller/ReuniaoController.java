@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import wtom.model.service.GoogleMeetService;
 import wtom.model.service.GestaoNotificacao;
 import wtom.model.service.ReuniaoService;
+import wtom.model.service.EventoService;
 
 import wtom.model.domain.*;
 import wtom.model.domain.util.UsuarioTipo;
@@ -234,6 +235,16 @@ public class ReuniaoController extends HttpServlet {
             }
 
             service.criarReuniao(r, usuario);
+
+            EventoService.getInstance().registrarEventoAutomatico(
+                r.getTitulo(),
+                "Reunião: " + r.getDescricao(),
+                r.getDataHora().toLocalDate(),
+                r.getDataHora().toLocalTime(),
+                r.getLink(),
+                5L, 
+                usuario
+            );
 
             Notificacao n = new Notificacao();
             n.setTipo(TipoNotificacao.REUNIAO_AGENDADA);

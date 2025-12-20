@@ -2,21 +2,18 @@ package wtom.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-//import jakarta.servlet.http.HttpSession; 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-//import java.util.List;
 import wtom.model.domain.Olimpiada;
 import wtom.model.service.GestaoOlimpiada;
 import wtom.model.service.GestaoNotificacao;
-//import wtom.model.service.NotificacaoService;
-//import wtom.model.dao.UsuarioDAO;
+import wtom.model.service.EventoService;
 import wtom.model.domain.AlcanceNotificacao;
 import wtom.model.domain.Inscricao;
 import wtom.model.domain.Notificacao;
-//import wtom.model.domain.Usuario;
 import wtom.model.domain.TipoNotificacao;
 import wtom.model.domain.Usuario;
 import wtom.model.domain.util.UsuarioTipo;
@@ -26,30 +23,7 @@ import wtom.model.service.exception.NegocioException;
 
 public class OlimpiadaController {
     
-    
-
-    /*private static boolean verificarPermissao(HttpServletRequest request) {
-        
-        if (session == null) {
-            return false;
-        }
-        
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogado"); 
-        
-        if (usuario == null) {
-            return false;
-        }
-        
-        String tipoUsuario = usuario.getTipo().toString(); 
-        return tipoUsuario.equals("ADMINISTRADOR") || tipoUsuario.equals("PROFESSOR");
-    }*/
-    
-
     public static String cadastrarOlimpiada(HttpServletRequest request) {
-        /*if (!verificarPermissao(request)) {
-            request.setAttribute("erro", "Acesso negado: Somente Administradores e Professores podem cadastrar olimpíadas.");
-            return "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
-        }*/
         
         GestaoOlimpiada gestaoOlimpiada = new GestaoOlimpiada();
         GestaoNotificacao gestaoNotificacao = new GestaoNotificacao();
@@ -64,6 +38,19 @@ public class OlimpiadaController {
 
             Olimpiada nova = new Olimpiada(nome, topico, dataLimite, dataProva, descricao, peso);
             gestaoOlimpiada.cadastrarOlimpiada(nova); 
+            
+            HttpSession session = request.getSession(false);
+            Usuario usuarioLogado = (session != null) ? (Usuario) session.getAttribute("usuario") : null;
+
+            EventoService.getInstance().registrarEventoAutomatico(
+                nome,
+                "Prova de Olimpíada: " + topico,
+                dataProva,
+                LocalTime.of(8, 0), 
+                null,
+                4L, 
+                usuarioLogado
+            );
 
             Notificacao notificacao = new Notificacao();
             notificacao.setMensagem(
@@ -95,11 +82,6 @@ public class OlimpiadaController {
 
 
     public static String alterarOlimpiada(HttpServletRequest request) {
-        /*if (!verificarPermissao(request)) {
-            request.setAttribute("erro", "Acesso negado: Somente Administradores e Professores podem alterar olimpíadas.");
-            System.out.println("não tem per  ");
-            return "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
-        }*/
         
         GestaoOlimpiada gestaoOlimpiada = new GestaoOlimpiada();
 
@@ -234,6 +216,4 @@ public class OlimpiadaController {
         request.setAttribute("olimpiadas", olimpiadas);
         request.setAttribute("inscricoes", inscricoes);
     }
-    
-    
 }
