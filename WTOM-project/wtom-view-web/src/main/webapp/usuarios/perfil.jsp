@@ -82,6 +82,13 @@
         color: #fff;
         border: 3px solid rgba(255,255,255,0.4);
         box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .profile-img-placeholder img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
     .profile-left h3 {
@@ -100,6 +107,26 @@
         background: rgba(0,0,0,0.1);
         padding: 4px 12px;
         border-radius: 20px;
+    }
+
+    .upload-form {
+        margin-top: 15px;
+    }
+
+    .upload-form input[type="file"] {
+        font-size: 0.8rem;
+        color: #fff;
+    }
+
+    .upload-form button {
+        margin-top: 10px;
+        padding: 6px 16px;
+        border-radius: 20px;
+        border: none;
+        background: #fff;
+        color: var(--tom-dark);
+        font-weight: 600;
+        cursor: pointer;
     }
 
     .profile-right {
@@ -168,136 +195,96 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 15px rgba(0, 188, 212, 0.4);
     }
-
-    .alert {
-        padding: 12px 20px;
-        border-radius: 8px;
-        margin-bottom: 25px;
-        font-size: 0.9rem;
-    }
-
-    .alert-danger {
-        background: #ffebee;
-        color: #c62828;
-        border: 1px solid #ffcdd2;
-    }
-
-    .alert-success {
-        background: #e8f5e9;
-        color: #2e7d32;
-        border: 1px solid #c8e6c9;
-    }
-
-    @media (max-width: 900px) {
-        .page-profile-container {
-            position: relative;
-            left: 0;
-            width: 100%;
-            padding: 20px;
-            margin-left: 0;
-        }
-        .profile-card {
-            flex-direction: column;
-            max-width: 500px;
-        }
-        .profile-left, .profile-right {
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .profile-left {
-            padding: 30px;
-        }
-        .profile-right {
-            padding: 30px;
-        }
-        .info-grid {
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-    }
 </style>
 
 <div class="page-profile-container">
 
-    <% if (usuarioHeader == null) { %>
+<% if (usuarioHeader == null) { %>
     <div style="text-align: center; margin-top: 50px;">
         <p>Nenhum usuário autenticado. <a href="${pageContext.request.contextPath}/index.jsp">Faça login</a>.</p>
     </div>
-    <% } else {%>
+<% } else { %>
 
-    <div class="profile-card">
-        <div class="profile-left">
-            <div class="profile-img-placeholder">
-                <%= usuarioHeader.getNome().substring(0, 1).toUpperCase()%>
-            </div>
-            <h3><%= usuarioHeader.getNome()%></h3>
-            <p><%= usuarioHeader.getTipo()%></p>
+<div class="profile-card">
+    <div class="profile-left">
+
+        <div class="profile-img-placeholder">
+            <% if (usuarioHeader.getFotoPerfil() != null && !usuarioHeader.getFotoPerfil().isBlank()) { %>
+                <img src="<%= request.getContextPath() + usuarioHeader.getFotoPerfil() %>">
+            <% } else { %>
+                <%= usuarioHeader.getNome().substring(0, 1).toUpperCase() %>
+            <% } %>
         </div>
 
-        <div class="profile-right">
+        <h3><%= usuarioHeader.getNome() %></h3>
+        <p><%= usuarioHeader.getTipo() %></p>
 
-            <% if (erro != null) {%>
-            <div class="alert alert-danger"><%= erro%></div>
-            <% } %>
-            <% if (sucesso != null) {%>
-            <div class="alert alert-success"><%= sucesso%></div>
-            <% } %>
+    </div>
 
-            <% if (usuarioHeader.getTipo() != null && usuarioHeader.getTipo().name().equals("ALUNO")) { %>
+    <div class="profile-right">
+
+        <% if (erro != null) { %>
+            <div class="alert alert-danger"><%= erro %></div>
+        <% } %>
+        <% if (sucesso != null) { %>
+            <div class="alert alert-success"><%= sucesso %></div>
+        <% } %>
+
+        <% if (usuarioHeader.getTipo() != null && usuarioHeader.getTipo().name().equals("ALUNO")) { %>
             <h4 class="section-title">Dados do Aluno</h4>
-            <% } else if (usuarioHeader.getTipo() != null && usuarioHeader.getTipo().name().equals("PROFESSOR")) { %>
+        <% } else if (usuarioHeader.getTipo() != null && usuarioHeader.getTipo().name().equals("PROFESSOR")) { %>
             <h4 class="section-title">Dados do Professor</h4>
-            <% } else { %>
+        <% } else { %>
             <h4 class="section-title">Informações Pessoais</h4>
-            <% }%>
+        <% } %>
 
-            <div class="info-grid">
-                <div class="info-item">
-                    <h5>Email</h5>
-                    <p><%= usuarioHeader.getEmail()%></p>
-                </div>
-                <div class="info-item">
-                    <h5>Telefone</h5>
-                    <p><%= usuarioHeader.getTelefone()%></p>
-                </div>
-                <div class="info-item">
-                    <h5>CPF</h5>
-                    <p><%= usuarioHeader.getCpf()%></p>
-                </div>
-                <div class="info-item">
-                    <h5>Login</h5>
-                    <p><%= usuarioHeader.getLogin()%></p>
-                </div>
+        <div class="info-grid">
+            <div class="info-item">
+                <h5>Email</h5>
+                <p><%= usuarioHeader.getEmail() %></p>
+            </div>
+            <div class="info-item">
+                <h5>Telefone</h5>
+                <p><%= usuarioHeader.getTelefone() %></p>
+            </div>
+            <div class="info-item">
+                <h5>CPF</h5>
+                <p><%= usuarioHeader.getCpf() %></p>
+            </div>
+            <div class="info-item">
+                <h5>Login</h5>
+                <p><%= usuarioHeader.getLogin() %></p>
+            </div>
 
-                <% if (usuarioHeader.getTipo() != null && usuarioHeader.getTipo().name().equals("ALUNO")) {
-                        wtom.model.domain.Aluno a = new wtom.model.service.AlunoService().buscarAlunoPorUsuario(usuarioHeader.getId());
-                        if (a != null) {%>
+            <% if (usuarioHeader.getTipo() != null && usuarioHeader.getTipo().name().equals("ALUNO")) {
+                Aluno a = new AlunoService().buscarAlunoPorUsuario(usuarioHeader.getId());
+                if (a != null) { %>
                 <div class="info-item">
                     <h5>Curso</h5>
-                    <p><%= a.getCurso()%></p>
+                    <p><%= a.getCurso() %></p>
                 </div>
                 <div class="info-item">
                     <h5>Série</h5>
-                    <p><%= a.getSerie()%></p>
+                    <p><%= a.getSerie() %></p>
                 </div>
-                <% } %>
-                <% } else if (usuarioHeader.getTipo() != null && usuarioHeader.getTipo().name().equals("PROFESSOR")) {
-                    wtom.model.domain.Professor p = new wtom.model.service.ProfessorService().buscarProfessorPorUsuario(usuarioHeader.getId());
-                    if (p != null) {%>
+            <% } } else if (usuarioHeader.getTipo() != null && usuarioHeader.getTipo().name().equals("PROFESSOR")) {
+                Professor p = new ProfessorService().buscarProfessorPorUsuario(usuarioHeader.getId());
+                if (p != null) { %>
                 <div class="info-item">
                     <h5>Área</h5>
-                    <p><%= p.getArea()%></p>
+                    <p><%= p.getArea() %></p>
                 </div>
-                <% } %>
-                <% }%>
-            </div>
-
-            <a href="${pageContext.request.contextPath}/EditarUsuarioController?id=<%= usuarioHeader.getId()%>" class="btn-edit">
-                Editar Perfil
-            </a>
-
+            <% } } %>
         </div>
+
+        <a href="${pageContext.request.contextPath}/EditarUsuarioController?id=<%= usuarioHeader.getId() %>"
+           class="btn-edit">
+            Editar Perfil
+        </a>
+
     </div>
-    <% }%>
 </div>
+<% } %>
+</div>
+
 <script src="${pageContext.request.contextPath}/js/cssControl.js"></script>

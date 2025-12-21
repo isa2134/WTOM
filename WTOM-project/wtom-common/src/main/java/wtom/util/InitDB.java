@@ -71,28 +71,35 @@ public class InitDB {
 
     public void initUsuario() throws SQLException {
         String sql = """
-            CREATE TABLE IF NOT EXISTS usuario (
-                id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                cpf VARCHAR(14) NOT NULL UNIQUE,
-                nome VARCHAR(100) NOT NULL,
-                telefone VARCHAR(20),
-                email VARCHAR(120) UNIQUE NOT NULL,
-                data_nascimento DATE,
-                senha VARCHAR(100) NOT NULL,
-                login VARCHAR(50) UNIQUE NOT NULL,
-                tipo ENUM('ADMINISTRADOR', 'PROFESSOR', 'ALUNO') NOT NULL,
-                
-                bloqueado BOOLEAN DEFAULT FALSE,
-                tentativas_login INT DEFAULT 0,
-                data_bloqueio TIMESTAMP NULL,  
-                
-                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-            );
-        """;
+        CREATE TABLE IF NOT EXISTS usuario (
+            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            cpf VARCHAR(14) NOT NULL UNIQUE,
+            nome VARCHAR(100) NOT NULL,
+            telefone VARCHAR(20),
+            email VARCHAR(120) UNIQUE NOT NULL,
+            data_nascimento DATE,
+            senha VARCHAR(100) NOT NULL,
+            login VARCHAR(50) UNIQUE NOT NULL,
+            tipo ENUM('ADMINISTRADOR', 'PROFESSOR', 'ALUNO') NOT NULL,
+            
+            foto_perfil VARCHAR(255) NULL,
+            
+            bloqueado BOOLEAN DEFAULT FALSE,
+            tentativas_login INT DEFAULT 0,
+            data_bloqueio TIMESTAMP NULL,  
+            
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        );
+    """;
 
         try (Statement st = con.createStatement()) {
             st.executeUpdate(sql);
+
+            try {
+                st.executeUpdate("ALTER TABLE usuario ADD COLUMN foto_perfil VARCHAR(255) NULL");
+            } catch (SQLException e) {
+            }
         }
     }
 
@@ -683,6 +690,54 @@ public class InitDB {
         }
     }
 
+    public void initPremiacoesRankingTeste() throws SQLException {
+
+        String sql = """
+        INSERT IGNORE INTO premiacao
+            (usuario_id, olimpiada_id, olimpiada_nome, olimpiada_peso,
+             tipo_premio, nivel, ano, peso_final)
+        VALUES
+            ((SELECT id FROM usuario WHERE cpf = '111.333.555-01'), 1, 'OBMEP', 2.0, 'OURO', 'Nível 2', 2023, 2.0),
+            ((SELECT id FROM usuario WHERE cpf = '111.333.555-01'), 2, 'Canguru', 1.5, 'PRATA', 'Nível J', 2022, 1.5),
+
+            ((SELECT id FROM usuario WHERE cpf = '222.444.666-02'), 1, 'OBMEP', 2.0, 'PRATA', 'Nível 1', 2023, 1.2),
+
+            ((SELECT id FROM usuario WHERE cpf = '333.555.777-03'), 3, 'OPM', 2.0, 'BRONZE', 'Regional', 2022, 0.8),
+
+            ((SELECT id FROM usuario WHERE cpf = '444.666.888-04'), 4, 'ONC', 1.2, 'MENCAO_HONROSA', 'Nacional', 2021, 0.5);
+    """;
+
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
+
+    public void initPontuacoesAlunosTeste() throws SQLException {
+
+        String sql = """
+        UPDATE aluno a
+        JOIN usuario u ON u.id = a.usuario_id
+        SET a.pontuacao =
+            CASE u.cpf
+                WHEN '111.333.555-01' THEN 950
+                WHEN '222.444.666-02' THEN 880
+                WHEN '333.555.777-03' THEN 820
+                WHEN '444.666.888-04' THEN 780
+                WHEN '555.777.999-05' THEN 720
+                WHEN '666.888.000-06' THEN 680
+                WHEN '777.999.111-07' THEN 640
+                WHEN '888.000.222-08' THEN 600
+                WHEN '999.111.333-09' THEN 560
+                WHEN '000.222.444-10' THEN 520
+                ELSE 300
+            END;
+    """;
+
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+        }
+    }
+
     public void initTodos() throws PersistenciaException {
         try {
             initUsuario();
@@ -715,6 +770,8 @@ public class InitDB {
             initConfiguracaoUsuario();
             initCategoria();
             initEvento();
+            initPontuacoesAlunosTeste();
+            initPremiacoesRankingTeste();
 
         } catch (SQLException e) {
             throw new PersistenciaException("erro ao inicializar tabelas: " + e.getMessage());

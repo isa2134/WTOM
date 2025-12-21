@@ -12,7 +12,6 @@ import java.util.List;
 public class UsuarioDAO {
 
     private static UsuarioDAO instance;
-
     private static final int LIMITE_TENTATIVAS = 5;
 
     private UsuarioDAO() {
@@ -25,22 +24,34 @@ public class UsuarioDAO {
         return instance;
     }
 
+
     public Usuario inserirERetornar(Usuario u) throws PersistenciaException {
+
         String sql = """
-            INSERT INTO usuario (cpf, nome, telefone, email, data_nascimento, senha, login, tipo)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+            INSERT INTO usuario
+            (cpf, nome, telefone, email, data_nascimento, senha, login, tipo, foto_perfil)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
         """;
 
-        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, u.getCpf());
             ps.setString(2, u.getNome());
             ps.setString(3, u.getTelefone());
             ps.setString(4, u.getEmail());
-            ps.setDate(5, Date.valueOf(u.getDataDeNascimento()));
+
+            if (u.getDataDeNascimento() != null) {
+                ps.setDate(5, Date.valueOf(u.getDataDeNascimento()));
+            } else {
+                ps.setNull(5, Types.DATE);
+            }
+
             ps.setString(6, u.getSenha());
             ps.setString(7, u.getLogin());
             ps.setString(8, u.getTipo().name());
+            ps.setString(9, u.getFotoPerfil());
+
             ps.executeUpdate();
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -55,14 +66,16 @@ public class UsuarioDAO {
             if (e.getMessage().contains("Duplicate") || e.getMessage().contains("UNIQUE")) {
                 throw new PersistenciaException("Já existe um usuário com este CPF, e-mail ou login.");
             }
-            throw new PersistenciaException("Erro ao inserir usuário: " + e.getMessage());
+            throw new PersistenciaException("Erro ao inserir usuário: " + e.getMessage(), e);
         }
     }
+
 
     public Usuario buscarPorCpfOuEmail(String cpf, String email) throws PersistenciaException {
         String sql = "SELECT * FROM usuario WHERE cpf = ? OR email = ? LIMIT 1";
 
-        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, cpf);
             ps.setString(2, email);
@@ -76,76 +89,214 @@ public class UsuarioDAO {
             return null;
 
         } catch (SQLException e) {
-            throw new PersistenciaException("Erro ao buscar usuário por CPF ou e-mail: " + e.getMessage());
+            throw new PersistenciaException("Erro ao buscar usuário por CPF ou e-mail.", e);
         }
     }
 
     public Usuario buscarPorId(Long id) throws PersistenciaException {
-        String sql = "SELECT * FROM usuario WHERE id=?";
-        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        String sql = "SELECT * FROM usuario WHERE id = ?";
+
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, id);
-            ResultSet rs = ps.executeQuery();
 
-            if (rs.next()) {
-                return mapResultSet(rs);
-            }
-            return null;
-        } catch (SQLException e) {
-            throw new PersistenciaException("Erro ao buscar usuário por ID: " + e.getMessage());
-        }
-    }
-
-    public Usuario buscarPorLoginSeguro(String login) throws PersistenciaException {
-        String sql = "SELECT * FROM usuario WHERE login = ?";
-        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, login);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return mapResultSet(rs);
                 }
             }
+            return null;
+
         } catch (SQLException e) {
-            throw new PersistenciaException("Erro ao buscar usuário por login (seguro): " + e.getMessage());
+            throw new PersistenciaException("Erro ao buscar usuário por ID.", e);
         }
-        return null;
     }
 
     public Usuario buscarPorLogin(String login) throws PersistenciaException {
         String sql = "SELECT * FROM usuario WHERE login = ?";
-        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, login);
+
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return mapResultSet(rs);
                 }
             }
+            return null;
+
         } catch (SQLException e) {
-            throw new PersistenciaException("Erro ao buscar usuário por login: " + e.getMessage());
+            throw new PersistenciaException("Erro ao buscar usuário por login.", e);
         }
-        return null;
     }
+
 
     public List<Usuario> listarTodos() throws PersistenciaException {
         String sql = "SELECT * FROM usuario";
-        List<Usuario> usuarios = new ArrayList<>();
+        List<Usuario> lista = new ArrayList<>();
 
-        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                usuarios.add(mapResultSet(rs));
+                lista.add(mapResultSet(rs));
             }
 
         } catch (SQLException e) {
-            throw new PersistenciaException("Erro ao listar usuários: " + e.getMessage());
+            throw new PersistenciaException("Erro ao listar usuários.", e);
         }
-
-        return usuarios;
+        return lista;
     }
 
-    public List<Usuario> buscarUsuariosBloqueados() throws PersistenciaException {
+    public List<Usuario> listarAlunos() throws PersistenciaException {
+        return listarPorTipo("ALUNO");
+    }
+
+    public List<Usuario> listarProfessores() throws PersistenciaException {
+        return listarPorTipo("PROFESSOR");
+    }
+
+    public List<Usuario> listarAdministradores() throws PersistenciaException {
+        return listarPorTipo("ADMINISTRADOR");
+    }
+
+    public List<Usuario> listarUsuariosNaoAdm() throws PersistenciaException {
+        return listarPorTipoExcluindo("ADMINISTRADOR");
+    }
+
+    private List<Usuario> listarPorTipo(String tipo) throws PersistenciaException {
+        String sql = "SELECT * FROM usuario WHERE tipo = ?";
+        List<Usuario> lista = new ArrayList<>();
+
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, tipo);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(mapResultSet(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("Erro ao listar usuários por tipo.", e);
+        }
+        return lista;
+    }
+
+    private List<Usuario> listarPorTipoExcluindo(String tipo) throws PersistenciaException {
+        String sql = "SELECT * FROM usuario WHERE tipo <> ?";
+        List<Usuario> lista = new ArrayList<>();
+
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, tipo);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(mapResultSet(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("Erro ao listar usuários excluindo tipo.", e);
+        }
+        return lista;
+    }
+
+
+    public void atualizar(Usuario u) throws PersistenciaException {
+
+        String sql = """
+            UPDATE usuario
+            SET nome=?, telefone=?, email=?, data_nascimento=?, senha=?, tipo=?, foto_perfil=?
+            WHERE id=?;
+        """;
+
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, u.getNome());
+            ps.setString(2, u.getTelefone());
+            ps.setString(3, u.getEmail());
+
+            if (u.getDataDeNascimento() != null) {
+                ps.setDate(4, Date.valueOf(u.getDataDeNascimento()));
+            } else {
+                ps.setNull(4, Types.DATE);
+            }
+
+            ps.setString(5, u.getSenha());
+            ps.setString(6, u.getTipo().name());
+            ps.setString(7, u.getFotoPerfil());
+            ps.setLong(8, u.getId());
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("Erro ao atualizar usuário.", e);
+        }
+    }
+
+    public void remover(Long id) throws PersistenciaException {
+        String sql = "DELETE FROM usuario WHERE id = ?";
+
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setLong(1, id);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("Erro ao remover usuário.", e);
+        }
+    }
+
+
+    public boolean registrarTentativaFalha(String login) throws PersistenciaException {
+
+        String select = "SELECT id, tentativas_login, bloqueado FROM usuario WHERE login = ?";
+        String update = "UPDATE usuario SET tentativas_login=?, bloqueado=?, data_bloqueio=? WHERE id=?";
+
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement psSel = con.prepareStatement(select);
+             PreparedStatement psUpd = con.prepareStatement(update)) {
+
+            psSel.setString(1, login);
+
+            try (ResultSet rs = psSel.executeQuery()) {
+                if (rs.next()) {
+                    long id = rs.getLong("id");
+                    int tentativas = rs.getInt("tentativas_login");
+                    boolean bloqueado = rs.getBoolean("bloqueado");
+
+                    if (bloqueado) return true;
+
+                    tentativas++;
+                    boolean bloquear = tentativas >= LIMITE_TENTATIVAS;
+
+                    psUpd.setInt(1, tentativas);
+                    psUpd.setBoolean(2, bloquear);
+                    psUpd.setTimestamp(3, bloquear ? new Timestamp(System.currentTimeMillis()) : null);
+                    psUpd.setLong(4, id);
+
+                    psUpd.executeUpdate();
+                    return bloquear;
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("Erro ao registrar tentativa falha.", e);
+        }
+        return false;
+    }
+     public List<Usuario> buscarUsuariosBloqueados() throws PersistenciaException {
         String sql = "SELECT * FROM usuario WHERE bloqueado = 1";
         List<Usuario> usuarios = new ArrayList<>();
 
@@ -161,91 +312,22 @@ public class UsuarioDAO {
 
         return usuarios;
     }
-
-    public void atualizar(Usuario u) throws PersistenciaException {
-        String sql = """
-            UPDATE usuario SET nome=?, telefone=?, email=?, data_nascimento=?, senha=?, tipo=?
-            WHERE id=?;
-        """;
-
+     public Usuario buscarPorLoginSeguro(String login) throws PersistenciaException {
+        String sql = "SELECT * FROM usuario WHERE login = ?";
         try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setString(1, u.getNome());
-            ps.setString(2, u.getTelefone());
-            ps.setString(3, u.getEmail());
-            ps.setDate(4, Date.valueOf(u.getDataDeNascimento()));
-            ps.setString(5, u.getSenha());
-            ps.setString(6, u.getTipo().name());
-            ps.setLong(7, u.getId());
-            ps.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new PersistenciaException("Erro ao atualizar usuário: " + e.getMessage());
-        }
-    }
-
-    public void remover(Long id) throws PersistenciaException {
-        String sql = "DELETE FROM usuario WHERE id=?";
-
-        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setLong(1, id);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new PersistenciaException("Erro ao remover usuário: " + e.getMessage());
-        }
-    }
-
-    public List<Usuario> listarUsuariosNaoAdm() throws PersistenciaException {
-        return listarPorTipoExcluindo("ADMINISTRADOR");
-    }
-
-    public List<Usuario> listarAlunos() throws PersistenciaException {
-        return listarPorTipo("ALUNO");
-    }
-
-    public List<Usuario> listarProfessores() throws PersistenciaException {
-        return listarPorTipo("PROFESSOR");
-    }
-
-    public List<Usuario> listarAdministradores() throws PersistenciaException {
-        return listarPorTipo("ADMINISTRADOR");
-    }
-
-    private List<Usuario> listarPorTipo(String tipo) throws PersistenciaException {
-        String sql = "SELECT * FROM usuario WHERE tipo=?";
-        List<Usuario> usuarios = new ArrayList<>();
-
-        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, tipo);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                usuarios.add(mapResultSet(rs));
+            ps.setString(1, login);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSet(rs);
+                }
             }
         } catch (SQLException e) {
-            throw new PersistenciaException("Erro ao listar usuários por tipo: " + e.getMessage());
+            throw new PersistenciaException("Erro ao buscar usuário por login (seguro): " + e.getMessage());
         }
-        return usuarios;
+        return null;
     }
-
-    private List<Usuario> listarPorTipoExcluindo(String tipo) throws PersistenciaException {
-        String sql = "SELECT * FROM usuario WHERE tipo<>?";
-        List<Usuario> usuarios = new ArrayList<>();
-
-        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, tipo);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                usuarios.add(mapResultSet(rs));
-            }
-        } catch (SQLException e) {
-            throw new PersistenciaException("Erro ao listar usuários (excluindo tipo): " + e.getMessage());
-        }
-        return usuarios;
-    }
-
-    public void resetarTentativasLogin(Long id) throws PersistenciaException {
+      public void resetarTentativasLogin(Long id) throws PersistenciaException {
         String sql = "UPDATE usuario SET tentativas_login = 0, bloqueado = 0, data_bloqueio = NULL WHERE id = ?";
 
         try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
@@ -255,63 +337,20 @@ public class UsuarioDAO {
             throw new PersistenciaException("Erro ao resetar tentativas de login: " + e.getMessage());
         }
     }
-
-    public boolean registrarTentativaFalha(String login) throws PersistenciaException {
-        String sqlSelect = "SELECT id, tentativas_login, bloqueado FROM usuario WHERE login = ?";
-        String sqlUpdate = "UPDATE usuario SET tentativas_login = ?, bloqueado = ?, data_bloqueio = ? WHERE id = ?";
-
-        try (Connection con = ConexaoDB.getConnection(); PreparedStatement psSelect = con.prepareStatement(sqlSelect); PreparedStatement psUpdate = con.prepareStatement(sqlUpdate)) {
-
-            psSelect.setString(1, login);
-
-            try (ResultSet rs = psSelect.executeQuery()) {
-                if (rs.next()) {
-                    long userId = rs.getLong("id");
-                    int tentativasAtuais = rs.getInt("tentativas_login");
-                    boolean jaBloqueado = rs.getBoolean("bloqueado");
-
-                    if (jaBloqueado) {
-                        return true;
-                    }
-
-                    int novasTentativas = tentativasAtuais + 1;
-                    boolean bloquear = novasTentativas >= LIMITE_TENTATIVAS;
-
-                    psUpdate.setInt(1, novasTentativas);
-                    psUpdate.setBoolean(2, bloquear);
-
-                    if (bloquear) {
-                        psUpdate.setTimestamp(3, new java.sql.Timestamp(System.currentTimeMillis()));
-                    } else {
-                        psUpdate.setTimestamp(3, null);
-                    }
-
-                    psUpdate.setLong(4, userId);
-                    psUpdate.executeUpdate();
-
-                    return bloquear;
-                }
-            }
-        } catch (SQLException e) {
-            throw new PersistenciaException("Erro ao registrar tentativa falha: " + e.getMessage(), e);
-        }
-        return false;
-    }
-
     public void desbloquearUsuario(Long id) throws PersistenciaException {
-        String sql = "UPDATE usuario SET tentativas_login = 0, bloqueado = 0, data_bloqueio = NULL WHERE id = ?";
+        String sql = "UPDATE usuario SET tentativas_login=0, bloqueado=0, data_bloqueio=NULL WHERE id=?";
 
-        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, id);
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            throw new PersistenciaException("Erro ao desbloquear usuário: " + e.getMessage());
+            throw new PersistenciaException("Erro ao desbloquear usuário.", e);
         }
     }
-
-    public void bloquearUsuarioManual(Long id) throws PersistenciaException {
+     public void bloquearUsuarioManual(Long id) throws PersistenciaException {
         String sql = "UPDATE usuario SET tentativas_login = ?, bloqueado = 1, data_bloqueio = ? WHERE id = ?";
 
         try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
@@ -325,43 +364,44 @@ public class UsuarioDAO {
             throw new PersistenciaException("Erro ao bloquear usuário manualmente: " + e.getMessage());
         }
     }
+    public void atualizarFoto(Long idUsuario, String caminhoFoto) throws SQLException {
 
-    public void deletar(Long id) throws PersistenciaException {
-        String sql = "DELETE FROM usuario WHERE id = ?";
+    String sql = "UPDATE usuario SET foto_perfil = ? WHERE id = ?";
 
-        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setLong(1, id);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new PersistenciaException("Erro ao deletar usuário: " + e.getMessage());
-        }
+    try (Connection con = ConexaoDB.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setString(1, caminhoFoto);
+        ps.setLong(2, idUsuario);
+
+        ps.executeUpdate();
     }
+}
 
     private Usuario mapResultSet(ResultSet rs) throws SQLException {
 
-        Usuario u = new Usuario(
-                rs.getLong("id"),
-                rs.getString("cpf"),
-                rs.getString("nome"),
-                rs.getString("telefone"),
-                rs.getString("email"),
-                rs.getDate("data_nascimento") != null
-                ? rs.getDate("data_nascimento").toLocalDate()
-                : null,
-                rs.getString("senha"),
-                rs.getString("login"),
-                UsuarioTipo.valueOf(rs.getString("tipo")),
-                null
-        );
+        Usuario u = new Usuario();
 
-        try {
-            u.setBloqueado(rs.getBoolean("bloqueado"));
-            u.setTentativasLogin(rs.getInt("tentativas_login"));
-            u.setDataBloqueio(rs.getTimestamp("data_bloqueio"));
-        } catch (SQLException ignored) {
+        u.setId(rs.getLong("id"));
+        u.setCpf(rs.getString("cpf"));
+        u.setNome(rs.getString("nome"));
+        u.setTelefone(rs.getString("telefone"));
+        u.setEmail(rs.getString("email"));
+
+        Date data = rs.getDate("data_nascimento");
+        if (data != null) {
+            u.setDataDeNascimento(data.toLocalDate());
         }
+
+        u.setSenha(rs.getString("senha"));
+        u.setLogin(rs.getString("login"));
+        u.setTipo(UsuarioTipo.valueOf(rs.getString("tipo")));
+        u.setFotoPerfil(rs.getString("foto_perfil"));
+
+        u.setBloqueado(rs.getBoolean("bloqueado"));
+        u.setTentativasLogin(rs.getInt("tentativas_login"));
+        u.setDataBloqueio(rs.getTimestamp("data_bloqueio"));
 
         return u;
     }
-
 }

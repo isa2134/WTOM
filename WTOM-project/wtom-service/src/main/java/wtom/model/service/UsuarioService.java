@@ -210,4 +210,12 @@ public class UsuarioService {
     public Usuario cadastrarUsuarioERetornar(Usuario u) throws NegocioException {
         return cadastrarUsuario(u);
     }
+    public void atualizarFoto(Long idUsuario, String caminhoFoto) throws NegocioException {
+    try {
+        usuarioDAO.atualizarFoto(idUsuario, caminhoFoto);
+    } catch (Exception e) {
+       throw new NegocioException("Erro ao atualizar foto: " + e.getMessage());
+    }
+}
+
 }

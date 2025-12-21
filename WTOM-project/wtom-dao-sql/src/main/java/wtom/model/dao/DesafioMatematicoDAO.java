@@ -8,90 +8,83 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class DesafioMatematicoDAO {
-    
+
     private static DesafioMatematicoDAO desafioDAO;
-    
-    public static DesafioMatematicoDAO getInstance(){
-        if(desafioDAO == null){
+
+    public static DesafioMatematicoDAO getInstance() {
+        if (desafioDAO == null) {
             desafioDAO = new DesafioMatematicoDAO();
         }
         return desafioDAO;
     }
-    
-    public void inserir(DesafioMatematico desafio) throws PersistenciaException{
+
+    public void inserir(DesafioMatematico desafio) throws PersistenciaException {
         String sql = "INSERT INTO desafios (id_professor, titulo, enunciado, imagem, data) VALUES (?, ?, ?, ?, ?)";
-        
-        try(Connection con = ConexaoDB.getConnection();
-            PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
-            
+
+        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             ps.setLong(1, desafio.getIdProfessor());
             ps.setString(2, desafio.getTitulo());
             ps.setString(3, desafio.getEnunciado());
             ps.setString(4, desafio.getImagem());
             ps.setString(5, desafio.getData());
-            
+
             ps.executeUpdate();
-            
-            try(ResultSet rs = ps.getGeneratedKeys()){
-                if(rs.next()){
+
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
                     desafio.setId(rs.getLong(1));
                 }
             }
-            
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("erro ao inserir desafio matematico. " + e.getMessage());
         }
-        catch(SQLException e){
-            throw new PersistenciaException("erro ao inserir desafio matematico. " + e.getMessage());  
-        }   
     }
-    
-    public void atualizarAlternativaCorreta(Long idDesafio, Long idAlternativaCorreta) throws PersistenciaException{
+
+    public void atualizarAlternativaCorreta(Long idDesafio, Long idAlternativaCorreta) throws PersistenciaException {
         String sql = "UPDATE desafios SET id_alternativa_correta = ? WHERE id = ?";
-        
-        try(Connection con = ConexaoDB.getConnection();
-            PreparedStatement ps = con.prepareStatement(sql)){
-            
+
+        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+
             ps.setLong(1, idAlternativaCorreta);
             ps.setLong(2, idDesafio);
-            
+
             ps.executeUpdate();
-        }
-        catch(SQLException e){
+        } catch (SQLException e) {
             throw new PersistenciaException("erro ao definir alternativa correta para o desafio. " + e.getMessage());
         }
     }
-    
-    public void alterar(DesafioMatematico desafio) throws PersistenciaException{
+
+    public void alterar(DesafioMatematico desafio) throws PersistenciaException {
         String sql = "UPDATE desafios SET titulo=?, enunciado=?, imagem=?, id_alternativa_correta=?, data=? WHERE id=?";
-        
-        try(Connection con = ConexaoDB.getConnection();
-            PreparedStatement ps = con.prepareStatement(sql)){
-            
+
+        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+
             ps.setString(1, desafio.getTitulo());
             ps.setString(2, desafio.getEnunciado());
             ps.setString(3, desafio.getImagem());
             ps.setLong(4, desafio.getIdAlternativaCorreta());
             ps.setString(5, desafio.getData());
             ps.setLong(6, desafio.getId());
-            
+
             ps.executeUpdate();
-            
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("erro ao alterar desafio matematico. " + e.getMessage());
         }
-        catch(SQLException e){
-            throw new PersistenciaException("erro ao alterar desafio matematico. " + e.getMessage());  
-        }   
     }
-    
-    public DesafioMatematico pesquisarPorId(Long idDesafio) throws PersistenciaException{
+
+    public DesafioMatematico pesquisarPorId(Long idDesafio) throws PersistenciaException {
         String sql = "SELECT * FROM desafios WHERE id=? AND ativo = TRUE";
         DesafioMatematico desafio = null;
-        
-        try(Connection con = ConexaoDB.getConnection();
-            PreparedStatement ps = con.prepareStatement(sql)){
-            
+
+        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+
             ps.setLong(1, idDesafio);
-            
-            try(ResultSet rs = ps.executeQuery()){
-                if(rs.next()){
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
                     desafio = new DesafioMatematico();
                     desafio.setId(rs.getLong("id"));
                     desafio.setIdProfessor(rs.getLong("id_professor"));
@@ -103,21 +96,18 @@ public class DesafioMatematicoDAO {
                 }
             }
             return desafio;
+        } catch (SQLException e) {
+            throw new PersistenciaException("erro ao pesquisar id de desafio matematico. " + e.getMessage());
         }
-        catch(SQLException e){
-            throw new PersistenciaException("erro ao pesquisar id de desafio matematico. " + e.getMessage());  
-        }   
     }
-    
-    public List<DesafioMatematico> listarTodos() throws PersistenciaException{
+
+    public List<DesafioMatematico> listarTodos() throws PersistenciaException {
         List<DesafioMatematico> desafios = new ArrayList<>();
         String sql = "SELECT * FROM desafios WHERE ativo = TRUE";
-        
-        try(Connection con = ConexaoDB.getConnection();
-            PreparedStatement ps = con.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery()){
-            
-            while(rs.next()){
+
+        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
                 DesafioMatematico d = new DesafioMatematico();
                 d.setId(rs.getLong("id"));
                 d.setIdProfessor(rs.getLong("id_professor"));
@@ -129,23 +119,40 @@ public class DesafioMatematicoDAO {
                 desafios.add(d);
             }
             return desafios;
-            
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("erro ao listar desafios matematicos. " + e.getMessage());
         }
-        catch(SQLException e){
-            throw new PersistenciaException("erro ao listar desafios matematicos. " + e.getMessage());  
-        }   
     }
-    
-    public void deletar(Long idDesafio) throws PersistenciaException{
+
+    public Long buscarAlternativaCorreta(Long idDesafio) throws PersistenciaException {
+
+        String sql = "SELECT id_alternativa_correta FROM desafios WHERE id = ?";
+
+        try (
+                Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setLong(1, idDesafio);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getLong("id_alternativa_correta");
+            }
+            return null;
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("Erro ao buscar alternativa correta", e);
+        }
+    }
+
+    public void deletar(Long idDesafio) throws PersistenciaException {
         String sql = "UPDATE desafios SET ativo = FALSE WHERE id = ?";
-        try(Connection con = ConexaoDB.getConnection();
-            PreparedStatement ps = con.prepareStatement(sql)) {
-            
+        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+
             ps.setLong(1, idDesafio);
             ps.executeUpdate();
-            
-        } catch(SQLException e) {
+
+        } catch (SQLException e) {
             throw new PersistenciaException("Erro ao arquivar desafio. " + e.getMessage());
-        } 
+        }
     }
 }
