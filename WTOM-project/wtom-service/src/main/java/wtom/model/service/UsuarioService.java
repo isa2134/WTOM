@@ -206,6 +206,15 @@ public class UsuarioService {
             throw new UsuarioInvalidoException("Erro ao buscar usuário: " + e.getMessage());
         }
     }
+    
+    public List<Usuario> listarPorTipo(UsuarioTipo tipo) throws NegocioException {
+        try {
+            return usuarioDAO.listarPorTipo(tipo.name());
+        } catch (PersistenciaException e) {
+            throw new NegocioException("Erro ao listar usuários por tipo: " + e.getMessage());
+        }
+    }
+
 
     public Usuario cadastrarUsuarioERetornar(Usuario u) throws NegocioException {
         return cadastrarUsuario(u);

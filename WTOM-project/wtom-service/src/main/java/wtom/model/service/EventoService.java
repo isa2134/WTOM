@@ -2,10 +2,17 @@ package wtom.model.service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
 import wtom.model.dao.EventoDAO;
+import wtom.model.domain.AlcanceNotificacao;
+import wtom.model.domain.Categoria;
 import wtom.model.domain.Evento;
+import wtom.model.domain.Notificacao;
+import wtom.model.domain.TipoNotificacao;
 import wtom.model.domain.Usuario;
 import wtom.model.domain.util.RepeticaoTipo;
 
@@ -13,6 +20,7 @@ public class EventoService {
 
     private static EventoService instance;
     private final EventoDAO eventoDAO = EventoDAO.getInstance();
+    private final GestaoNotificacao gestaoNotificacao = new GestaoNotificacao();
 
     private EventoService() {
     }
@@ -34,7 +42,33 @@ public class EventoService {
         
         evento.setAutor(usuarioCriador);
         
-        return eventoDAO.salvar(evento);
+        Evento eventoSalvo = eventoDAO.salvar(evento);
+
+        enviarNotificacaoNovoEvento(eventoSalvo);
+        
+        return eventoSalvo;
+    }
+
+    private void enviarNotificacaoNovoEvento(Evento evento) {
+        try {
+            Notificacao n = new Notificacao();
+            n.setTitulo("Novo Evento: " + evento.getTitulo());
+            
+            String dataFormatada = evento.getDataEvento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            String horario = (evento.getHorario() != null) ? " às " + evento.getHorario() : "";
+            
+            n.setMensagem("Um novo evento foi agendado para o dia " + dataFormatada + horario + 
+                          ". Confira o cronograma para mais detalhes.");
+            
+            n.setTipo(TipoNotificacao.REUNIAO_AGENDADA); 
+            
+            n.setAlcance(AlcanceNotificacao.GERAL); 
+
+            gestaoNotificacao.selecionaAlcance(n, AlcanceNotificacao.GERAL);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public Evento atualizar(Evento evento, Usuario usuarioEditor) throws Exception {
@@ -70,6 +104,26 @@ public class EventoService {
             return listarTodos();
         }
         return eventoDAO.buscarPorTitulo(termo);
+    }
+
+    public void registrarEventoAutomatico(String titulo, String descricao, LocalDate data, LocalTime horario, String link, Long idCategoria, Usuario autor) {
+        try {
+            Evento evento = new Evento();
+            evento.setTitulo(titulo);
+            evento.setDescricao(descricao);
+            evento.setDataEvento(data);
+            evento.setHorario(horario);
+            evento.setAnexoUrl(link);
+            evento.setTipoRepeticao(RepeticaoTipo.NENHUM);
+            
+            Categoria categoria = new Categoria();
+            categoria.setId(idCategoria);
+            evento.setCategoria(categoria);
+            
+            salvar(evento, autor);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public List<Evento> listarEventosNoPeriodo(LocalDate dataInicio, LocalDate dataFim) throws Exception {

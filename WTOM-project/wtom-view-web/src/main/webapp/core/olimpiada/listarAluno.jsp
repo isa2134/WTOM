@@ -254,6 +254,42 @@
 
     <main>
     <h1>Olimpíadas Disponíveis</h1>
+    <button id="btnToggleFiltro" class="btn btn-filtrar-toggle">Filtrar</button>
+
+<div id="filtroArea" style="display:none; margin-bottom:15px;">
+    <form action="olimpiada" method="get" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <input type="hidden" name="acao" value="filtrar">
+        <input type="text" name="nome" placeholder="Buscar por nome..." value="${param.nome}">
+        <input type="text" name="topico" placeholder="Tópico" value="${param.topico}">
+        <input type="number" step="0.1" name="pesoMin" placeholder="Peso min" value="${param.pesoMin}" style="width:120px;">
+        <input type="number" step="0.1" name="pesoMax" placeholder="Peso max" value="${param.pesoMax}" style="width:120px;">
+        <input type="date" name="dataMin" value="${param.dataMin}">
+        <input type="date" name="dataMax" value="${param.dataMax}">
+        <label style="display:inline-flex; align-items:center; gap:6px;">
+            <input type="checkbox" name="expira24" ${param.expira24 == 'on' ? 'checked' : ''}> Expira em 24h
+        </label>
+        <select name="ordenarPor">
+            <option value="">Ordenar</option>
+            <option value="data" ${param.ordenarPor == 'data' ? 'selected' : ''}>Prazo</option>
+            <option value="peso" ${param.ordenarPor == 'peso' ? 'selected' : ''}>Peso</option>
+        </select>
+        <button class="btn btn-editar" type="submit">Aplicar filtro</button>
+    </form>
+</div>
+
+<script>
+    (function(){
+        const btn = document.getElementById("btnToggleFiltro");
+        const area = document.getElementById("filtroArea");
+        btn.addEventListener("click", () => {
+            const shown = area.style.display === "flex";
+            area.style.display = shown ? "none" : "flex";
+            btn.textContent = shown ? "Filtrar" : "Fechar filtros";
+        });
+        window.addEventListener("load", () => { area.style.display = "none"; });
+    })();
+</script>
+
     <div class="top-actions">
         <form action="olimpiada" method="post" style="display:inline;">
             <input type="hidden" name="acao" value="listarInscricoesAluno">

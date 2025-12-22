@@ -20,5 +20,14 @@
         <maven.compiler.release>17</maven.compiler.release> 
         <exec.mainClass>WtomDomain</exec.mainClass>
     </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
+    </dependencies>
+
 
 </project>

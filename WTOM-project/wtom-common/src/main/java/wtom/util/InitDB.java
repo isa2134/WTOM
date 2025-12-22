@@ -294,6 +294,24 @@ public class InitDB {
             st.executeUpdate(sql);
         }
     }
+    
+    public void initFeedbacks() throws SQLException{
+        String sql = """
+            CREATE TABLE IF NOT EXISTS feedbacks (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                id_autor BIGINT NOT NULL,
+                id_destinatario BIGINT NOT NULL,
+                mensagem TEXT NOT NULL,
+                data VARCHAR(100) NOT NULL,
+                ativo BOOLEAN DEFAULT TRUE,
+                FOREIGN KEY (id_autor) REFERENCES usuario(id),
+                FOREIGN KEY (id_destinatario) REFERENCES usuario(id));
+        """;
+        
+        try(Statement st = con.createStatement()){
+            st.executeUpdate(sql);
+        }
+    }
 
     public void initInscricoes() throws SQLException {
         String sql = """
@@ -675,15 +693,15 @@ public class InitDB {
 
     public void initOlimpiadasPadrao() throws SQLException {
         String sql = """
-            INSERT IGNORE INTO olimpiadas
-                (id, nome, peso)
-            VALUES
-                (1, 'OBMEP - Olimpíada Brasileira de Matemática das Escolas Públicas', 2.0),
-                (2, 'Canguru de Matemática', 1.5),
-                (3, 'Olimpíada Paulista de Matemática', 2.0),
-                (4, 'ONC - Olimpíada Nacional de Ciências', 1.2),
-                (5, 'OBA - Olimpíada Brasileira de Astronomia e Astronáutica', 1.0);
-            """;
+        INSERT IGNORE INTO olimpiadas
+            (id, nome, topico, data_limite_inscricao, data_prova, descricao, peso)
+        VALUES
+            (1, 'OBMEP', 'Matemática', '2025-03-01', '2025-03-10', 'Olimpíada de matemática', 2.0),
+            (2, 'Canguru', 'Matemática', '2025-04-01', '2025-04-15', 'Prova internacional canguru', 1.5),
+            (3, 'OPM', 'Matemática', '2025-05-01', '2025-05-20', 'Olimpíada paulista', 2.0),
+            (4, 'ONC', 'Ciências', '2025-06-01', '2025-06-15', 'Olimpíada nacional de ciências', 1.2),
+            (5, 'OBA', 'Astronomia', '2025-07-01', '2025-07-30', 'OBA astronômica', 1.0);
+        """;
 
         try (Statement st = con.createStatement()) {
             st.executeUpdate(sql);
@@ -738,9 +756,33 @@ public class InitDB {
         }
     }
 
+    public void initRedefinicaoSenha() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS redefinicao_senha (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                usuario_id BIGINT NOT NULL,
+                token VARCHAR(255) NOT NULL UNIQUE,
+                data_expiracao TIMESTAMP NOT NULL,
+                utilizado BOOLEAN DEFAULT FALSE,
+                data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+                CONSTRAINT fk_redef_senha_usuario
+                    FOREIGN KEY (usuario_id)
+                    REFERENCES usuario(id)
+                    ON DELETE CASCADE
+            );
+        """;
+
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+            System.out.println("Tabela 'redefinicao_senha' verificada.");
+        }
+    }
+
     public void initTodos() throws PersistenciaException {
         try {
             initUsuario();
+            initRedefinicaoSenha();
             initConfiguracao();
             initProfessor();
             initAluno();
@@ -751,6 +793,7 @@ public class InitDB {
             initAlternativas();
             initResolucoes();
             initSubmissoes();
+            initFeedbacks();
             initUsuariosPadrao();
             initReunioes();
             initAviso();
@@ -759,10 +802,8 @@ public class InitDB {
             initRespostas();
             initDuvidasTeste();
             initRespostasTeste();
-
             initAlunosPadrao();
             initProfessoresPadrao();
-
             initPremiacoes();
             initPremiacoesPadrao();
             initOlimpiadasPadrao();

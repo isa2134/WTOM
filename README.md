@@ -140,8 +140,8 @@ O projeto é um sistema que será implementado para a Equipe de Treinamento Olí
 | 3      | CSU13       |      5        |
 | 3      | CSU14       |      1        |
 | 3      | CSU15       |      6        |
-| 3      | CSU16       |      3        |
+| 3      | CSU16       |      4        |
 | 3      | CSU17       |      2        |
-| 3      | CSU18       |      4        |
+| 3      | CSU18       |      3        |
 
 

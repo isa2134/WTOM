@@ -2,21 +2,18 @@ package wtom.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-//import jakarta.servlet.http.HttpSession; 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-//import java.util.List;
 import wtom.model.domain.Olimpiada;
 import wtom.model.service.GestaoOlimpiada;
 import wtom.model.service.GestaoNotificacao;
-//import wtom.model.service.NotificacaoService;
-//import wtom.model.dao.UsuarioDAO;
+import wtom.model.service.EventoService;
 import wtom.model.domain.AlcanceNotificacao;
 import wtom.model.domain.Inscricao;
 import wtom.model.domain.Notificacao;
-//import wtom.model.domain.Usuario;
 import wtom.model.domain.TipoNotificacao;
 import wtom.model.domain.Usuario;
 import wtom.model.domain.util.UsuarioTipo;
@@ -25,32 +22,9 @@ import wtom.model.service.UsuarioService;
 import wtom.model.service.exception.NegocioException;
 
 public class OlimpiadaController {
-    
-    
-
-    /*private static boolean verificarPermissao(HttpServletRequest request) {
-        
-        if (session == null) {
-            return false;
-        }
-        
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogado"); 
-        
-        if (usuario == null) {
-            return false;
-        }
-        
-        String tipoUsuario = usuario.getTipo().toString(); 
-        return tipoUsuario.equals("ADMINISTRADOR") || tipoUsuario.equals("PROFESSOR");
-    }*/
-    
 
     public static String cadastrarOlimpiada(HttpServletRequest request) {
-        /*if (!verificarPermissao(request)) {
-            request.setAttribute("erro", "Acesso negado: Somente Administradores e Professores podem cadastrar olimpíadas.");
-            return "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
-        }*/
-        
+
         GestaoOlimpiada gestaoOlimpiada = new GestaoOlimpiada();
         GestaoNotificacao gestaoNotificacao = new GestaoNotificacao();
 
@@ -63,12 +37,25 @@ public class OlimpiadaController {
             double peso = Double.parseDouble(request.getParameter("peso"));
 
             Olimpiada nova = new Olimpiada(nome, topico, dataLimite, dataProva, descricao, peso);
-            gestaoOlimpiada.cadastrarOlimpiada(nova); 
+            gestaoOlimpiada.cadastrarOlimpiada(nova);
+
+            HttpSession session = request.getSession(false);
+            Usuario usuarioLogado = (session != null) ? (Usuario) session.getAttribute("usuario") : null;
+
+            EventoService.getInstance().registrarEventoAutomatico(
+                    nome,
+                    "Prova de Olimpíada: " + topico,
+                    dataProva,
+                    LocalTime.of(8, 0),
+                    null,
+                    4L,
+                    usuarioLogado
+            );
 
             Notificacao notificacao = new Notificacao();
             notificacao.setMensagem(
-                "Foi aberta a olimpíada \"" + nome + "\". " +
-                "Inscrições até " + dataLimite + " e prova em " + dataProva + "."
+                    "Foi aberta a olimpíada \"" + nome + "\". "
+                    + "Inscrições até " + dataLimite + " e prova em " + dataProva + "."
             );
             notificacao.setTipo(TipoNotificacao.OLIMPIADA_ABERTA);
 
@@ -93,14 +80,8 @@ public class OlimpiadaController {
         }
     }
 
-
     public static String alterarOlimpiada(HttpServletRequest request) {
-        /*if (!verificarPermissao(request)) {
-            request.setAttribute("erro", "Acesso negado: Somente Administradores e Professores podem alterar olimpíadas.");
-            System.out.println("não tem per  ");
-            return "redirect:/olimpiada?acao=listarOlimpiadaAdminProf";
-        }*/
-        
+
         GestaoOlimpiada gestaoOlimpiada = new GestaoOlimpiada();
 
         try {
@@ -124,7 +105,7 @@ public class OlimpiadaController {
         }
     }
 
-    public static String excluirOlimpiada(HttpServletRequest request) {   
+    public static String excluirOlimpiada(HttpServletRequest request) {
         try {
             int id = Integer.parseInt(request.getParameter("idOlimpiada"));
             GestaoOlimpiada gestaoOlimpiada = new GestaoOlimpiada();
@@ -138,12 +119,11 @@ public class OlimpiadaController {
             return "/core/olimpiada/listar.jsp";
         }
     }
-    
-    public static String cadastrarInscricao(HttpServletRequest request){
-        GestaoInscricao gestaoInscricao = new GestaoInscricao();
-        
 
-        try{
+    public static String cadastrarInscricao(HttpServletRequest request) {
+        GestaoInscricao gestaoInscricao = new GestaoInscricao();
+
+        try {
             HttpSession session = request.getSession(false);
             Usuario usuario = (Usuario) session.getAttribute("usuario");
 
@@ -155,12 +135,12 @@ public class OlimpiadaController {
             int idOlimpiada = Integer.parseInt(request.getParameter("idOlimpiada"));
 
             Inscricao inscricao = new Inscricao(
-                usuario.getNome(),
-                usuario.getCpf(),
-                idOlimpiada,
-                usuario.getId()
+                    usuario.getNome(),
+                    usuario.getCpf(),
+                    idOlimpiada,
+                    usuario.getId()
             );
-            
+
             gestaoInscricao.cadastrarInscricao(inscricao);
 
             return "redirect:/olimpiada?acao=listarOlimpiadaAluno";
@@ -171,10 +151,10 @@ public class OlimpiadaController {
             return "/core/olimpiada/listarAluno.jsp";
         }
     }
-        
-    public static String excluirInscricao(HttpServletRequest request){
+
+    public static String excluirInscricao(HttpServletRequest request) {
         GestaoInscricao gestaoInscricao = new GestaoInscricao();
-        try{
+        try {
             HttpSession session = request.getSession(false);
             Usuario usuario = (Usuario) session.getAttribute("usuario");
 
@@ -184,44 +164,43 @@ public class OlimpiadaController {
             }
 
             int idOlimpiada = Integer.parseInt(request.getParameter("idOlimpiada"));
-            
+
             if (usuario.getTipo() == UsuarioTipo.ADMINISTRADOR || usuario.getTipo() == UsuarioTipo.PROFESSOR) {
                 Long idAluno = Long.parseLong(request.getParameter("idUsuario"));
                 System.out.println("Entrou dentro do if de oc");
                 gestaoInscricao.excluirInscricao(idAluno, idOlimpiada);
                 return "redirect:/olimpiada?acao=listarInscricoesAdminProf&idOlimpiada=" + idOlimpiada;
             }
-            
+
             gestaoInscricao.excluirInscricao(usuario.getId(), idOlimpiada);
             System.out.println("Fez a ação de excluir em excluirInscricao");
             return "redirect:/olimpiada?acao=listarOlimpiadaAluno";
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("erro", "Erro ao excluir a inscrição: " + e.getMessage());
             return "/core/olimpiada/listarAluno.jsp";
         }
     }
-    
-    public static String alteraInscricao(HttpServletRequest request) throws NegocioException{
+
+    public static String alteraInscricao(HttpServletRequest request) throws NegocioException {
         Long idAluno = Long.parseLong(request.getParameter("idAluno"));
         int idOlimpiada = Integer.parseInt(request.getParameter("idOlimpiada"));
-        
+
         GestaoInscricao gestaoInscricao = new GestaoInscricao();
-        
+
         Inscricao i = new Inscricao(request.getParameter("nome"), request.getParameter("cpf"), idOlimpiada, idAluno);
         gestaoInscricao.alterarInscricao(i);
-        
+
         return "redirect:/olimpiada?acao=listarInscricoesAdminProf&idOlimpiada=" + idOlimpiada;
     }
-        
-    public static void prepararDadosInterfaceAluno(HttpServletRequest request){
+
+    public static void prepararDadosInterfaceAluno(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         Usuario usuario = (Usuario) session.getAttribute("usuario");
         GestaoOlimpiada gestaoOlimpiada = new GestaoOlimpiada();
-        
+
         List<Olimpiada> olimpiadas = gestaoOlimpiada.pesquisarOlimpiadasAtivas();
-        
 
         Map<Integer, Boolean> inscricoes = new HashMap<>();
         GestaoInscricao gestaoInscricao = new GestaoInscricao();
@@ -234,6 +213,4 @@ public class OlimpiadaController {
         request.setAttribute("olimpiadas", olimpiadas);
         request.setAttribute("inscricoes", inscricoes);
     }
-    
-    
 }
