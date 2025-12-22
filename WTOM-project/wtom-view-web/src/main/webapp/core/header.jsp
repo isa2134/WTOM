@@ -141,11 +141,13 @@
                 </c:choose>
                 <a href="${pageContext.request.contextPath}/usuarios/perfil.jsp"> <span>Perfil</span></a>
                 
+
                 <%-- Botões exclusivos do ADMIN --%> 
                 <c:if test="${usuario != null && usuario.tipo != null && usuario.tipo.name() == 'ADMINISTRADOR'}"> 
                     <a href="${pageContext.request.contextPath}/AdminAlunosController"><span>Alunos</span></a> 
                     <a href="${pageContext.request.contextPath}/AdminProfessoresController"><span>Professores</span></a> 
                 </c:if>
+                <c:choose>    
                     <c:when test="${usuario.tipo == UsuarioTipo.PROFESSOR || usuario.tipo == UsuarioTipo.ADMINISTRADOR}">
                         <a href="${pageContext.request.contextPath}/SubmissaoDesafioController?acao=listarTodos"
                            class="${pageContext.request.servletPath.contains('submissoes-desafio') || pageContext.request.servletPath.contains('SubmissaoDesafioController') ? 'active' : ''}">
@@ -159,6 +161,8 @@
                         </a>
                     </c:otherwise>
                 </c:choose>
+               
+
 
                 <a href="${pageContext.request.contextPath}/DuvidaController?acao=listar"
                    class="${pageContext.request.servletPath.contains('duvida') || pageContext.request.servletPath.contains('DuvidaController') ? 'active' : ''}">

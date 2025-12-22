@@ -386,7 +386,23 @@ label {
 .btn-transparent:hover {
     background: rgba(255, 255, 255, 0.2);
 }
+.btn-light {
+    background-color: #e9f1f3;
+    color: var(--accent);
+    border: 1px solid #c9d6da;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
 
+.btn-light:hover {
+    background-color: #d8e7ea;
+    border-color: #b9cacc;
+}
 .welcome-visual {
     z-index: 2;
     font-size: 8rem;
