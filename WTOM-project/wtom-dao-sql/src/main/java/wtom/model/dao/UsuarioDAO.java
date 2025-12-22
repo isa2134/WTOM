@@ -168,7 +168,7 @@ public class UsuarioDAO {
         return listarPorTipoExcluindo("ADMINISTRADOR");
     }
 
-    private List<Usuario> listarPorTipo(String tipo) throws PersistenciaException {
+    public List<Usuario> listarPorTipo(String tipo) throws PersistenciaException {
         String sql = "SELECT * FROM usuario WHERE tipo = ?";
         List<Usuario> lista = new ArrayList<>();
 
@@ -267,10 +267,6 @@ public class UsuarioDAO {
         try (Connection con = ConexaoDB.getConnection();
              PreparedStatement psSel = con.prepareStatement(select);
              PreparedStatement psUpd = con.prepareStatement(update)) {
-
-    public List<Usuario> listarPorTipo(String tipo) throws PersistenciaException {
-        String sql = "SELECT * FROM usuario WHERE tipo=?";
-            psSel.setString(1, login);
 
             try (ResultSet rs = psSel.executeQuery()) {
                 if (rs.next()) {
