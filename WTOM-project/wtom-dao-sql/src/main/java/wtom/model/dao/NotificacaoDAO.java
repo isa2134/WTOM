@@ -35,7 +35,7 @@ public class NotificacaoDAO {
             ps.setString(2, notificacao.getMensagem());
             ps.setString(3, notificacao.getTipo().name());        
             ps.setString(4, notificacao.getAlcance().name());
-            ps.setBoolean(5, notificacao.getLida());
+            ps.setBoolean(5, notificacao.isLida());
             ps.setObject(6, notificacao.getDestinatario() != null ? notificacao.getDestinatario().getId() : null);
 
             ps.executeUpdate();
@@ -91,8 +91,6 @@ public class NotificacaoDAO {
             ps.setLong(1, idUsuario);
 
             try (ResultSet rs = ps.executeQuery()) {
-                UsuarioDAO usuarioDAO = UsuarioDAO.getInstance();
-
                 while (rs.next()) {
                     Notificacao n = mapResultSet(rs);
                     
