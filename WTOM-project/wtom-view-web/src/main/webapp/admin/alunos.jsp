@@ -47,10 +47,7 @@
                             <div id="opcoes-relatorio-${a.id}" class="relatorio-expansivel">
                                 <form method="get" action="${pageContext.request.contextPath}/relatorio/desempenho/pdf">
                                     <input type="hidden" name="idAluno" value="${a.id}"/>
-                                    <div class="periodo-opcoes">
                                         <label><input type="hidden" name="periodo" value="180"></label>
-                                    </div>
-
                                     <div class="relatorio-botoes">
                                         <button type="submit" class="btn btn-success btn-sm btn-relatorio">📊 Emitir Relatório</button>
                                     </div>
@@ -65,14 +62,4 @@
 </div>
 
 <jsp:include page="/includes/footer.jsp" />
-
-
-<script>
-    function toggleRelatorio(idAluno) {
-        const div = document.getElementById("opcoes-relatorio-" + idAluno);
-        if (!div) return;
-        div.classList.toggle("aberto");
-        console.log("tá mexendo");
-    }
-</script>
 

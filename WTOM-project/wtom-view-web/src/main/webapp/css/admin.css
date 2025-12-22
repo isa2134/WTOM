@@ -220,20 +220,10 @@
     padding-top: 15px;
 }
 
-.relatorio-expansivel.aberto {
-    display: block;
-}
 .relatorio-expansivel {
-    display: none !important; 
-    max-height: 0 !important;
-    overflow: hidden !important;
-    opacity: 0 !important;
-    transition: max-height 0.3s ease, opacity 0.3s ease !important;
-}
-
-.relatorio-expansivel.aberto {
-    max-height: 500px;
+    display: block; 
     opacity: 1;
+    transition: max-height 0.3s ease, opacity 0.3s ease !important;
 }
 
 .btn-relatorio {
