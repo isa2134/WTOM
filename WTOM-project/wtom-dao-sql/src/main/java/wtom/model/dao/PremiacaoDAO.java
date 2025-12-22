@@ -7,10 +7,11 @@ import wtom.dao.exception.PersistenciaException;
 import wtom.util.ConexaoDB;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
+ 
 public class PremiacaoDAO {
 
     private static PremiacaoDAO instance;
@@ -252,4 +253,49 @@ public class PremiacaoDAO {
     void setPesoFinalDirectly(Premiacao p, double peso) {
         p.setPesoFinalForDao(peso);
     }
+    
+    public List<Premiacao> listarPorUsuarioEPeriodo(Long usuarioId, LocalDate inicio, LocalDate fim) throws PersistenciaException {
+
+        if (usuarioId == null) {
+            throw new PersistenciaException("usuarioId não pode ser nulo");
+        }
+        if (inicio == null || fim == null) {
+            throw new PersistenciaException("Período inválido: datas não podem ser nulas");
+        }
+        if (inicio.isAfter(fim)) {
+            throw new PersistenciaException("Data inicial não pode ser posterior à data final");
+        }
+
+        String sql = """
+            SELECT *
+            FROM premiacao
+            WHERE usuario_id = ?
+              AND ano BETWEEN ? AND ?
+            ORDER BY ano DESC, peso_final DESC
+        """;
+
+        List<Premiacao> lista = new ArrayList<>();
+
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setLong(1, usuarioId);
+            ps.setInt(2, inicio.getYear());
+            ps.setInt(3, fim.getYear());
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(mapResultSetParaPremiacao(rs));
+                }
+            }
+
+            return lista;
+
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                "Erro ao listar premiações do usuário no período", e
+            );
+        }
+    }
+
 }

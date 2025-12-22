@@ -1,5 +1,5 @@
 
-package wtom.model.domain;
+package wtom.model.domain.dto;
 
 public class RankingPremiacaoMedalhaDTO extends RankingDTO {
     private int ouros;

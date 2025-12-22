@@ -4,7 +4,7 @@
     <jsp:param name="pageTitle" value="Admin - Alunos" />
 </jsp:include>
 
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin.css">  
 
 <div class="page content">
     <header class="page-header">
@@ -26,9 +26,8 @@
                 <c:forEach var="a" items="${alunos}">
                     <div class="card">
                         <div class="card-body">
-                            
                             <h4>${a.usuario.nome}</h4>
-                            
+
                             <div class="card-info">
                                 <p><strong>ID:</strong> ${a.id}</p>
                                 <p><strong>Curso:</strong> ${a.curso}</p>
@@ -40,10 +39,22 @@
                                 <a class="btn btn-primary btn-sm" href="${pageContext.request.contextPath}/EditarAlunoController?id=${a.id}">
                                     Editar Dados
                                 </a>
-
                                 <a class="btn btn-secondary btn-sm" href="${pageContext.request.contextPath}/AdminPremiacoesController?idAluno=${a.id}">
                                     Editar Premiações
                                 </a>
+                            </div>
+
+                            <div id="opcoes-relatorio-${a.id}" class="relatorio-expansivel">
+                                <form method="get" action="${pageContext.request.contextPath}/relatorio/desempenho/pdf">
+                                    <input type="hidden" name="idAluno" value="${a.id}"/>
+                                    <div class="periodo-opcoes">
+                                        <label><input type="hidden" name="periodo" value="180"></label>
+                                    </div>
+
+                                    <div class="relatorio-botoes">
+                                        <button type="submit" class="btn btn-success btn-sm btn-relatorio">📊 Emitir Relatório</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -54,3 +65,14 @@
 </div>
 
 <jsp:include page="/includes/footer.jsp" />
+
+
+<script>
+    function toggleRelatorio(idAluno) {
+        const div = document.getElementById("opcoes-relatorio-" + idAluno);
+        if (!div) return;
+        div.classList.toggle("aberto");
+        console.log("tá mexendo");
+    }
+</script>
+

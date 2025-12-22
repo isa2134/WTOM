@@ -195,6 +195,33 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 15px rgba(0, 188, 212, 0.4);
     }
+    
+    .modal-relatorio {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
+        z-index: 999;
+    }
+
+    .modal-content-relatorio {
+        background: #fff;
+        width: 360px;
+        padding: 30px;
+        border-radius: 12px;
+        margin: 15% auto;
+        text-align: center;
+    }
+
+    .btn-cancelar {
+        margin-left: 10px;
+        background: #ccc;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 30px;
+        cursor: pointer;
+    }
+
 </style>
 
 <div class="page-profile-container">
@@ -281,10 +308,66 @@
            class="btn-edit">
             Editar Perfil
         </a>
+           
+        <% if (usuarioHeader.getTipo() != null && usuarioHeader.getTipo().name().equals("ALUNO")) { %>
+            <button class="btn-edit"
+                    style="margin-top: 20px;"
+                    onclick="abrirModalRelatorio()">
+                📊 Emitir Relatório de Desempenho
+            </button>
+        <% } %>
+
 
     </div>
 </div>
 <% } %>
 </div>
 
+<div id="modalRelatorio" class="modal-relatorio">
+    <div class="modal-content-relatorio">
+        <h3>Período do Relatório</h3>
+
+        <form method="get"
+              action="${pageContext.request.contextPath}/relatorio/desempenho/pdf">
+
+            <label>
+                <input type="radio" name="periodo" value="30" checked>
+                Últimos 30 dias
+            </label><br>
+
+            <label>
+                <input type="radio" name="periodo" value="90">
+                Últimos 3 meses
+            </label><br>
+
+            <label>
+                <input type="radio" name="periodo" value="180">
+                Últimos 6 meses
+            </label><br><br>
+
+            <button type="submit" class="btn-edit">
+                Baixar PDF
+            </button>
+
+            <button type="button"
+                    class="btn-cancelar"
+                    onclick="fecharModalRelatorio()">
+                Cancelar
+            </button>
+        </form>
+    </div>
+</div>
+
+
 <script src="${pageContext.request.contextPath}/js/cssControl.js"></script>
+<script>
+    function abrirModalRelatorio() {
+        document.getElementById("modalRelatorio").style.display = "block";
+    }
+
+    function fecharModalRelatorio() {
+        document.getElementById("modalRelatorio").style.display = "none";
+    }
+</script>
+
+   

@@ -22,38 +22,33 @@ public class GestaoSubmissaoDesafio {
     }
 
     public Long cadastrar(SubmissaoDesafio submissao) throws PersistenciaException {
-
         List<String> erros = SubmissaoDesafioHelper.validarSubmissao(submissao);
         if (!erros.isEmpty()) {
             throw new NegocioException(erros);
         }
 
-        SubmissaoDesafio existente =
-                submissaoDAO.pesquisarPorAlunoEDesafio(
-                        submissao.getIdAluno(),
-                        submissao.getIdDesafio()
-                );
+        int qtdSubmissoes =  submissaoDAO.contarSubmissoes(submissao.getIdAluno(),submissao.getIdDesafio());
 
-        if (existente != null) {
-            throw new NegocioException(
-                List.of("Você já respondeu este desafio.")
-            );
-        }
+        boolean jaAcertouAntes = submissaoDAO.jaAcertouAntes(submissao.getIdAluno(),submissao.getIdDesafio());
 
         submissaoDAO.inserir(submissao);
 
-        Long alternativaCorreta =
-                desafioDAO.buscarAlternativaCorreta(submissao.getIdDesafio());
+        Long alternativaCorreta = desafioDAO.buscarAlternativaCorreta(submissao.getIdDesafio());
 
-        if (alternativaCorreta != null &&
-            alternativaCorreta.equals(submissao.getIdAlternativaEscolhida())) {
+        boolean acertouAgora = alternativaCorreta != null && alternativaCorreta.equals(submissao.getIdAlternativaEscolhida());
 
-            int pontos = 10; // pode vir do desafio no futuro
+        if (acertouAgora && !jaAcertouAntes) {
+            int pontos;
+
+            if (qtdSubmissoes == 0) pontos = 15; 
+            else pontos = 5;
+            
             alunoDAO.adicionarPontuacao(submissao.getIdAluno(), pontos);
         }
-
+        
         return submissao.getId();
     }
+
 
     public List<SubmissaoDesafio> listarPorDesafio(Long idDesafio) throws PersistenciaException {
         return submissaoDAO.listarPorIdDesafio(idDesafio);

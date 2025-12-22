@@ -195,4 +195,60 @@ public class SubmissaoDesafioDAO {
         }
     }
     
+    public int contarSubmissoes(Long idAluno, Long idDesafio) throws PersistenciaException {
+
+        String sql = """
+            SELECT COUNT(*)
+            FROM submissoes_desafio
+            WHERE id_aluno = ? AND id_desafio = ?
+        """;
+
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setLong(1, idAluno);
+            ps.setLong(2, idDesafio);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                return rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                "Erro ao contar submissões: " + e.getMessage()
+            );
+        }
+    }
+    
+    public boolean jaAcertouAntes(Long idAluno, Long idDesafio) throws PersistenciaException {
+
+        String sql = """
+            SELECT 1
+            FROM submissoes_desafio s
+            JOIN desafios d ON d.id = s.id_desafio
+            WHERE s.id_aluno = ?
+              AND s.id_desafio = ?
+              AND s.id_alternativa_escolhida = d.id_alternativa_correta
+            LIMIT 1
+        """;
+
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setLong(1, idAluno);
+            ps.setLong(2, idDesafio);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                "Erro ao verificar acerto anterior: " + e.getMessage()
+            );
+        }
+    }
+
+
 }

@@ -188,3 +188,55 @@
     background-color: #7f8c8d;
     border-color: #7f8c8d;
 }
+
+.relatorio-expansivel {
+    display: none; 
+    background: rgba(255, 255, 255, 0.05); 
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 15px;
+    border: 1px dashed var(--primary-color); 
+}
+
+.periodo-opcoes {
+    display: flex;
+    justify-content: space-around; 
+    background: #2c3e50;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.periodo-opcoes label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.card-actions-relatorio {
+    margin-top: 15px;
+    border-top: 1px solid #4a637a;
+    padding-top: 15px;
+}
+
+.relatorio-expansivel.aberto {
+    display: block;
+}
+.relatorio-expansivel {
+    display: none !important; 
+    max-height: 0 !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    transition: max-height 0.3s ease, opacity 0.3s ease !important;
+}
+
+.relatorio-expansivel.aberto {
+    max-height: 500px;
+    opacity: 1;
+}
+
+.btn-relatorio {
+    padding: 8px 14px;
+    font-size: 0.9rem;
+}

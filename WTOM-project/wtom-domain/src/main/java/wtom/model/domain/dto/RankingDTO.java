@@ -1,4 +1,4 @@
-package wtom.model.domain;
+package wtom.model.domain.dto;
 
 public abstract class RankingDTO {
 
