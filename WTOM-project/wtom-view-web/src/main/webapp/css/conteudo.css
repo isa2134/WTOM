@@ -40,15 +40,6 @@ textarea {
   margin-bottom: 5px;
 }
 
-
-.btn-danger {
-    background: var(--danger);
-    box-shadow: 0 4px 12px rgba(216, 87, 74, 0.2);
-}
-.btn-danger:hover {
-    background: var(--danger-hover);
-}
-
 .back-button-fixed {
     position: absolute;
     top: 28px;

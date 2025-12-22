@@ -1231,6 +1231,24 @@ input:checked + .slider:before {
     .config-grid {
         grid-template-columns: 1fr;
     }
+
+    .hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 40px;
+        height: auto;
+    }
+
+    .hero-content {
+        max-width: 100%;
+    }
+    
+} 
+.card-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
 }
 
 .geral form-group{

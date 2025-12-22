@@ -294,6 +294,24 @@ public class InitDB {
             st.executeUpdate(sql);
         }
     }
+    
+    public void initFeedbacks() throws SQLException{
+        String sql = """
+            CREATE TABLE IF NOT EXISTS feedbacks (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                id_autor BIGINT NOT NULL,
+                id_destinatario BIGINT NOT NULL,
+                mensagem TEXT NOT NULL,
+                data VARCHAR(100) NOT NULL,
+                ativo BOOLEAN DEFAULT TRUE,
+                FOREIGN KEY (id_autor) REFERENCES usuario(id),
+                FOREIGN KEY (id_destinatario) REFERENCES usuario(id));
+        """;
+        
+        try(Statement st = con.createStatement()){
+            st.executeUpdate(sql);
+        }
+    }
 
     public void initInscricoes() throws SQLException {
         String sql = """
@@ -775,6 +793,7 @@ public class InitDB {
             initAlternativas();
             initResolucoes();
             initSubmissoes();
+            initFeedbacks();
             initUsuariosPadrao();
             initReunioes();
             initAviso();

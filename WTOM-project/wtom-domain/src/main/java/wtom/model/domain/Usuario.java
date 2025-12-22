@@ -17,6 +17,10 @@ public class Usuario {
     private String login;
     private UsuarioTipo tipo;
     private List<Premiacao> premiacoes;
+    
+    public Usuario(){
+        
+    }
 
     private boolean bloqueado;
     private int tentativasLogin;
@@ -26,8 +30,6 @@ public class Usuario {
 
     private static final long TEMPO_BLOQUEIO_MS = 30 * 60 * 1000;
 
-    public Usuario() {
-    }
 
     public Usuario(String login, String cpf) {
         this.login = login;
