@@ -9,7 +9,7 @@ import java.util.List;
 
 import wtom.model.domain.Usuario;
 import wtom.model.domain.util.UsuarioTipo;
-import wtom.model.domain.RankingDTO;
+import wtom.model.domain.dto.RankingDTO;
 import wtom.model.service.RankingService;
 
 @WebServlet("/ranking")

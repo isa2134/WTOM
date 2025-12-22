@@ -80,6 +80,54 @@ public class AlunoDAO {
 
         return alunos;
     }
+    
+    public int buscarPontuacaoPorIdAluno(Long idAluno) {
+        String sql = "SELECT COALESCE(pontuacao, 0) AS pontuacao FROM aluno WHERE id = ?";
+
+        try (
+            Connection con = ConexaoDB.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql)
+        ) {
+            ps.setLong(1, idAluno);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("pontuacao");
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar pontuação do aluno", e);
+        }
+
+        return 0; 
+    }
+    
+    public int buscarPontuacaoMedia() throws PersistenciaException {
+
+        String sql = """
+            SELECT AVG(pontuacao) AS media
+            FROM aluno
+        """;
+
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt("media"); 
+            }
+
+            return 0;
+
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                "Erro ao buscar pontuação média dos alunos: " + e.getMessage()
+            );
+        }
+    }
+
+
 
     public void atualizar(Aluno aluno) throws PersistenciaException {
         String sql = "UPDATE aluno SET curso = ?, pontuacao = ?, serie = ? WHERE id = ?";

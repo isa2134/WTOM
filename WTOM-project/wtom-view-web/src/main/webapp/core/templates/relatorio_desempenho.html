@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8" />
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&amp;display=swap" rel="stylesheet" />
+        <style>
+            body { font-family: 'Montserrat', sans-serif; padding: 20px; color: #333; }
+            .header { text-align: center; margin-bottom: 30px; }
+            .container { display: flex; gap: 20px; }
+            .column { 
+                flex: 1; 
+                text-align: center; 
+                position: relative;
+                padding: 0 10px; 
+                min-width: 200px;
+            }
+            .column:not(:last-child)::after {
+                content: ""; position: absolute; right: -10px; top: 0; bottom: 0; border-right: 3px dashed #000;
+            }
+            .stat-item { margin-bottom: 15px; font-size: 14px; }
+            .highlight-red { color: #ff4d4d; font-weight: bold; }
+            .highlight-green { color: #2ecc71; font-weight: bold; }
+            .highlight-blue { color: #3498db; font-weight: bold; }
+            .highlight-darkblue { color: #2c3e50; font-weight: bold; }
+            .medal-gold { color: #f1c40f; font-weight: bold; }
+            .medal-silver { color: #95a5a6; font-weight: bold; }
+            .medal-bronze { color: #a0522d; font-weight: bold; }
+            .medal-honor { color: #3498db; font-weight: bold; }
+            .chart { 
+                display: block;    /* Transforma a imagem em bloco para aceitar margens */
+                width: 220px; 
+                margin: 15px auto; /* 'auto' nas laterais centraliza o bloco */
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>Relatório de Desempenho</h1>
+            <p>Aluno: {{NOME}}</p>
+            <p>Período analisado: {{INICIO}} a {{FIM}}</p>
+        </div>
+
+        <div class="container">
+            <div class="column">
+                <h2>Estatísticas de Desafios</h2>
+                <div class="stat-item">
+                    Realizou <span class="highlight-red">{{SUB}}</span> submissões<br />
+                    <span class="highlight-green">{{SUB_ACIMA_MEDIA}}.</span> 
+                </div>
+                <div class="stat-item">
+                    Acertou <span class="highlight-green">{{SUB_CORR}}</span> na 1ª tentativa
+                </div>
+                <div class="stat-item">
+                    Sua posição no ranking: <span class="highlight-green">{{POS_DESAFIO}}</span><br />
+                    TOP <strong>{{POS_REL_DESAFIO}}%</strong>
+                </div>
+                <div class="stat-item">
+                    Aproveitamento: <span class="highlight-blue">{{APROVEITAMENTO}}%</span>
+                </div>
+                <div style="text-align: center; width: 100%;">
+                    <img class="chart" src="{{GRAFICO_PIZZA}}" alt="Gráfico de Desafios" />
+                </div>
+            </div>
+
+            <div class="column">
+                <h2>Estatísticas de Olimpíadas</h2>
+                <div class="stat-item">
+                    Realizou <span class="highlight-red">{{OLIMPIADAS}}</span> olimpíadas
+                </div>
+                <div class="stat-item">
+                    <span class="medal-gold"> {{OURO}} Medalha de Ouro</span><br />
+                    <span class="medal-silver"> {{PRATA}} Medalha de Prata</span><br />
+                    <span class="medal-bronze"> {{BRONZE}} Medalha de Bronze</span><br />
+                    <span class="medal-honor"> {{MH}} Menção Honrosa</span>
+                </div>
+                <div class="stat-item">
+                    De {{OLIMPIADAS}} olimpíadas, você conquistou {{PREMIACOES}} premiações!
+                </div>
+                <img class="chart" src="{{GRAFICO_MEDALHAS}}" />
+            </div>
+
+            <div class="column">
+                <h2>Pontuação</h2>
+                <div class="stat-item">
+                    Pontuação atual<br />
+                    <span class="highlight-green" style="font-size: 26px;">{{PONTUACAO}}</span> 
+                    <br />Média dos alunos<br />
+                    <span class="highlight-red" style="font-size: 26px;">{{PONTUACAO_MEDIA}}</span>
+                    <p>{{MSG_PONTUACAO}}</p>
+                </div>
+                <div class="stat-item">
+                    Muito bem! Continue se esforçando! Lembre-se, grandes obras são reflexos de pequenos esforços constantes! 
+                    A diferença entre um campeão e um iniciante, é que o campeão é o iniciante que nunca desistiu! Foque nos estudos e no progresso contínuo.
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

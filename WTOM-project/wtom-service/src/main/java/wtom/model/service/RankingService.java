@@ -1,5 +1,9 @@
 package wtom.model.service;
 
+import wtom.model.domain.dto.RankingDTO;
+import wtom.model.domain.dto.RankingDesafioDTO;
+import wtom.model.domain.dto.RankingPremiacaoMedalhaDTO;
+import wtom.model.domain.dto.RankingPremiacaoPesoDTO;
 import wtom.model.dao.RankingPremiacaoDAO;
 import wtom.model.dao.RankingDesafioDAO;
 import wtom.model.domain.*;
