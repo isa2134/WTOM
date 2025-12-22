@@ -7,6 +7,10 @@
         tipoParam = request.getParameter("tipo");
     }
     String erro = (String) request.getAttribute("erro");
+    Integer minTamanhoSenha = (Integer) request.getAttribute("minTamanhoSenha");
+    if (minTamanhoSenha == null) {
+        minTamanhoSenha = 8;
+    }
 %>
 
 <div class="page">
@@ -35,7 +39,12 @@
                 <input type="text" name="login" value="<%= request.getParameter("login") != null ? request.getParameter("login") : "" %>" required>
 
                 <label>Senha</label>
-                <input type="password" name="senha" required>
+                <input type="password" 
+                       name="senha" 
+                       minlength="<%= minTamanhoSenha %>"
+                       placeholder="Mínimo de <%= minTamanhoSenha %> caracteres"
+                       required>
+                <p class="hint">A senha deve ter no mínimo <%= minTamanhoSenha %> caracteres.</p>
 
                 <label>Data de Nascimento</label>
                 <input type="date" name="dataDeNascimento" value="<%= request.getParameter("dataDeNascimento") != null ? request.getParameter("dataDeNascimento") : "" %>" required>
@@ -65,7 +74,7 @@
                         <option value="Trânsito" <%= "Trânsito".equals(request.getParameter("curso")) ? "selected" : "" %>>Trânsito</option>
                         <option value="Redes de Computadores" <%= "Redes de Computadores".equals(request.getParameter("curso")) ? "selected" : "" %>>Redes de Computadores</option>
                     </select>
-                   
+                    
                     <label>Série</label>
                     <select name="serie" required>
                         <option value="">Selecione a série</option>
@@ -74,7 +83,7 @@
                         <option value="3º Ano" <%= "3º Ano".equals(request.getParameter("serie")) ? "selected" : "" %>>3º Ano</option>
                     </select>
                 </div>
-   
+    
                 <div id="professorFields" style="<%= "PROFESSOR".equals(tipoParam) ? "" : "display:none" %>">
                     <label>Área</label>
                     <input type="text" name="area" value="<%= request.getParameter("area") != null ? request.getParameter("area") : "" %>">

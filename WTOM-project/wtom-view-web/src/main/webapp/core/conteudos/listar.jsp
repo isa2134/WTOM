@@ -2,14 +2,14 @@
 <%@page import="wtom.model.domain.util.UsuarioTipo" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<%@include file="/core/header.jsp" %>
+<%@include file="/core/menu.jsp" %>
 
 <main class="content">
     <section class="page">
         <header class="page-header">
             <h2>Conteúdos Didáticos</h2>
         </header>
-    
+
         <c:if test="${not empty sessionScope.mensagemSucesso}">
             <p style="color: green;">${sessionScope.mensagemSucesso}</p>
             <c:remove var="mensagemSucesso" scope="session"/>
@@ -19,11 +19,11 @@
             <p style="color: red;">${sessionScope.erro}</p>
             <c:remove var="erro" scope="session"/>
         </c:if>
-            
+
         <div>
             <div class="btn-add">
                 <c:if test="${usuario.tipo == UsuarioTipo.PROFESSOR || usuario.tipo == UsuarioTipo.ADMINISTRADOR}">
-                    <button class="btn" onclick="window.location.href='${pageContext.request.contextPath}/core/conteudos/adicionar-alterar.jsp'">Adicionar material</button>
+                    <button class="btn" onclick="window.location.href = '${pageContext.request.contextPath}/core/conteudos/adicionar-alterar.jsp'">Adicionar material</button>
                 </c:if>
             </div>
             <div class="card"style="margin-top:12px">
@@ -35,10 +35,11 @@
                                 <div class="small muted">${conteudo.data}</div>
                             </div>
                             <div class="content-actions">
-                                <button class="btn" onclick="window.location.href='${pageContext.request.contextPath}/ConteudoController?acao=visualizar&id=${conteudo.id}'">Abrir</button>
+                                <button class="btn" onclick="window.location.href = '${pageContext.request.contextPath}/ConteudoController?acao=visualizar&id=${conteudo.id}'">Abrir</button>
                                 <c:if test="${usuario.tipo == UsuarioTipo.PROFESSOR || usuario.tipo == UsuarioTipo.ADMINISTRADOR}">
-                                    <button class="btn ghost" onclick="window.location.href='${pageContext.request.contextPath}/ConteudoController?acao=editar&id=${conteudo.id}'">Editar</button>
-                                    <button class="btn danger ghost" onclick="if(confirm('Deseja excluir esse conteúdo?'))window.location.href='${pageContext.request.contextPath}/ConteudoController?acao=excluir&id=${conteudo.id}'">Excluir</button>
+                                    <button class="btn ghost" onclick="window.location.href = '${pageContext.request.contextPath}/ConteudoController?acao=editar&id=${conteudo.id}'">Editar</button>
+                                    <button class="btn danger ghost" onclick="if (confirm('Deseja excluir esse conteúdo?'))
+                                                window.location.href = '${pageContext.request.contextPath}/ConteudoController?acao=excluir&id=${conteudo.id}'">Excluir</button>
                                 </c:if>
                             </div>
                         </div>
@@ -48,6 +49,7 @@
 
         </div>
     </section>
+    
 </main>
 
 <%@include file="/core/footer.jsp" %>

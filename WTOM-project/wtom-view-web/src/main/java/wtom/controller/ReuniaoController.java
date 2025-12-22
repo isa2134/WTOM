@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import wtom.model.service.GoogleMeetService;
 import wtom.model.service.GestaoNotificacao;
 import wtom.model.service.ReuniaoService;
+import wtom.model.service.EventoService;
 
 import wtom.model.domain.*;
 import wtom.model.domain.util.UsuarioTipo;
@@ -56,16 +57,22 @@ public class ReuniaoController extends HttpServlet {
         } else if ("atualizar".equals(acao)) {
             atualizar(req, resp);
         } else {
-            resp.sendRedirect(req.getContextPath() + "/reuniao?acao=listar");
+            resp.sendRedirect(req.getContextPath() + "/core/reuniao?acao=listar");
         }
     }
 
     private void listar(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+        Usuario usuario = (Usuario) req.getSession().getAttribute("usuario");
+        
+        if (usuario == null) {
+            resp.sendRedirect(req.getContextPath() + "/home"); 
+            return;
+        }
+
         List<Reuniao> lista = service.listarTodas();
         LocalDateTime agora = LocalDateTime.now();
 
-        Usuario usuario = (Usuario) req.getSession().getAttribute("usuario");
         UsuarioTipo tipoUsuarioLogado = usuario.getTipo();
 
         lista.removeIf(r -> {
@@ -117,15 +124,27 @@ public class ReuniaoController extends HttpServlet {
     }
 
     private void novoForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Usuario usuario = (Usuario) req.getSession().getAttribute("usuario");
+        if (usuario == null) {
+            resp.sendRedirect(req.getContextPath() + "/home"); 
+            return;
+        }
+        
         req.setAttribute("reuniao", new Reuniao());
         req.getRequestDispatcher("/core/reuniao/form.jsp").forward(req, resp);
     }
 
     private void editarForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+        Usuario u = (Usuario) req.getSession().getAttribute("usuario");
+        if (u == null) {
+            resp.sendRedirect(req.getContextPath() + "/home"); 
+            return;
+        }
+        
         Long id = Long.parseLong(req.getParameter("id"));
         Reuniao r = service.buscarPorId(id);
-        Usuario u = (Usuario) req.getSession().getAttribute("usuario");
+        
 
         if (r == null) {
             listar(req, resp);
@@ -138,7 +157,7 @@ public class ReuniaoController extends HttpServlet {
                 && r.getCriadoPor().getId().equals(u.getId()));
 
         if (!pode) {
-            listar(req, resp);
+            resp.sendRedirect(req.getContextPath() + "/reuniao?acao=listar");
             return;
         }
 
@@ -148,8 +167,13 @@ public class ReuniaoController extends HttpServlet {
 
     private void excluir(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
 
-        Long id = Long.parseLong(req.getParameter("id"));
         Usuario u = (Usuario) req.getSession().getAttribute("usuario");
+        if (u == null) {
+            resp.sendRedirect(req.getContextPath() + "/home"); 
+            return;
+        }
+        
+        Long id = Long.parseLong(req.getParameter("id"));
 
         service.excluirReuniao(id, u);
 
@@ -158,8 +182,13 @@ public class ReuniaoController extends HttpServlet {
 
     private void encerrar(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
 
-        Long id = Long.parseLong(req.getParameter("id"));
         Usuario usuario = (Usuario) req.getSession().getAttribute("usuario");
+        if (usuario == null) {
+            resp.sendRedirect(req.getContextPath() + "/home"); 
+            return;
+        }
+        
+        Long id = Long.parseLong(req.getParameter("id"));
 
         service.encerrarReuniao(id, usuario);
 
@@ -169,9 +198,13 @@ public class ReuniaoController extends HttpServlet {
     private void salvar(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
+        Usuario usuario = (Usuario) req.getSession().getAttribute("usuario");
+        if (usuario == null) {
+            resp.sendRedirect(req.getContextPath() + "/home"); 
+            return;
+        }
+        
         try {
-            Usuario usuario = (Usuario) req.getSession().getAttribute("usuario");
-
             Reuniao r = new Reuniao();
 
             r.setTitulo(req.getParameter("titulo"));
@@ -203,6 +236,16 @@ public class ReuniaoController extends HttpServlet {
 
             service.criarReuniao(r, usuario);
 
+            EventoService.getInstance().registrarEventoAutomatico(
+                r.getTitulo(),
+                "Reunião: " + r.getDescricao(),
+                r.getDataHora().toLocalDate(),
+                r.getDataHora().toLocalTime(),
+                r.getLink(),
+                5L, 
+                usuario
+            );
+
             Notificacao n = new Notificacao();
             n.setTipo(TipoNotificacao.REUNIAO_AGENDADA);
             n.setMensagem("Nova reunião: " + r.getTitulo() + "\nData: " + r.getDataHora());
@@ -220,10 +263,14 @@ public class ReuniaoController extends HttpServlet {
 
     private void atualizar(HttpServletRequest req, HttpServletResponse resp)
             throws IOException, ServletException {
+        
+        Usuario usuario = (Usuario) req.getSession().getAttribute("usuario");
+        if (usuario == null) {
+            resp.sendRedirect(req.getContextPath() + "/home"); 
+            return;
+        }
 
         try {
-            Usuario usuario = (Usuario) req.getSession().getAttribute("usuario");
-
             Long id = Long.parseLong(req.getParameter("id"));
             Reuniao r = service.buscarPorId(id);
 

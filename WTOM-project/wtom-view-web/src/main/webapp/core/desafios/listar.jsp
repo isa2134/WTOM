@@ -2,7 +2,7 @@
 <%@page import="wtom.model.domain.util.UsuarioTipo" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<%@include file="/core/header.jsp" %>
+<%@include file="/core/menu.jsp" %>
 
 <main class="content">
     <section class="page">
