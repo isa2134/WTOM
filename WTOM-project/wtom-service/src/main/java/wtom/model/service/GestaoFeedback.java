@@ -5,6 +5,7 @@ import wtom.dao.exception.PersistenciaException;
 import wtom.model.dao.FeedbackDAO;
 import wtom.model.domain.Feedback;
 import wtom.model.domain.util.FeedbackHelper;
+import wtom.model.domain.util.UsuarioTipo;
 import wtom.model.exception.NegocioException;
 
 public class GestaoFeedback {
@@ -29,6 +30,7 @@ public class GestaoFeedback {
         return feedbackDAO.pesquisarPorId(id_feedback);
     }
     
+    
     public List<Feedback> listarFeedbacks() throws PersistenciaException{
         return feedbackDAO.listarTodos();
     }
@@ -39,6 +41,18 @@ public class GestaoFeedback {
     
     public List<Feedback> listarPorAutor(Long id_autor) throws PersistenciaException{
         return feedbackDAO.listarPorAutor(id_autor);
+    }
+    
+    public List<Feedback> listarPorTipoDestinatario(UsuarioTipo tipo) throws PersistenciaException{
+        return feedbackDAO.listarPorTipoDestinatario(tipo); 
+    }
+    
+    public List<Feedback> listarArquivados() throws PersistenciaException{
+        return feedbackDAO.listarArquivados();
+    }
+    
+    public List<Feedback> listarArquivadosPorTipoDestinatario(UsuarioTipo tipo) throws PersistenciaException{
+        return feedbackDAO.listarArquivadosPorTipoDestinatario(tipo);
     }
     
     public void excluir(Long id_feedback) throws PersistenciaException{

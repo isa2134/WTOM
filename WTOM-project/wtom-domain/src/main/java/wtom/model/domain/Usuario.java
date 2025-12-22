@@ -17,6 +17,10 @@ public class Usuario {
     private String login;
     private UsuarioTipo tipo;
     private List<Premiacao> premiacoes;
+    
+    public Usuario(){
+        
+    }
 
     public Usuario(String login, String cpf) {
         this.login = login;

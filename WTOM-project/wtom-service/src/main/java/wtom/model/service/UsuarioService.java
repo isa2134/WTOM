@@ -120,5 +120,14 @@ public class UsuarioService {
             return null;
         }
     }
+    
+    public List<Usuario> listarPorTipo(UsuarioTipo tipo) throws NegocioException {
+        try {
+            return usuarioDAO.listarPorTipo(tipo.name());
+        } catch (PersistenciaException e) {
+            throw new NegocioException("Erro ao listar usuários por tipo: " + e.getMessage());
+        }
+    }
+
 
 }

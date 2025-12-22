@@ -29,23 +29,27 @@
                 <a href="${pageContext.request.contextPath}/DesafioController?acao=listarTodos"><span>Desafios</span></a>
                 
                 <c:choose>
-                    <c:when test="${usuario.tipo == UsuarioTipo.PROFESSOR || usuario.tipo == UsuarioTipo.ADMINISTRADOR}">
-                        <a href="${pageContext.request.contextPath}/SubmissaoDesafioController?acao=listarTodos">
-                            <span>Submissões</span>
-                        </a>
+                    <c:when test="${isAdmin || isProfessor}">
+                        <a href="${pageContext.request.contextPath}/SubmissaoDesafioController?acao=listarTodos"><span>Submissões</span></a>
                     </c:when>
-
                     <c:otherwise>
-                        <a href="${pageContext.request.contextPath}/SubmissaoDesafioController?acao=listarPorAluno">
-                            <span>Meus desafios</span>
-                        </a>
+                        <a href="${pageContext.request.contextPath}/SubmissaoDesafioController?acao=listarPorAluno"><span>Meus desafios</span></a>
                     </c:otherwise>
                 </c:choose>
                 
                 <a href="${pageContext.request.contextPath}/DuvidaController?acao=listar"> <span>Dúvidas</span></a>
                 <a href="${pageContext.request.contextPath}/notificacao"> <span>Notificações</span></a>
                 <a href="${pageContext.request.contextPath}/reuniao?acao=listar">Reuniões Online</a>
+                <c:choose>
+                    <c:when test="${isAdmin}">
+                        <a href="${pageContext.request.contextPath}/FeedbackController?acao=listarAdmin"><span>Feedbacks</span></a>
+                    </c:when>
+                    <c:otherwise>
+                        <a href="${pageContext.request.contextPath}/FeedbackController?acao=listar"><span>Feedbacks</span></a>
+                    </c:otherwise>
+                </c:choose>
                 <a href="${pageContext.request.contextPath}/usuarios/perfil.jsp"> <span>Perfil</span></a>
+                
                 <%-- Botões exclusivos do ADMIN --%> 
                 <c:if test="${usuario != null && usuario.tipo != null && usuario.tipo.name() == 'ADMINISTRADOR'}"> 
                     <a href="${pageContext.request.contextPath}/AdminAlunosController"><span>Alunos</span></a> 

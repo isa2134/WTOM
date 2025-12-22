@@ -13,10 +13,10 @@ public class FeedbackHelper {
             erros.add("Feedback nao pode ser null!");
         }
         else{
-            if(feedback.getIdAutor() == null){
+            if(feedback.getAutor().getId() == null){
                 erros.add("Feedback precisa de id do autor!");
             }
-            if(feedback.getIdDestinatario() == null){
+            if(feedback.getDestinatario().getId() == null){
                 erros.add("Feedback precida de id do destinatario!");
             }
             if(feedback.getMensagem() == null){

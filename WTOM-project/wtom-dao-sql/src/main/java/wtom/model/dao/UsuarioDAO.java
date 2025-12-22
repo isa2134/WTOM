@@ -203,7 +203,7 @@ public class UsuarioDAO {
         return listarPorTipo("ADMINISTRADOR");
     }
 
-    private List<Usuario> listarPorTipo(String tipo) throws PersistenciaException {
+    public List<Usuario> listarPorTipo(String tipo) throws PersistenciaException {
         String sql = "SELECT * FROM usuario WHERE tipo=?";
         List<Usuario> usuarios = new ArrayList<>();
 
