@@ -230,7 +230,7 @@
                             <% }%>
                         </div>
                         <div class="user-details">
-                            <span class="user-name"><%= nomeUsuario%></span>
+                            <span class="user-name" style="color:white"><%= nomeUsuario%></span>
                             <span class="user-role">${usuario.tipo}</span>
                         </div>
                         
