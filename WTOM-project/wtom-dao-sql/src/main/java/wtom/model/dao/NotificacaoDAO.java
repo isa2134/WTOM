@@ -33,10 +33,10 @@ public class NotificacaoDAO {
 
             ps.setString(1, notificacao.getTitulo());
             ps.setString(2, notificacao.getMensagem());
-            ps.setString(3, notificacao.getTipo().name());         
+            ps.setString(3, notificacao.getTipo().name());        
             ps.setString(4, notificacao.getAlcance().name());
-            ps.setBoolean(5, notificacao.getLida());
-            ps.setLong(6, notificacao.getDestinatario().getId());
+            ps.setBoolean(5, notificacao.isLida());
+            ps.setObject(6, notificacao.getDestinatario() != null ? notificacao.getDestinatario().getId() : null);
 
             ps.executeUpdate();
 
@@ -91,17 +91,21 @@ public class NotificacaoDAO {
             ps.setLong(1, idUsuario);
 
             try (ResultSet rs = ps.executeQuery()) {
-                UsuarioDAO usuarioDAO = UsuarioDAO.getInstance();
-
                 while (rs.next()) {
                     Notificacao n = mapResultSet(rs);
-                    n.setDestinatario(usuarioDAO.buscarPorId(idUsuario));
+                    
+                    Usuario destinatario = new Usuario();
+                    destinatario.setId(idUsuario);
+                    n.setDestinatario(destinatario);
+                    
                     lista.add(n);
                 }
             }
 
         } catch (SQLException e) {
             throw new PersistenciaException("Erro ao listar notificações: " + e.getMessage());
+        } catch (Exception e) {
+             throw new PersistenciaException("Erro ao listar notificações (carregamento de usuário): " + e.getMessage());
         }
 
         return lista;
@@ -126,15 +130,41 @@ public class NotificacaoDAO {
         return lista;
     }
 
+    public int limparNotificacoesLidas() throws PersistenciaException {
+        String sql = "DELETE FROM notificacao WHERE lida = TRUE"; 
+
+        try (Connection con = ConexaoDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            return ps.executeUpdate(); 
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("Erro ao apagar notificações antigas: " + e.getMessage());
+        }
+    }
+
     private Notificacao mapResultSet(ResultSet rs) throws SQLException {
         Notificacao n = new Notificacao();
         n.setId(rs.getLong("id"));
         n.setTitulo(rs.getString("titulo"));
         n.setMensagem(rs.getString("mensagem"));
-        n.setDataDoEnvio(rs.getTimestamp("data_do_envio").toLocalDateTime());
-        n.setTipo(TipoNotificacao.valueOf(rs.getString("tipo")));      
+        
+        Timestamp ts = rs.getTimestamp("data_do_envio");
+        if (ts != null) {
+            n.setDataDoEnvio(ts.toLocalDateTime());
+        }
+
+        n.setTipo(TipoNotificacao.valueOf(rs.getString("tipo")));        
         n.setAlcance(AlcanceNotificacao.valueOf(rs.getString("alcance")));
         n.setLida(rs.getBoolean("lida"));
+        
+        Long destinatarioId = rs.getLong("destinatario_id");
+        if (!rs.wasNull()) {
+             Usuario destinatario = new Usuario();
+             destinatario.setId(destinatarioId);
+             n.setDestinatario(destinatario);
+        }
+        
         return n;
     }
 }

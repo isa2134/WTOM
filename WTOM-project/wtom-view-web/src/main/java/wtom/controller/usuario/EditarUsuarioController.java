@@ -1,43 +1,44 @@
 package wtom.controller.usuario;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+
 import wtom.model.domain.Aluno;
 import wtom.model.domain.Professor;
-
 import wtom.model.domain.Usuario;
 import wtom.model.domain.util.UsuarioTipo;
 import wtom.model.service.AlunoService;
+import wtom.model.service.FileUploadService;
 import wtom.model.service.ProfessorService;
 import wtom.model.service.UsuarioService;
 import wtom.model.service.exception.NegocioException;
 import wtom.util.ValidadorUtil;
 
 @WebServlet("/EditarUsuarioController")
+@MultipartConfig
 public class EditarUsuarioController extends HttpServlet {
 
     private final UsuarioService usuarioService = new UsuarioService();
-    AlunoService alunoService = new AlunoService();
-    ProfessorService professorService = new ProfessorService();
+    private final AlunoService alunoService = new AlunoService();
+    private final ProfessorService professorService = new ProfessorService();
 
-    
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        String id = req.getParameter("id");
-        req.setAttribute("id", id);
-
         req.getRequestDispatcher("/usuarios/editar.jsp").forward(req, resp);
     }
-    
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+
         try {
             HttpSession session = req.getSession();
             Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
@@ -52,39 +53,41 @@ public class EditarUsuarioController extends HttpServlet {
             String dataStr = req.getParameter("dataDeNascimento");
             String senha = req.getParameter("senha");
 
-            if (email == null || !ValidadorUtil.validarEmail(email))
-                throw new NegocioException("E-mail inválido.");
-
             LocalDate data = LocalDate.parse(dataStr);
-            if (!ValidadorUtil.validarData(data))
+            if (!ValidadorUtil.validarData(data)) {
                 throw new NegocioException("Data de nascimento inválida.");
+            }
 
             usuario.setNome(nome);
             usuario.setTelefone(telefone);
             usuario.setEmail(email);
             usuario.setDataDeNascimento(data);
-            
+
             if (senha != null && !senha.isBlank()) {
                 usuario.setSenha(senha);
             }
 
+            Part foto = req.getPart("foto");
+            if (foto != null && foto.getSize() > 0) {
+
+                String caminhoFoto = FileUploadService.salvarArquivo(foto);
+
+                usuario.setFotoPerfil(caminhoFoto);
+                usuarioService.atualizarFoto(usuario.getId(), caminhoFoto);
+            }
+
+            // ===== ALUNO =====
             if (usuario.getTipo() == UsuarioTipo.ALUNO) {
-                String curso = req.getParameter("curso");
-                String serie = req.getParameter("serie");
-
                 Aluno aluno = alunoService.buscarAlunoPorUsuario(usuario.getId());
-                aluno.setCurso(curso);
-                aluno.setSerie(serie);
-
+                aluno.setCurso(req.getParameter("curso"));
+                aluno.setSerie(req.getParameter("serie"));
                 alunoService.atualizarAluno(aluno);
             }
 
+            // ===== PROFESSOR =====
             if (usuario.getTipo() == UsuarioTipo.PROFESSOR) {
-                String area = req.getParameter("area");
-
                 Professor professor = professorService.buscarProfessorPorUsuario(usuario.getId());
-                professor.setArea(area);
-
+                professor.setArea(req.getParameter("area"));
                 professorService.atualizarProfessor(professor);
             }
 
@@ -92,18 +95,13 @@ public class EditarUsuarioController extends HttpServlet {
 
             Usuario atualizado = usuarioService.buscarPorId(usuario.getId());
             session.setAttribute("usuarioLogado", atualizado);
-
             session.setAttribute("sucesso", "Dados atualizados com sucesso!");
-            resp.sendRedirect(req.getContextPath() + "/usuarios/perfil.jsp");
 
-        } catch (NegocioException e) {
+            resp.sendRedirect(req.getContextPath() + "/PerfilUsuarioController");
+
+        } catch (NegocioException | DateTimeParseException e) {
             req.setAttribute("erro", e.getMessage());
             req.getRequestDispatcher("/usuarios/editar.jsp").forward(req, resp);
-
-        } catch (DateTimeParseException e) {
-            req.setAttribute("erro", "Formato de data inválido.");
-            req.getRequestDispatcher("/usuarios/editar.jsp").forward(req, resp);
-
         } catch (Exception e) {
             req.setAttribute("erro", "Erro inesperado: " + e.getMessage());
             req.getRequestDispatcher("/usuarios/editar.jsp").forward(req, resp);

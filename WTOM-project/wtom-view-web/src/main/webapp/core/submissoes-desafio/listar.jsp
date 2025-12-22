@@ -3,7 +3,7 @@
 <%@taglib prefix="c" uri="jakarta.tags.core"%>
 <%@page import="wtom.model.domain.util.UsuarioTipo" %>
 
-<%@include file="/core/header.jsp" %>
+<%@include file="/core/menu.jsp" %>
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/desafio.css"/>
 

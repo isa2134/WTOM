@@ -7,11 +7,13 @@ import java.io.IOException;
 
 @WebServlet("/PerfilUsuarioController")
 public class PerfilUsuarioController extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
         HttpSession session = req.getSession(false);
+
         if (session == null || session.getAttribute("usuarioLogado") == null) {
             resp.sendRedirect(req.getContextPath() + "/index.jsp");
             return;
@@ -23,7 +25,6 @@ public class PerfilUsuarioController extends HttpServlet {
             session.removeAttribute("sucesso");
         }
 
-        
         req.getRequestDispatcher("/usuarios/perfil.jsp").forward(req, resp);
     }
 }

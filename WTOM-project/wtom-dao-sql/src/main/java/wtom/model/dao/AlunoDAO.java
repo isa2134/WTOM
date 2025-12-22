@@ -4,6 +4,7 @@ import wtom.model.domain.Aluno;
 import wtom.model.domain.Usuario;
 import wtom.dao.exception.PersistenciaException;
 import wtom.util.ConexaoDB;
+import wtom.model.domain.util.UsuarioTipo;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,8 +14,7 @@ public class AlunoDAO {
 
     public Aluno inserirERetornar(Aluno aluno) throws PersistenciaException {
         String sql = "INSERT INTO aluno (usuario_id, curso, pontuacao, serie) VALUES (?, ?, ?, ?)";
-        try (Connection con = ConexaoDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setLong(1, aluno.getUsuario().getId());
             ps.setString(2, aluno.getCurso());
@@ -45,12 +45,10 @@ public class AlunoDAO {
             SELECT a.id AS a_id, a.curso, a.pontuacao, a.serie,
                    u.id AS u_id, u.login, u.cpf, u.nome, u.telefone, u.email, u.data_nascimento, u.senha, u.tipo
             FROM aluno a
-            JOIN usuario u ON u.id = a.usuario_id
+            LEFT JOIN usuario u ON u.id = a.usuario_id
             """;
 
-        try (Connection con = ConexaoDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Usuario usuario = new Usuario(rs.getString("login"), rs.getString("cpf"));
@@ -59,11 +57,13 @@ public class AlunoDAO {
                 usuario.setTelefone(rs.getString("telefone"));
                 usuario.setEmail(rs.getString("email"));
                 java.sql.Date dataSql = rs.getDate("data_nascimento");
-                if (dataSql != null) usuario.setDataDeNascimento(dataSql.toLocalDate());
+                if (dataSql != null) {
+                    usuario.setDataDeNascimento(dataSql.toLocalDate());
+                }
                 usuario.setSenha(rs.getString("senha"));
                 String tipoStr = rs.getString("tipo");
                 if (tipoStr != null) {
-                    usuario.setTipo(wtom.model.domain.util.UsuarioTipo.valueOf(tipoStr));
+                    usuario.setTipo(UsuarioTipo.valueOf(tipoStr));
                 }
 
                 Aluno a = new Aluno(usuario);
@@ -74,17 +74,16 @@ public class AlunoDAO {
                 alunos.add(a);
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new PersistenciaException("Erro ao listar alunos: " + e.getMessage());
         }
 
         return alunos;
     }
 
-
     public void atualizar(Aluno aluno) throws PersistenciaException {
         String sql = "UPDATE aluno SET curso = ?, pontuacao = ?, serie = ? WHERE id = ?";
-        try (Connection con = ConexaoDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, aluno.getCurso());
             ps.setInt(2, aluno.getPontuacao());
@@ -97,10 +96,27 @@ public class AlunoDAO {
         }
     }
 
+    public void adicionarPontuacao(Long usuarioId, int pontos) {
+
+        String sql = """
+        UPDATE aluno
+        SET pontuacao = COALESCE(pontuacao, 0) + ?
+        WHERE usuario_id = ?
+    """;
+
+        try (
+                Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, pontos);
+            ps.setLong(2, usuarioId);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao atualizar pontuação do aluno", e);
+        }
+    }
+
     public void remover(Long idAluno) throws PersistenciaException {
         String sql = "DELETE FROM aluno WHERE id = ?";
-        try (Connection con = ConexaoDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = ConexaoDB.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, idAluno);
             ps.executeUpdate();

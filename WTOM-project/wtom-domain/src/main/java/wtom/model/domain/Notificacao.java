@@ -18,7 +18,7 @@ public class Notificacao {
     }
 
     public Notificacao(String titulo, String mensagem, Usuario destinatario, 
-                       AlcanceNotificacao alcance) {
+                       TipoNotificacao tipo, AlcanceNotificacao alcance) {
         this.titulo = titulo;
         this.mensagem = mensagem;
         this.destinatario = destinatario;
@@ -84,7 +84,7 @@ public class Notificacao {
         this.alcance = alcance;
     }
 
-    public boolean getLida() {
+    public boolean isLida() {
         return lida;
     }
 

@@ -17,6 +17,9 @@ import wtom.model.domain.TipoNotificacao;
 import wtom.model.service.GestaoNotificacao;
 import wtom.dao.exception.PersistenciaException;
 import wtom.model.dao.UsuarioDAO;
+import wtom.model.dao.ConfiguracaoUsuarioDAO;
+import wtom.model.domain.ConfiguracaoUsuario;
+import wtom.dao.exception.PersistenciaException;
 
 @WebServlet(name = "DuvidaController", urlPatterns = {"/DuvidaController"})
 public class DuvidaController extends HttpServlet {
@@ -32,12 +35,19 @@ public class DuvidaController extends HttpServlet {
         String acao = request.getParameter("acao");
 
         try {
-            if (acao == null || acao.equals("listar")) listarDuvidas(request, response);
-            else if (acao.equals("nova")) abrirFormulario(request, response);
-            else if (acao.equals("editar")) abrirFormularioEditar(request, response);
-            else if (acao.equals("responder")) abrirResponder(request, response);
-            else if (acao.equals("excluir")) deletarDuvida(request, response);
-            else listarDuvidas(request, response);
+            if (acao == null || acao.equals("listar")) {
+                listarDuvidas(request, response);
+            } else if (acao.equals("nova")) {
+                abrirFormulario(request, response);
+            } else if (acao.equals("editar")) {
+                abrirFormularioEditar(request, response);
+            } else if (acao.equals("responder")) {
+                abrirResponder(request, response);
+            } else if (acao.equals("excluir")) {
+                deletarDuvida(request, response);
+            } else {
+                listarDuvidas(request, response);
+            }
 
         } catch (PersistenciaException e) {
             request.setAttribute("erro", e.getMessage());
@@ -52,9 +62,13 @@ public class DuvidaController extends HttpServlet {
         String acao = request.getParameter("acao");
 
         try {
-            if ("salvar".equals(acao)) salvarDuvida(request, response);
-            else if ("salvarResposta".equals(acao)) salvarResposta(request, response);
-            else listarDuvidas(request, response);
+            if ("salvar".equals(acao)) {
+                salvarDuvida(request, response);
+            } else if ("salvarResposta".equals(acao)) {
+                salvarResposta(request, response);
+            } else {
+                listarDuvidas(request, response);
+            }
 
         } catch (PersistenciaException e) {
             request.setAttribute("erro", e.getMessage());
@@ -160,14 +174,33 @@ public class DuvidaController extends HttpServlet {
 
         if (duvida != null && duvida.getIdAluno() != null) {
             Usuario aluno = UsuarioDAO.getInstance().buscarPorId(duvida.getIdAluno());
-            if (aluno != null) {
-                Notificacao n = new Notificacao();
-                n.setTitulo("Nova resposta na sua dúvida");
-                n.setMensagem("Sua dúvida \"" + duvida.getTitulo() + "\" recebeu uma nova resposta.");
-                n.setTipo(TipoNotificacao.OUTROS);
-                n.setAlcance(AlcanceNotificacao.INDIVIDUAL);
-                n.setDestinatario(aluno);
-                new GestaoNotificacao().selecionaAlcance(n, AlcanceNotificacao.INDIVIDUAL);
+
+            if (duvida != null && duvida.getIdAluno() != null) {
+
+                if (aluno != null) {
+                    ConfiguracaoUsuario configAluno = null;
+                    try {
+                        configAluno = ConfiguracaoUsuarioDAO.getInstance().buscarConfiguracao(aluno.getId());
+                    } catch (PersistenciaException e) {
+                        System.err.println("Erro ao buscar configurações do aluno " + aluno.getId() + " antes de notificar: " + e.getMessage());
+                        configAluno = new ConfiguracaoUsuario();
+                    }
+
+                    if (configAluno.isNotifForum()) {
+
+                        Notificacao n = new Notificacao();
+                        n.setTitulo("Nova resposta na sua dúvida");
+                        n.setMensagem("Sua dúvida \"" + duvida.getTitulo() + "\" recebeu uma nova resposta.");
+                        n.setAlcance(AlcanceNotificacao.INDIVIDUAL);
+                        n.setDestinatario(aluno);
+
+                        try {
+                            new GestaoNotificacao().selecionaAlcance(n, AlcanceNotificacao.INDIVIDUAL);
+                        } catch (PersistenciaException e) {
+                            System.err.println("Erro ao enviar notificação de fórum: " + e.getMessage());
+                        }
+                    }
+                }
             }
         }
 
