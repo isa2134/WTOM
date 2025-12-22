@@ -360,24 +360,6 @@ public class InitDB {
     }
 
     public void initAlunosPadrao() throws SQLException {
-        String sql = """
-            INSERT IGNORE INTO aluno (usuario_id, curso, pontuacao, serie)
-            VALUES
-                (3, 'Informática', 0, '1º Ano'),
-
-                (16, 'Edificações', 0, '2º Ano'),
-                (17, 'Eletrônica', 0, '3º Ano'),
-                (18, 'Eletrotécnica', 0, '1º Ano'),
-                (19, 'Equipamentos Biomédicos', 0, '2º Ano'),
-                (20, 'Estradas', 0, '3º Ano'),
-                (21, 'Hospedagem', 0, '1º Ano'),
-                (22, 'Informática', 0, '2º Ano'),
-                (23, 'Mecânica', 0, '3º Ano'),
-                (24, 'Mecatrônica', 0, '1º Ano'),
-                (25, 'Química', 0, '2º Ano');
-        """;
-
-    public void initAlunosPadrao() throws SQLException {
         String[][] alunosData = {
             {"111.222.333-44", "Informática", "1º Ano"},
             {"111.333.555-01", "Edificações", "2º Ano"},
