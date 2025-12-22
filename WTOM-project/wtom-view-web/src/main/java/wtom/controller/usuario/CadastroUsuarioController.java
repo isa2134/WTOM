@@ -139,11 +139,34 @@ public class CadastroUsuarioController extends HttpServlet {
                 usuario = usuarioService.cadastrarUsuarioERetornar(usuario);
             }
 
-            HttpSession session = req.getSession();
+            HttpSession sessaoAntiga = req.getSession(false);
+            if (sessaoAntiga != null) {
+                sessaoAntiga.invalidate();
+            }
+            
+            HttpSession session = req.getSession(true);
+            session.setAttribute("usuario", usuario);
             session.setAttribute("usuarioLogado", usuario);
-            session.setAttribute("sucesso", "Usuário cadastrado com sucesso!");
+            session.setAttribute("usuarioTipo", usuario.getTipo());
 
-            resp.sendRedirect(req.getContextPath() + "/menu.jsp");
+            String destino;
+
+            switch (usuario.getTipo()) {
+                case ALUNO:
+                    destino = "/core/home-aluno.jsp";
+                    break;
+                case PROFESSOR:
+                    destino = "/core/home-professor.jsp";
+                    break;
+                case ADMINISTRADOR:
+                    destino = "/core/home-admin.jsp";
+                    break;
+                default:
+                    destino = "/index.jsp";
+                    break;
+            }
+
+            resp.sendRedirect(req.getContextPath() + destino);
 
         } catch (NegocioException e) {
             req.setAttribute("erro", e.getMessage());

@@ -94,11 +94,12 @@
                                 <i class="fa-solid fa-chalkboard-user"></i>
                                 <span>Gerenciar Professores</span>
                             </a>
-
+                                
+                            <!-- Comentei por ser um erro de lógica, é necessário acessar alunos primeiro       
                             <a href="${pageContext.request.contextPath}/AdminPremiacoesController" class="btn-option">
                                 <i class="fa-solid fa-medal"></i>
                                 <span>Gerenciar Premiações</span>
-                            </a>
+                            </a> --> 
 
                             <a href="${pageContext.request.contextPath}/ConfiguracaoController" class="btn-option" style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.1)">
                                 <i class="fa-solid fa-sliders"></i>

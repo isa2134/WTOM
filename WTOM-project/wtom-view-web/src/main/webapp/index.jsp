@@ -63,7 +63,10 @@
                 </div>
                 
                 <div class="forgot-pass-wrapper">
-                    <a href="#" class="forgot-pass-link">Esqueceu a senha?</a>
+                    <a href="${pageContext.request.contextPath}/SolicitarRedefinicaoSenhaController"
+                       class="forgot-pass-link">
+                        Esqueceu a senha?
+                    </a>
                 </div>
 
                 <button class="btn-modern-login" type="submit">LOGIN</button>
