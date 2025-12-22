@@ -129,8 +129,9 @@
             </div>
 
             <div class="menu">
-                <jsp:include page="/core/menu_itens.jsp" />
+                <jsp:include page="/core/menu.jsp" />
             </div>
+
         </nav>
 
         <script>

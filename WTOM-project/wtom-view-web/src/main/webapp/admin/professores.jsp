@@ -36,7 +36,7 @@
                             </div>
 
                             <div class="card-actions"> 
-                                <a class="btn btn-primary btn-sm" href="${pageContext.request.contextPath}/EditarProfessorController?id=${p.id}">
+                                <a class="btn btn-primary btn-sm" href="${pageContext.request.contextPath}/EditarProfessorController?id=${p.usuario.id}">
                                     Editar Dados
                                 </a>
                             </div>

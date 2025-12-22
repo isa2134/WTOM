@@ -21,22 +21,35 @@ public class EditarProfessorController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        try {
-            Long id = Long.parseLong(req.getParameter("id"));
+        String idUsuarioStr = req.getParameter("id");
 
-            Usuario usuario = usuarioService.buscarPorId(id);
-            Professor professor = professorService.buscarProfessorPorUsuario(id);
+        if (idUsuarioStr == null || idUsuarioStr.isBlank()) {
+            req.setAttribute("erro", "ID do usuário não informado.");
+            req.getRequestDispatcher("/admin/editarProfessor.jsp").forward(req, resp);
+            return;
+        }
+
+        try {
+            Long idUsuario = Long.parseLong(idUsuarioStr);
+
+            Usuario usuario = usuarioService.buscarPorId(idUsuario);
+            Professor professor = professorService.buscarProfessorPorUsuario(idUsuario);
+
+            if (usuario == null || professor == null) {
+                throw new NegocioException("Professor não encontrado para o usuário informado.");
+            }
 
             req.setAttribute("usuario", usuario);
             req.setAttribute("professor", professor);
 
+        } catch (NumberFormatException e) {
+            req.setAttribute("erro", "ID do usuário inválido.");
         } catch (Exception e) {
             req.setAttribute("erro", "Erro ao carregar professor: " + e.getMessage());
         }
 
         req.getRequestDispatcher("/admin/editarProfessor.jsp").forward(req, resp);
     }
-
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -48,16 +61,18 @@ public class EditarProfessorController extends HttpServlet {
             Usuario usuario = usuarioService.buscarPorId(idUsuario);
             Professor professor = professorService.buscarProfessorPorUsuario(idUsuario);
 
-            if (usuario == null || professor == null)
+            if (usuario == null || professor == null) {
                 throw new NegocioException("Professor não encontrado.");
+            }
 
             usuario.setNome(req.getParameter("nome"));
             usuario.setEmail(req.getParameter("email"));
             usuario.setTelefone(req.getParameter("telefone"));
 
             String senha = req.getParameter("senha");
-            if (senha != null && !senha.isBlank())
+            if (senha != null && !senha.isBlank()) {
                 usuario.setSenha(senha);
+            }
 
             professor.setArea(req.getParameter("area"));
 

@@ -28,42 +28,37 @@ public class AdminPremiacoesController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        String idAlunoStr = req.getParameter("idAluno");
-        if (idAlunoStr == null || idAlunoStr.isBlank()) {
-            req.setAttribute("erro", "ID do aluno não informado.");
+        String idUsuarioStr = req.getParameter("idUsuario");
+
+        if (idUsuarioStr == null || idUsuarioStr.isBlank()) {
+            req.setAttribute("erro", "ID do usuário não informado.");
             req.getRequestDispatcher(VIEW).forward(req, resp);
             return;
         }
 
         try {
-            Long idAluno = Long.parseLong(idAlunoStr);
+            Long idUsuario = Long.parseLong(idUsuarioStr);
 
-            Aluno aluno = alunoService.buscarPorId(idAluno);
-
+            Aluno aluno = alunoService.buscarAlunoPorUsuario(idUsuario);
             if (aluno == null) {
-                req.setAttribute("erro", "Aluno não encontrado para o ID informado.");
-                req.getRequestDispatcher(VIEW).forward(req, resp);
-                return;
+                throw new NegocioException("Aluno não encontrado para o usuário informado.");
             }
 
             String criterio = req.getParameter("criterio");
-
-            List<Premiacao> lista = premiacaoService.listarPorUsuario(aluno.getUsuario().getId(), criterio);
+            List<Premiacao> premiacoes =
+                    premiacaoService.listarPorUsuario(idUsuario, criterio);
 
             req.setAttribute("aluno", aluno);
-            req.setAttribute("premiacoes", lista);
+            req.setAttribute("premiacoes", premiacoes);
             req.setAttribute("tiposPremio", TipoPremio.values());
 
             req.getRequestDispatcher(VIEW).forward(req, resp);
 
         } catch (NumberFormatException e) {
-            req.setAttribute("erro", "ID do aluno inválido.");
+            req.setAttribute("erro", "ID do usuário inválido.");
             req.getRequestDispatcher(VIEW).forward(req, resp);
         } catch (NegocioException e) {
-            req.setAttribute("erro", "Erro ao carregar premiações: " + e.getMessage());
-            req.getRequestDispatcher(VIEW).forward(req, resp);
-        } catch (Exception e) {
-            req.setAttribute("erro", "Erro inesperado: " + e.getMessage());
+            req.setAttribute("erro", e.getMessage());
             req.getRequestDispatcher(VIEW).forward(req, resp);
         }
     }
@@ -75,14 +70,11 @@ public class AdminPremiacoesController extends HttpServlet {
         String acao = req.getParameter("acao");
 
         try {
-            if ("criar".equalsIgnoreCase(acao)) {
-                criar(req, resp);
-            } else if ("editar".equalsIgnoreCase(acao)) {
-                editar(req, resp);
-            } else if ("excluir".equalsIgnoreCase(acao)) {
-                excluir(req, resp);
-            } else {
-                throw new NegocioException("Ação inválida ou não informada.");
+            switch (acao) {
+                case "criar" -> criar(req, resp);
+                case "editar" -> editar(req, resp);
+                case "excluir" -> excluir(req, resp);
+                default -> throw new NegocioException("Ação inválida.");
             }
         } catch (NegocioException e) {
             req.setAttribute("erro", e.getMessage());
@@ -91,149 +83,73 @@ public class AdminPremiacoesController extends HttpServlet {
     }
 
     private void criar(HttpServletRequest req, HttpServletResponse resp)
-            throws NegocioException, IOException, ServletException {
+            throws NegocioException, IOException {
 
-        try {
-            String usuarioIdStr = req.getParameter("usuarioId");
-            String nomeOlimpiada = req.getParameter("olimpiadaNome");
-            String pesoStr = req.getParameter("pesoOlimpiada");
-            String tipoStr = req.getParameter("tipoPremio");
-            String nivel = req.getParameter("nivel");
-            String anoStr = req.getParameter("ano");
+        Long idUsuario = Long.valueOf(req.getParameter("usuarioId"));
 
-            if (usuarioIdStr == null || usuarioIdStr.isBlank())
-                throw new NegocioException("ID do usuário (aluno) obrigatório.");
+        Olimpiada ol = new Olimpiada(
+                req.getParameter("olimpiadaNome"),
+                null,
+                LocalDate.now(),
+                LocalDate.now(),
+                null,
+                Double.parseDouble(req.getParameter("pesoOlimpiada")),
+                0
+        );
 
-            if (nomeOlimpiada == null || nomeOlimpiada.isBlank())
-                throw new NegocioException("Nome da olimpíada obrigatório.");
+        Premiacao p = new Premiacao(
+                null,
+                ol,
+                TipoPremio.valueOf(req.getParameter("tipoPremio")),
+                req.getParameter("nivel"),
+                Integer.valueOf(req.getParameter("ano"))
+        );
 
-            if (pesoStr == null || pesoStr.isBlank())
-                throw new NegocioException("Peso da olimpíada obrigatório.");
+        premiacaoService.cadastrar(p, idUsuario);
 
-            if (tipoStr == null || tipoStr.isBlank())
-                throw new NegocioException("Tipo de prêmio obrigatório.");
-
-            if (nivel == null || nivel.isBlank())
-                throw new NegocioException("Nível é obrigatório.");
-
-            if (anoStr == null || anoStr.isBlank())
-                throw new NegocioException("Ano é obrigatório.");
-
-            Long idUsuario = Long.valueOf(usuarioIdStr);
-            double pesoOlimp = Double.parseDouble(pesoStr);
-            Integer ano = Integer.valueOf(anoStr);
-
-            TipoPremio tipo;
-            try {
-                tipo = TipoPremio.valueOf(tipoStr);
-            } catch (IllegalArgumentException ex) {
-                throw new NegocioException("Tipo de prêmio inválido.");
-            }
-
-            Olimpiada ol = new Olimpiada(nomeOlimpiada, null, LocalDate.now(), LocalDate.now(), null, pesoOlimp, 0);
-
-            Premiacao p = new Premiacao(null, ol, tipo, nivel, ano);
-
-            premiacaoService.cadastrar(p, idUsuario);
-
-            Aluno aluno = alunoService.buscarAlunoPorUsuario(idUsuario);
-            if (aluno != null && aluno.getId() != null) {
-                resp.sendRedirect(req.getContextPath() + "/AdminPremiacoesController?idAluno=" + aluno.getId());
-            } else {
-                resp.sendRedirect(req.getContextPath() + "/AdminAlunosController");
-            }
-
-        } catch (NumberFormatException | NullPointerException e) {
-            throw new NegocioException("Dados numéricos inválidos no formulário: " + e.getMessage());
-        }
+        resp.sendRedirect(req.getContextPath()
+                + "/AdminPremiacoesController?idUsuario=" + idUsuario);
     }
 
     private void editar(HttpServletRequest req, HttpServletResponse resp)
-            throws NegocioException, IOException, ServletException {
+            throws NegocioException, IOException {
 
-        try {
-            String usuarioIdStr = req.getParameter("usuarioId");
-            String idPremStr = req.getParameter("premiacaoId");
-            String nomeOlimpiada = req.getParameter("olimpiadaNome");
-            String pesoStr = req.getParameter("pesoOlimpiada");
-            String tipoStr = req.getParameter("tipoPremio");
-            String nivel = req.getParameter("nivel");
-            String anoStr = req.getParameter("ano");
+        Long idUsuario = Long.valueOf(req.getParameter("usuarioId"));
+        Long idPrem = Long.valueOf(req.getParameter("premiacaoId"));
 
-            if (usuarioIdStr == null || usuarioIdStr.isBlank() ||
-                idPremStr == null || idPremStr.isBlank())
-                throw new NegocioException("IDs de usuário/premiação obrigatórios.");
+        Olimpiada ol = new Olimpiada(
+                req.getParameter("olimpiadaNome"),
+                null,
+                LocalDate.now(),
+                LocalDate.now(),
+                null,
+                Double.parseDouble(req.getParameter("pesoOlimpiada")),
+                0
+        );
 
-            if (nomeOlimpiada == null || nomeOlimpiada.isBlank())
-                throw new NegocioException("Nome da olimpíada obrigatório.");
+        Premiacao p = new Premiacao(
+                idPrem,
+                ol,
+                TipoPremio.valueOf(req.getParameter("tipoPremio")),
+                req.getParameter("nivel"),
+                Integer.valueOf(req.getParameter("ano"))
+        );
 
-            if (pesoStr == null || pesoStr.isBlank())
-                throw new NegocioException("Peso da olimpíada obrigatório.");
+        premiacaoService.atualizar(p, idUsuario);
 
-            if (tipoStr == null || tipoStr.isBlank())
-                throw new NegocioException("Tipo de prêmio obrigatório.");
-
-            if (nivel == null || nivel.isBlank())
-                throw new NegocioException("Nível é obrigatório.");
-
-            if (anoStr == null || anoStr.isBlank())
-                throw new NegocioException("Ano é obrigatório.");
-
-            Long idUsuario = Long.valueOf(usuarioIdStr);
-            Long idPrem = Long.valueOf(idPremStr);
-            double pesoOlimp = Double.parseDouble(pesoStr);
-            Integer ano = Integer.valueOf(anoStr);
-
-            TipoPremio tipo;
-            try {
-                tipo = TipoPremio.valueOf(tipoStr);
-            } catch (IllegalArgumentException ex) {
-                throw new NegocioException("Tipo de prêmio inválido.");
-            }
-
-            Olimpiada ol = new Olimpiada(nomeOlimpiada, null, LocalDate.now(), LocalDate.now(), null, pesoOlimp, 0);
-
-            Premiacao p = new Premiacao(idPrem, ol, tipo, nivel, ano);
-
-            premiacaoService.atualizar(p, idUsuario);
-
-            Aluno aluno = alunoService.buscarAlunoPorUsuario(idUsuario);
-            if (aluno != null && aluno.getId() != null) {
-                resp.sendRedirect(req.getContextPath() + "/AdminPremiacoesController?idAluno=" + aluno.getId());
-            } else {
-                resp.sendRedirect(req.getContextPath() + "/AdminAlunosController");
-            }
-
-        } catch (NumberFormatException | NullPointerException e) {
-            throw new NegocioException("Dados inválidos no formulário de edição: " + e.getMessage());
-        }
+        resp.sendRedirect(req.getContextPath()
+                + "/AdminPremiacoesController?idUsuario=" + idUsuario);
     }
 
     private void excluir(HttpServletRequest req, HttpServletResponse resp)
             throws NegocioException, IOException {
 
-        try {
-            String usuarioIdStr = req.getParameter("usuarioId");
-            String idPremStr = req.getParameter("premiacaoId");
+        Long idUsuario = Long.valueOf(req.getParameter("usuarioId"));
+        Long idPrem = Long.valueOf(req.getParameter("premiacaoId"));
 
-            if (usuarioIdStr == null || usuarioIdStr.isBlank() ||
-                idPremStr == null || idPremStr.isBlank())
-                throw new NegocioException("IDs de usuário/premiação obrigatórios.");
+        premiacaoService.remover(idPrem);
 
-            Long idUsuario = Long.valueOf(usuarioIdStr);
-            Long idPrem = Long.valueOf(idPremStr);
-
-            premiacaoService.remover(idPrem);
-
-            Aluno aluno = alunoService.buscarAlunoPorUsuario(idUsuario);
-            if (aluno != null && aluno.getId() != null) {
-                resp.sendRedirect(req.getContextPath() + "/AdminPremiacoesController?idAluno=" + aluno.getId());
-            } else {
-                resp.sendRedirect(req.getContextPath() + "/AdminAlunosController");
-            }
-
-        } catch (NumberFormatException e) {
-            throw new NegocioException("IDs inválidos para exclusão.");
-        }
+        resp.sendRedirect(req.getContextPath()
+                + "/AdminPremiacoesController?idUsuario=" + idUsuario);
     }
 }

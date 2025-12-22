@@ -5,6 +5,7 @@
     <jsp:param name="pageTitle" value="Editar Aluno" />
 </jsp:include>
 
+
 <div class="page">
     <header class="page-header"><h2>Editar Aluno</h2></header>
 

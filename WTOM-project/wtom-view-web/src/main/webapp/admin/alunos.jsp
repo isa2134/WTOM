@@ -36,10 +36,10 @@
                             </div>
 
                             <div class="card-actions">
-                                <a class="btn btn-primary btn-sm" href="${pageContext.request.contextPath}/EditarAlunoController?id=${a.id}">
+                                <a class="btn btn-primary btn-sm" href="${pageContext.request.contextPath}/EditarAlunoController?id=${a.usuario.id}">
                                     Editar Dados
                                 </a>
-                                <a class="btn btn-secondary btn-sm" href="${pageContext.request.contextPath}/AdminPremiacoesController?idAluno=${a.id}">
+                                <a class="btn btn-secondary btn-sm" href="${pageContext.request.contextPath}/AdminPremiacoesController?idUsuario=${a.usuario.id}">
                                     Editar Premiações
                                 </a>
                             </div>
