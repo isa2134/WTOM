@@ -756,9 +756,33 @@ public class InitDB {
         }
     }
 
+    public void initRedefinicaoSenha() throws SQLException {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS redefinicao_senha (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                usuario_id BIGINT NOT NULL,
+                token VARCHAR(255) NOT NULL UNIQUE,
+                data_expiracao TIMESTAMP NOT NULL,
+                utilizado BOOLEAN DEFAULT FALSE,
+                data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+                CONSTRAINT fk_redef_senha_usuario
+                    FOREIGN KEY (usuario_id)
+                    REFERENCES usuario(id)
+                    ON DELETE CASCADE
+            );
+        """;
+
+        try (Statement st = con.createStatement()) {
+            st.executeUpdate(sql);
+            System.out.println("Tabela 'redefinicao_senha' verificada.");
+        }
+    }
+
     public void initTodos() throws PersistenciaException {
         try {
             initUsuario();
+            initRedefinicaoSenha();
             initConfiguracao();
             initProfessor();
             initAluno();
@@ -777,10 +801,8 @@ public class InitDB {
             initRespostas();
             initDuvidasTeste();
             initRespostasTeste();
-
             initAlunosPadrao();
             initProfessoresPadrao();
-
             initPremiacoes();
             initPremiacoesPadrao();
             initOlimpiadasPadrao();
