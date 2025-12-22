@@ -19,11 +19,10 @@
                     <c:when test="${isAdmin}">
                         <a href="${pageContext.request.contextPath}/FeedbackController?acao=listarAdmin" class="btn-light">Voltar</a>
                         <c:if test="${isAdmin && podeExcluir}">
-                            <a href="${pageContext.request.contextPath}/FeedbackController?acao=excluir&id=${feedback.id}"
-                               class="btn ghost danger"
-                               onclick="return confirm('Deseja excluir este feedback?');">
+                            <button type="button" class="btn danger ghost"
+                                    onclick="confirmarExclusao('${pageContext.request.contextPath}/FeedbackController?acao=excluir&id=${feedback.id}', 'Deseja realmente excluir este feedback?')">
                                 Excluir
-                            </a>
+                            </button>
                         </c:if>
                     </c:when>
                     <c:otherwise>
@@ -83,6 +82,15 @@
 
         </div>
     </section>
+    <div id="modalConfirmacao" class="modal">
+        <div class="modal-content">
+            <p id="modalMensagem">Tem certeza que deseja excluir este item?</p>
+            <div class="modal-actions">
+                <button class="btn ghost" id="btnCancelar">Cancelar</button>
+                <button class="btn danger" id="btnConfirmar">Excluir</button>
+            </div>
+        </div>
+    </div>
 </main>
-
+<script src="${pageContext.request.contextPath}/js/feedback.js"></script>
 <%@include file="/core/footer.jsp" %>

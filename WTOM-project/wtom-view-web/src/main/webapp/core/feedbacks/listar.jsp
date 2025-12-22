@@ -8,6 +8,13 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/feedback.css"/>
 
 <main class="content">
+    
+    <c:if test="${not empty mensagemSucesso}">
+        <div class="toast success" id="toast">
+            ${mensagemSucesso}
+        </div>
+    </c:if>
+
     <section class="page">
         <header class="page-header">
             <h2>Feedbacks</h2>
@@ -116,3 +123,5 @@
 
     </section>  
 </main>
+<script src="${pageContext.request.contextPath}/js/feedback.js"></script>
+<%@include file="/core/footer.jsp" %>

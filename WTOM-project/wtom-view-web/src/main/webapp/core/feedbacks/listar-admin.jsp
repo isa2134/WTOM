@@ -99,10 +99,11 @@
                         </button>
 
                         <c:if test="${not arquivados}">
-                            <button class="btn danger ghost"
-                                onclick="if(confirm('Excluir este feedback?')) window.location.href='${pageContext.request.contextPath}/FeedbackController?acao=excluir&id=${feedback.id}'">
+                            <button type="button" class="btn danger ghost"
+                                    onclick="confirmarExclusao('${pageContext.request.contextPath}/FeedbackController?acao=excluir&id=${feedback.id}', 'Deseja realmente excluir este feedback?')">
                                 Excluir
                             </button>
+
                         </c:if>
                     </div>
                 </div>
@@ -110,6 +111,16 @@
 
         </div>
     </section>
-</main>
+    <div id="modalConfirmacao" class="modal">
+        <div class="modal-content">
+            <p id="modalMensagem">Tem certeza que deseja excluir este item?</p>
+            <div class="modal-actions">
+                <button class="btn ghost" id="btnCancelar">Cancelar</button>
+                <button class="btn danger" id="btnConfirmar">Excluir</button>
+            </div>
+        </div>
+    </div>
 
+</main>
+<script src="${pageContext.request.contextPath}/js/feedback.js"></script>
 <%@include file="/core/footer.jsp" %>
