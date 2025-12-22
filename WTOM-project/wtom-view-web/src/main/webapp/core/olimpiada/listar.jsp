@@ -5,149 +5,326 @@
 <!DOCTYPE html>
 <script> console.log("Abriu admin/prof!");</script>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>WTOM - Olimpíadas</title>
+<head>
+    <meta charset="UTF-8">
+    <title>WTOM - Olimpíadas</title>
 
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/menu.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/menu.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/estilos.css">
 
-        <style>
-            main {
-                flex: 1;
-                margin-left: calc(var(--sidebar-width) + 30px);
-                padding: 5%;
-            }
+    <style>
+        main {
+            flex: 1;
+            margin-left: calc(var(--sidebar-width) + 30px); /* dá um respiro extra */
+            padding: 5%;
+        }
 
-            h1 {
-                color: var(--accent);
-                margin-bottom: 25px;
-            }
+        h1 {
+            color: var(--accent);
+            margin-bottom: 25px;
+        }
 
-            .olimpiada-card {
-                background: var(--surface);
-                border-radius: var(--radius);
-                padding: 18px 22px;
-                margin-bottom: 14px;
-                box-shadow: var(--shadow);
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-            }
+        /* ====== CARD ====== */
+        .olimpiada-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 18px 22px;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-            .olimpiada-info {
-                display: flex;
-                flex-direction: column;
-                gap: 4px;
-            }
+        .olimpiada-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
 
-            .olimpiada-info h4 {
-                margin: 0;
-                font-size: 17px;
-                font-weight: 700;
-                color: var(--accent);
-            }
+        .olimpiada-info h4 {
+            margin: 0;
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--accent);
+        }
 
-            .olimpiada-info small {
-                color: var(--muted);
-                font-size: 14px;
-            }
+        .olimpiada-info small {
+            color: var(--muted);
+            font-size: 14px;
+        }
 
-            .olimpiada-actions {
-                display: flex;
-                gap: 8px;
-            }
+        /* ====== AÇÕES ====== */
+        .olimpiada-actions {
+            display: flex;
+            gap: 8px;
+        }
 
-            .btn {
-                border: none;
-                border-radius: 8px;
-                padding: 8px 14px;
-                font-size: 14px;
-                font-weight: 600;
-                cursor: pointer;
-                transition: 0.2s;
-            }
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
 
-            .btn-ver {
-                background-color: #e9f1f3;
-                color: var(--accent);
-                border: 1px solid #c9d6da;
-            }
+        .btn-ver {
+            background-color: #e9f1f3;
+            color: var(--accent);
+            border: 1px solid #c9d6da;
+        }
 
-            .btn-ver:hover {
-                background-color: #d8e7ea;
-            }
+        .btn-ver:hover {
+            background-color: #d8e7ea;
+        }
 
-            .btn-editar {
-                background-color: var(--accent);
-                color: white;
-            }
+        .btn-editar {
+            background-color: var(--accent);
+            color: white;
+        }
 
-            .btn-editar:hover {
-                background-color: #0c3c48;
-            }
+        .btn-editar:hover {
+            background-color: #0c3c48;
+        }
 
-            .btn-excluir {
-                background-color: #DC3545;
-                color: white;
-            }
+        .btn-excluir {
+            background-color: #DC3545;
+            color: white;
+        }
 
-            .btn-excluir:hover {
-                background-color: var(--danger-hover);
-            }
+        .btn-excluir:hover {
+            background-color: var(--danger-hover);
+        }
 
-            .modal {
-                display: none;
-                position: fixed;
-                z-index: 1000;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.45);
-                justify-content: center;
-                align-items: center;
-            }
+        /* ====== MODAL ====== */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.45);
+            justify-content: center;
+            align-items: center;
+        }
 
-            .modal-content {
-                background: white;
-                padding: 25px;
-                border-radius: 14px;
-                width: 400px;
-                box-shadow: 0 4px 14px rgba(0,0,0,0.2);
-                animation: fadeIn 0.3s ease;
-            }
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            width: 400px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+            animation: fadeIn 0.3s ease;
+        }
 
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(-8px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-            .modal h3 {
-                color: var(--accent);
-                margin-bottom: 12px;
-            }
+        .modal h3 {
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
 
-            .modal p {
-                margin: 5px 0;
-            }
+        .modal p {
+            margin: 5px 0;
+        }
 
-            .modal strong {
-                color: var(--accent);
-            }
+        .modal strong {
+            color: var(--accent);
+        }
 
-            .modal .btn-fechar {
-                background: var(--accent);
-                color: white;
-                width: 100%;
-                margin-top: 15px;
-            }
+        .modal .btn-fechar {
+            background: var(--accent);
+            color: white;
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        .modal {
+       display: none;
+       position: fixed;
+       z-index: 1000;
+       left: 0; 
+       top: 0;
+       width: 100%; 
+       height: 100%;
+       background: rgba(0, 0, 0, 0.45);
+       justify-content: center;
+       align-items: center;
+     }
+
+     .modal-content {
+       background: white;
+       padding: 25px;
+       border-radius: 14px;
+       width: 400px;
+       box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+       animation: fadeIn 0.3s ease;
+     }
+
+     @keyframes fadeIn {
+       from { opacity: 0; transform: translateY(-8px); }
+       to { opacity: 1; transform: translateY(0); }
+     }
+
+     .modal h3 {
+       color: var(--accent);
+       margin-bottom: 12px;
+     }
+
+    .modal p{
+       margin: 5px 0;
+    }
+
+    .modal strong {
+       color: var(--accent);
+     }
+
+     .modal .btn-fechar {
+       background: var(--accent);
+       color: white;
+       width: 100%;
+       margin-top: 15px;
+       border: none;
+       border-radius: 8px;
+       padding: 10px;
+       font-weight: 600;
+       cursor: pointer;
+       transition: 0.2s;
+     }
+
+     .modal .btn-fechar:hover {
+       background-color: #0c3c48;
+     }
+
+     /* ====== RESPONSIVIDADE ====== */
+     @media (max-width: 768px) {
+       main {
+         margin-left: 0;
+         padding: 20px;
+       }
+
+       .card {
+         flex-direction: column;
+         align-items: flex-start;
+         gap: 10px;
+         width: 100%;
+       }
+       .card-actions {
+         width: 100%;
+         justify-content: flex-start;
+         gap: 12px;
+       }
+     }
+
+     .btn {
+       background-color: #0F4C5C;
+       color: white;
+       border: none;
+       padding: 8px 12px;
+       border-radius: 6px;
+       cursor: pointer;
+       margin-top: 10px;
+     }
+
+
+
+     .btn:hover {
+       background-color: #09637b;
+     }
+
+
+
+     .mensagem {
+       color: #6B7A81;
+       margin-top: 15px;
+     }
+
+    #btn-excluir {
+        background: #c62828;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    #btn-excluir:hover {
+        background: #a01717;
+    }
+
+    #modalExcluir .modal-content {
+        border-top: 6px solid #c62828;
+    }
+
+    </style>
+</head>
+
+<body>
+    <%@ include file="/core/menu.jsp" %>
+
+
+    <main>
+        <h1>Olimpíadas</h1>
+        <button id="btnToggleFiltro" class="btn btn-filtrar-toggle">Filtrar</button>
+
+<div id="filtroArea" style="display:none; margin-bottom:15px;">
+    <form action="olimpiada" method="get" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <input type="hidden" name="acao" value="filtrar">
+        <input type="text" name="nome" placeholder="Buscar por nome..." value="${param.nome}">
+        <input type="text" name="topico" placeholder="Tópico" value="${param.topico}">
+        <input type="number" step="0.1" name="pesoMin" placeholder="Peso min" value="${param.pesoMin}" style="width:120px;">
+        <input type="number" step="0.1" name="pesoMax" placeholder="Peso max" value="${param.pesoMax}" style="width:120px;">
+        <input type="date" name="dataMin" value="${param.dataMin}">
+        <input type="date" name="dataMax" value="${param.dataMax}">
+        <label style="display:inline-flex; align-items:center; gap:6px;">
+            <input type="checkbox" name="expira24" ${param.expira24 == 'on' ? 'checked' : ''}> Expira em 24h
+        </label>
+        <select name="ordenarPor">
+            <option value="">Ordenar</option>
+            <option value="data" ${param.ordenarPor == 'data' ? 'selected' : ''}>Prazo</option>
+            <option value="peso" ${param.ordenarPor == 'peso' ? 'selected' : ''}>Peso</option>
+        </select>
+        <button class="btn btn-editar" type="submit">Aplicar filtro</button>
+    </form>
+</div>
+
+<script>
+    (function(){
+        const btn = document.getElementById("btnToggleFiltro");
+        const area = document.getElementById("filtroArea");
+        btn.addEventListener("click", () => {
+            const shown = area.style.display === "flex";
+            area.style.display = shown ? "none" : "flex";
+            btn.textContent = shown ? "Filtrar" : "Fechar filtros";
+        });
+        window.addEventListener("load", () => { area.style.display = "none"; });
+    })();
+</script>
+
+        <c:choose>
+            <c:when test="${not empty olimpiadas}">
+                <c:forEach var="o" items="${olimpiadas}">
+                    <div class="olimpiada-card">
+                        <div class="olimpiada-info">
+                            <h4>${o.nome}</h4>
+                            <small>${o.topico} • Data da prova: ${o.dataProva}</small>
+                        </div>
+                        <div class="olimpiada-actions">
+                            <button class="btn btn-ver" 
+                                    data-nome="${o.nome}"
+                                    data-topico="${o.topico}"
+                                    data-limite="${o.dataLimiteInscricao}"
+                                    data-prova="${o.dataProva}"
+                                    data-peso="${o.pesoOlimpiada}"
+                                    data-descricao="${o.descricao}">
+                                Ver
+                            </button>
 
             .modal {
                 display: none;

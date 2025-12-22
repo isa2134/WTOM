@@ -360,6 +360,24 @@ public class InitDB {
     }
 
     public void initAlunosPadrao() throws SQLException {
+        String sql = """
+            INSERT IGNORE INTO aluno (usuario_id, curso, pontuacao, serie)
+            VALUES
+                (3, 'Informática', 0, '1º Ano'),
+
+                (16, 'Edificações', 0, '2º Ano'),
+                (17, 'Eletrônica', 0, '3º Ano'),
+                (18, 'Eletrotécnica', 0, '1º Ano'),
+                (19, 'Equipamentos Biomédicos', 0, '2º Ano'),
+                (20, 'Estradas', 0, '3º Ano'),
+                (21, 'Hospedagem', 0, '1º Ano'),
+                (22, 'Informática', 0, '2º Ano'),
+                (23, 'Mecânica', 0, '3º Ano'),
+                (24, 'Mecatrônica', 0, '1º Ano'),
+                (25, 'Química', 0, '2º Ano');
+        """;
+
+    public void initAlunosPadrao() throws SQLException {
         String[][] alunosData = {
             {"111.222.333-44", "Informática", "1º Ano"},
             {"111.333.555-01", "Edificações", "2º Ano"},
@@ -675,15 +693,15 @@ public class InitDB {
 
     public void initOlimpiadasPadrao() throws SQLException {
         String sql = """
-            INSERT IGNORE INTO olimpiadas
-                (id, nome, peso)
-            VALUES
-                (1, 'OBMEP - Olimpíada Brasileira de Matemática das Escolas Públicas', 2.0),
-                (2, 'Canguru de Matemática', 1.5),
-                (3, 'Olimpíada Paulista de Matemática', 2.0),
-                (4, 'ONC - Olimpíada Nacional de Ciências', 1.2),
-                (5, 'OBA - Olimpíada Brasileira de Astronomia e Astronáutica', 1.0);
-            """;
+        INSERT IGNORE INTO olimpiadas
+            (id, nome, topico, data_limite_inscricao, data_prova, descricao, peso)
+        VALUES
+            (1, 'OBMEP', 'Matemática', '2025-03-01', '2025-03-10', 'Olimpíada de matemática', 2.0),
+            (2, 'Canguru', 'Matemática', '2025-04-01', '2025-04-15', 'Prova internacional canguru', 1.5),
+            (3, 'OPM', 'Matemática', '2025-05-01', '2025-05-20', 'Olimpíada paulista', 2.0),
+            (4, 'ONC', 'Ciências', '2025-06-01', '2025-06-15', 'Olimpíada nacional de ciências', 1.2),
+            (5, 'OBA', 'Astronomia', '2025-07-01', '2025-07-30', 'OBA astronômica', 1.0);
+        """;
 
         try (Statement st = con.createStatement()) {
             st.executeUpdate(sql);
