@@ -2,25 +2,25 @@ package wtom.controller;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
-
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import wtom.model.service.UsuarioService;
 import wtom.model.domain.Usuario;
 import wtom.model.domain.Configuracao;
 import wtom.model.dao.ConfiguracaoDAO;
 import wtom.model.domain.LogAuditoria;
 import wtom.model.dao.LogAuditoriaDAO;
-import wtom.model.domain.util.PasswordUtils;
 
 @WebServlet(name = "LoginController", urlPatterns = {"/LoginController", "/login"})
 public class LoginController extends HttpServlet {
 
     private final ConfiguracaoDAO configDAO = new ConfiguracaoDAO();
-    private final LogAuditoriaDAO logDAO = LogAuditoriaDAO.getInstance();
-    private final UsuarioService usuarioService = new UsuarioService();
+    private final LogAuditoriaDAO logDAO = LogAuditoriaDAO.getInstance(); 
+    private final UsuarioService usuarioService = new UsuarioService(); 
 
     private static final int LIMITE_TENTATIVAS = 5;
     private static final long TEMPO_BLOQUEIO_MS = 30 * 60 * 1000;
@@ -42,21 +42,22 @@ public class LoginController extends HttpServlet {
             request.setAttribute("config", new Configuracao());
         }
 
-        if ("true".equalsIgnoreCase(logout)) {
+        if (logout != null && logout.equalsIgnoreCase("true")) {
             HttpSession sessao = request.getSession(false);
             if (sessao != null) {
                 Usuario usuario = (Usuario) sessao.getAttribute("usuarioLogado");
                 if (usuario != null) {
-                    registrarLog(request, "LOGOUT_SUCESSO",
-                            "Usuário deslogou do sistema.", usuario.getId());
+                    registrarLog(request, "LOGOUT_SUCESSO", "Usuário deslogou do sistema.", usuario.getId());
                 }
                 sessao.invalidate();
             }
+            request.getRequestDispatcher("/index.jsp").forward(request, response);
+            return;
         }
 
         request.getRequestDispatcher("/index.jsp").forward(request, response);
     }
-
+    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -71,59 +72,41 @@ public class LoginController extends HttpServlet {
             Usuario usuario = usuarioService.buscarPorLoginSeguro(login);
 
             if (usuario == null) {
-                registrarLog(request, "LOGIN_FALHA",
-                        "Tentativa de login com usuário inexistente: " + login, null);
+                registrarLog(request, "LOGIN_FALHA", "Tentativa de login com usuário inexistente: " + login, null);
                 request.getSession().setAttribute("erroLogin", "Login ou senha incorretos.");
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 return;
             }
-
+            
             usuarioId = usuario.getId();
 
             if (usuario.isBloqueado()) {
                 Timestamp dataBloqueio = usuario.getDataBloqueio();
-                long tempoDecorrido = System.currentTimeMillis()
-                        - (dataBloqueio != null ? dataBloqueio.getTime() : 0);
-
+                long tempoDecorrido = System.currentTimeMillis() - (dataBloqueio != null ? dataBloqueio.getTime() : 0);
                 long tempoRestanteMs = TEMPO_BLOQUEIO_MS - tempoDecorrido;
 
-                if (tempoRestanteMs > 0) {
+                if (tempoRestanteMs <= 0) {
+                    usuarioService.resetarTentativasLogin(usuario.getId());
+                    usuario.setBloqueado(false);
+                    usuario.setTentativasLogin(0);
+                } else {
                     String tempoFormatado = formatarTempoRestante(tempoRestanteMs);
-
-                    registrarLog(request, "LOGIN_NEGADO_BLOQUEADO",
-                            "Conta bloqueada. Tempo restante: " + tempoFormatado, usuarioId);
-
-                    request.getSession().setAttribute(
-                            "erroLogin",
-                            "Sua conta está bloqueada. Tente novamente em " + tempoFormatado + "."
-                    );
+                    mensagemErro = String.format("Sua conta está bloqueada por motivos de segurança. Tente novamente em aproximadamente %s.", tempoFormatado);
+                    registrarLog(request, "LOGIN_NEGADO_BLOQUEADO", "Tentativa de login na conta bloqueada, tempo restante: " + tempoFormatado, usuarioId);
+                    request.getSession().setAttribute("erroLogin", mensagemErro);
+                    Configuracao config = configDAO.buscarConfiguracoes();
+                    request.setAttribute("config", config != null ? config : new Configuracao());
                     request.getRequestDispatcher("/index.jsp").forward(request, response);
                     return;
                 }
-
-                usuarioService.resetarTentativasLogin(usuario.getId());
-                usuario.setBloqueado(false);
-                usuario.setTentativasLogin(0);
             }
 
-            boolean senhaValida = false;
-            String senhaArmazenada = usuario.getSenha();
-
-            if (senhaArmazenada != null && senhaArmazenada.startsWith("$2a$")) {
-                senhaValida = PasswordUtils.verificar(senha, senhaArmazenada);
-            }
-
-            if (!senhaValida && senhaArmazenada != null && senha.equals(senhaArmazenada)) {
-                senhaValida = true;
-
-            }
-
-            if (senhaValida) {
-
-                usuarioService.resetarTentativasLogin(usuario.getId());
-
-                registrarLog(request, "LOGIN_SUCESSO",
-                        "Login efetuado com sucesso.", usuarioId);
+            if (usuario.getSenha() != null && usuario.getSenha().equals(senha)) {
+                if (usuario.getTentativasLogin() > 0) {
+                    usuarioService.resetarTentativasLogin(usuario.getId());
+                }
+                
+                registrarLog(request, "LOGIN_SUCESSO", "Login efetuado com sucesso.", usuarioId);
 
                 HttpSession sessao = request.getSession(true);
                 sessao.setAttribute("usuario", usuario);
@@ -132,35 +115,33 @@ public class LoginController extends HttpServlet {
 
                 response.sendRedirect(request.getContextPath() + "/home");
                 return;
-            }
 
-            boolean bloqueadoAgora = usuarioService.registrarTentativaFalha(login);
-            Usuario usuarioAtualizado = usuarioService.buscarPorLoginSeguro(login);
-
-            int tentativasAtuais = usuarioAtualizado.getTentativasLogin();
-
-            if (bloqueadoAgora) {
-                mensagemErro = "Senha incorreta. Conta bloqueada por 30 minutos.";
-                registrarLog(request, "LOGIN_BLOQUEADO_AGORA",
-                        "Conta bloqueada por excesso de tentativas.", usuarioId);
-            } else if (tentativasAtuais >= LIMITE_TENTATIVAS - 2) {
-                int faltam = LIMITE_TENTATIVAS - tentativasAtuais;
-                mensagemErro = "Senha incorreta. Restam " + faltam + " tentativas.";
             } else {
-                mensagemErro = "Login ou senha incorretos.";
+                boolean bloqueadoAgora = usuarioService.registrarTentativaFalha(login);
+                Usuario usuarioAtualizado = usuarioService.buscarPorLoginSeguro(login);
+                int tentativasAtuais = usuarioAtualizado != null ? usuarioAtualizado.getTentativasLogin() : 0;
+                String tipoLog = "LOGIN_FALHA_SENHA";
+
+                if (bloqueadoAgora) {
+                    mensagemErro = "Senha incorreta. Tentativas excedidas! Sua conta foi bloqueada por 30 minutos.";
+                    tipoLog = "LOGIN_BLOQUEADO_AGORA";
+                } else if (tentativasAtuais >= LIMITE_TENTATIVAS - 2) {
+                    int faltam = LIMITE_TENTATIVAS - tentativasAtuais;
+                    mensagemErro = String.format("Senha incorreta. Você tem apenas %d tentativas restantes antes que sua conta seja bloqueada por 30 minutos.", faltam);
+                } else {
+                    mensagemErro = "Login ou senha incorretos.";
+                }
+
+                registrarLog(request, tipoLog, "Tentativa de login com senha incorreta para: " + login, usuarioId);
+                request.getSession().setAttribute("erroLogin", mensagemErro);
+                Configuracao config = configDAO.buscarConfiguracoes();
+                request.setAttribute("config", config != null ? config : new Configuracao());
+                request.getRequestDispatcher("/index.jsp").forward(request, response);
             }
-
-            registrarLog(request, "LOGIN_FALHA_SENHA",
-                    "Senha incorreta para: " + login, usuarioId);
-
-            request.getSession().setAttribute("erroLogin", mensagemErro);
-            request.getRequestDispatcher("/index.jsp").forward(request, response);
-
         } catch (Exception e) {
-            registrarLog(request, "ERRO_LOGIN_SERVER",
-                    "Erro interno no login: " + e.getMessage(), usuarioId);
-
-            request.getSession().setAttribute("erroLogin", "Erro interno do servidor.");
+            e.printStackTrace();
+            registrarLog(request, "ERRO_LOGIN_SERVER", "Erro grave durante o processamento do login. Detalhe: " + e.getMessage(), usuarioId);
+            request.setAttribute("erro", "Erro servidor: " + e.getMessage());
             request.getRequestDispatcher("/index.jsp").forward(request, response);
         }
     }
@@ -168,24 +149,27 @@ public class LoginController extends HttpServlet {
     private String formatarTempoRestante(long tempoRestanteMs) {
         long minutos = tempoRestanteMs / (60 * 1000);
         long segundos = (tempoRestanteMs % (60 * 1000)) / 1000;
-
         if (minutos > 0) {
-            return minutos + " min " + segundos + " seg";
+            return String.format("%d min %d seg", minutos, segundos);
+        } else {
+            return String.format("%d segundos", segundos);
         }
-        return segundos + " segundos";
     }
 
-    private void registrarLog(HttpServletRequest request, String tipoAcao,
-                              String detalhes, Long usuarioId) {
+    private void registrarLog(HttpServletRequest request, String tipoAcao, String detalhes, Long usuarioId) {
         try {
             LogAuditoria log = new LogAuditoria();
             log.setTipoAcao(tipoAcao);
             log.setDetalhes(detalhes);
-            log.setUsuarioId(usuarioId != null ? usuarioId.intValue() : null);
+            if (usuarioId != null) {
+                log.setUsuarioId(usuarioId.intValue());
+            } else {
+                log.setUsuarioId(null);
+            }
             log.setIpOrigem(request.getRemoteAddr());
-
             logDAO.salvarLog(log);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
