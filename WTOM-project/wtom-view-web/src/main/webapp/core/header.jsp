@@ -223,28 +223,47 @@
 
                     <div class="user-info-box">
                         <div class="user-avatar">
-                            <% if (usuarioHeader.getFotoPerfil() != null && !usuarioHeader.getFotoPerfil().isBlank()) {%>
-                            <img src="<%= request.getContextPath() + usuarioHeader.getFotoPerfil()%>">
-                            <% } else {%>
-                            <%= usuarioHeader.getNome().substring(0, 1).toUpperCase()%>
-                            <% }%>
+                            <% if (usuarioHeader != null 
+                                   && usuarioHeader.getFotoPerfil() != null 
+                                   && !usuarioHeader.getFotoPerfil().isBlank()) { %>
+
+                                <img src="<%= request.getContextPath() + usuarioHeader.getFotoPerfil() %>">
+
+                            <% } else if (usuarioHeader != null && usuarioHeader.getNome() != null) { %>
+
+                                <%= usuarioHeader.getNome().substring(0, 1).toUpperCase() %>
+
+                            <% } else { %>
+
+                                <i class="fa-solid fa-user"></i>
+
+                            <% } %>
                         </div>
+
                         <div class="user-details">
-                            <span class="user-name" style="color:white"><%= nomeUsuario%></span>
-                            <span class="user-role">${usuario.tipo}</span>
+                            <span class="user-name" style="color:white">
+                                <%= nomeUsuario %>
+                            </span>
+
+                            <% if (usuarioHeader != null) { %>
+                                <span class="user-role">${usuario.tipo}</span>
+                            <% } %>
                         </div>
-                        
+
+                        <% if (usuarioHeader != null) { %>
                         <div class="notification-wrapper">
                             <button class="notification-btn" id="notifBtn" title="Notificações">
                                 <i class="fa-solid fa-bell"></i>
-                                <% if(qtdNaoLidas > 0) { %>
+                                <% if (qtdNaoLidas > 0) { %>
                                     <span class="notification-badge"><%= qtdNaoLidas %></span>
                                 <% } %>
                             </button>
                         </div>
 
                         <i class="fa-solid fa-chevron-up" style="font-size: 10px; margin-left: auto;"></i>
+                        <% } %>
                     </div>
+
                 </div>
             </nav>
         </aside>

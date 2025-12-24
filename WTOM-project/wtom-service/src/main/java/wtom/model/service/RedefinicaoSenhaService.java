@@ -20,9 +20,6 @@ public class RedefinicaoSenhaService {
 
     private static final int EXPIRACAO_MINUTOS = 30;
 
-    /* =========================================================
-       SOLICITAÇÃO DE REDEFINIÇÃO
-       ========================================================= */
     public void solicitarRedefinicaoSenha(String email) throws NegocioException {
         try {
             if (email == null || email.isBlank()) {
@@ -61,9 +58,6 @@ public class RedefinicaoSenhaService {
         }
     }
 
-    /* =========================================================
-       VALIDAÇÃO DE TOKEN
-       ========================================================= */
     public RedefinicaoSenha validarToken(String token) throws NegocioException {
         try {
             if (token == null || token.isBlank()) {
@@ -93,9 +87,6 @@ public class RedefinicaoSenhaService {
         }
     }
 
-    /* =========================================================
-       REDEFINIÇÃO DE SENHA
-       ========================================================= */
     public void redefinirSenha(String token, String novaSenha) throws NegocioException {
         try {
             RedefinicaoSenha redefinicao = validarToken(token);
@@ -124,9 +115,6 @@ public class RedefinicaoSenhaService {
         }
     }
 
-    /* =========================================================
-       MÉTODOS AUXILIARES
-       ========================================================= */
     private String gerarTokenSeguro() {
         return UUID.randomUUID().toString() + UUID.randomUUID().toString();
     }
